@@ -6,3 +6,5 @@ include <slots.scad>
 include <stacking.scad>
 include <label.scad>
 include <debug_preview.scad>
+include <slot_test.scad>
+include <render.scad>

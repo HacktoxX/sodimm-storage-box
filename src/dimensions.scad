@@ -238,12 +238,18 @@ assert(
 function slot_width_with_clearance(thickness_clearance) =
     sodimm_thickness + thickness_clearance;
 
-function slot_test_field_width_for(thickness_clearance) =
-    (slot_test_rows * slot_width_with_clearance(thickness_clearance)) +
-    ((slot_test_rows - 1) * row_spacing);
+function slot_test_field_length_for(columns) =
+    (columns * slot_length) + ((columns - 1) * center_gap);
 
-function slot_test_body_width_for(thickness_clearance) =
-    slot_test_field_width_for(thickness_clearance) +
+function slot_test_field_width_for(thickness_clearance, rows) =
+    (rows * slot_width_with_clearance(thickness_clearance)) +
+    ((rows - 1) * row_spacing);
+
+function slot_test_body_length_for(columns) =
+    slot_test_field_length_for(columns) + (2 * slot_test_edge_width);
+
+function slot_test_body_width_for(thickness_clearance, rows) =
+    slot_test_field_width_for(thickness_clearance, rows) +
     (2 * slot_test_edge_width);
 
 assert(
@@ -322,16 +328,13 @@ slot_test_edge_width = max(wall_thickness, slot_test_outer_margin);
 slot_test_slot_length = slot_length;
 slot_test_slot_width =
     slot_width_with_clearance(slot_thickness_clearance);
-slot_test_field_length =
-    (slot_test_columns * slot_test_slot_length) +
-    ((slot_test_columns - 1) * center_gap);
+slot_test_field_length = slot_test_field_length_for(slot_test_columns);
 slot_test_field_width =
-    slot_test_field_width_for(slot_thickness_clearance);
+    slot_test_field_width_for(slot_thickness_clearance, slot_test_rows);
 
-slot_test_body_length =
-    slot_test_field_length + (2 * slot_test_edge_width);
+slot_test_body_length = slot_test_body_length_for(slot_test_columns);
 slot_test_body_width =
-    slot_test_body_width_for(slot_thickness_clearance);
+    slot_test_body_width_for(slot_thickness_clearance, slot_test_rows);
 slot_test_body_height = bottom_thickness + insertion_depth;
 
 // Slot placement starts after the compact outer wall.
@@ -381,7 +384,10 @@ slot_test_max_variant_clearance =
         ? max(slot_test_clearance_variants)
         : slot_thickness_clearance;
 slot_test_max_variant_body_width =
-    slot_test_body_width_for(slot_test_max_variant_clearance);
+    slot_test_body_width_for(
+        slot_test_max_variant_clearance,
+        slot_test_rows
+    );
 slot_test_variant_pitch =
     slot_test_max_variant_body_width + slot_test_variant_spacing;
 slot_test_variants_width =

@@ -88,8 +88,3 @@ module debug_preview() {
     %color(debug_slot_color)
         debug_slot_placeholders();
 }
-
-if (debug_mode) {
-    debug_configuration();
-    debug_preview();
-}
