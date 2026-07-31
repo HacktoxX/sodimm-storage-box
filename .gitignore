@@ -1,0 +1,23 @@
+# Operating-system metadata
+.DS_Store
+Thumbs.db
+
+# Editor metadata
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OpenSCAD and slicer-generated artifacts
+*.stl
+*.3mf
+*.amf
+*.csg
+*.gcode
+*.bgcode
+
+# Local build and export directories
+build/
+dist/
+exports/
