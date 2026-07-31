@@ -6,13 +6,15 @@ Dieses Dokument unterscheidet zwischen berechneten Konstruktionsentscheidungen
 und durch Druckversuche bestätigten Ergebnissen. Das Maßsystem und die
 Assertions sind implementiert und über die Kommandozeile geprüft. Passungswerte
 bleiben Prüfziele, bis repräsentative PETG-Testkörper mit realen SO-DIMMs
-gedruckt wurden.
+gedruckt wurden. Ein erster realer Testdruck hat die bisherige Slotlänge als zu
+kurz identifiziert; die daraus abgeleitete Korrektur muss in einem weiteren
+Testdruck bestätigt werden.
 
 ## Konstruktionsvorgaben
 
-| Vorgabe | Anfangswert | Zweck |
+| Vorgabe | Standardwert | Zweck |
 | --- | ---: | --- |
-| SO-DIMM-Platinenlänge | 67,6 mm | Definiert den Bauraum des Moduls |
+| SO-DIMM-Platinenlänge | 72,0 mm | Gemessener Bauraum des realen Moduls |
 | SO-DIMM-Platinenhöhe | 30,0 mm | Definiert Einstecktiefe und Auflagebereich |
 | SO-DIMM-Gesamtdicke | 4,2 mm | Konservative Standardhülle der Komponenten |
 | Kapazität | 20 Module | Geforderte Kapazität der Box |
@@ -25,11 +27,19 @@ Alle geometriewirksamen Werte müssen konfigurierbar bleiben. Nominelle
 Bauteilmaße, Fertigungsspiel und abgeleitete Geometrie werden getrennt gehalten,
 damit eine Druckeranpassung die SO-DIMM-Referenzmaße nicht unbemerkt verändert.
 
-Die Hülle von 67,6 × 30,0 × 4,2 mm ist eine technische Vorgabe und keine
+Die Hülle von 72,0 × 30,0 × 4,2 mm ist eine technische Vorgabe und keine
 Behauptung, dass jedes gefertigte Modul dieselbe Komponentenstärke besitzt.
 Heatspreader, ungewöhnlich hohe Bauteile, Aufkleber und Platinenabweichungen
 können den Standardwert überschreiten. Der Passungstest muss deshalb mit den
 dicksten Modulen erfolgen, die tatsächlich aufbewahrt werden sollen.
+
+Die nominelle Länge wurde nach einem realen Testdruck von 67,6 auf 72,0 mm
+korrigiert. Die geprüften Module messen ungefähr 72 mm; die frühere daraus
+abgeleitete Slotlänge von 68,8 mm war folglich zu kurz. Das vorhandene
+Längenspiel von insgesamt 1,2 mm bleibt erhalten und ergibt eine neue freie
+Slotlänge von 73,2 mm. Damit bleibt die Verantwortlichkeit eindeutig:
+`config.scad` enthält die gemessene Nominallänge und `dimensions.scad` leitet
+die freie Slotlänge zentral daraus ab.
 
 ## Architektur
 
@@ -51,10 +61,10 @@ Maßkette. Die Standardkonfiguration ergibt:
 
 | Abgeleiteter Wert | Ergebnis |
 | --- | ---: |
-| Slotabmessung | 68,8 × 5,2 mm |
-| Slotfeld | 145,6 × 80,8 mm |
-| Hauptkörper | 162,0 × 97,2 × 31,4 mm |
-| Gesamter Druckbauraum | 162,0 × 97,2 × 33,0 mm |
+| Slotabmessung | 73,2 × 5,2 mm |
+| Slotfeld | 154,4 × 80,8 mm |
+| Hauptkörper | 170,8 × 97,2 × 31,4 mm |
+| Gesamter Druckbauraum | 170,8 × 97,2 × 33,0 mm |
 | Freiliegende SO-DIMM-Höhe | 1,0 mm |
 
 Die Gesamthöhe enthält die reservierte, 1,6 mm nach unten ragende
@@ -65,7 +75,7 @@ umgehen.
 
 ## Passungsspiele
 
-Der anfängliche Slot addiert 1,2 mm zur nominellen Modullänge und 1,0 mm zur
+Der aktualisierte Slot addiert 1,2 mm zur nominellen Modullänge und 1,0 mm zur
 nominellen Gesamtdicke. Zentriert entsprechen diese Werte 0,6 mm an jedem Ende
 und 0,5 mm an jeder Breitseite. Die bewusst konservative Ausgangsbasis
 berücksichtigt PETG-Oberflächenstruktur, Elefantenfuß, Druckerabweichungen und
@@ -82,7 +92,7 @@ Stapel- und Trennversuche sowohl geringes Spiel als auch leichtes Lösen zeigen.
 Der Kalibrierkörper bildet zwei Spalten und zwei Reihen mit derselben
 `slot_length`, demselben Mittelabstand, Reihenabstand, derselben Bodenstärke,
 Einstecktiefe und Mindestwandstärke wie die geplante vollständige Box ab. Der
-einzelne Standardkörper misst 152,0 × 20,0 × 31,4 mm. Werden die vier
+einzelne Standardkörper misst 160,8 × 20,0 × 31,4 mm. Werden die vier
 Slotvolumen von einem kompakten Grundkörper abgezogen, bleiben nur der
 geschlossene Boden, Außenwände, Mittelsteg und Reihentrenner zurück; ein
 funktionsloser massiver Kern entsteht nicht.
@@ -104,7 +114,7 @@ Druckbett aus einen 23,4 mm hohen Mittelsteg stehen und liegt damit deutlich
 ## Schutz der Kontaktkante
 
 Am Boden jedes Slots bleiben zwei flache, jeweils 5,0 mm lange Endauflagen
-stehen. Dazwischen wird eine 58,8 mm lange Freistellung um 0,8 mm vertieft. Das
+stehen. Dazwischen wird eine 63,2 mm lange Freistellung um 0,8 mm vertieft. Das
 Modul liegt dadurch an den äußeren Platinenenden auf, während der größte Teil
 der Kontaktkante über dem Boden frei bleibt. Seitliche Noppen oder Clips ragen
 nicht in den Slot, sodass weder Komponenten noch Kontakte seitlich geklemmt
@@ -177,8 +187,8 @@ abgeleitet werden, ohne Konstanten in Geometriemodulen zu verstecken.
 
 Die Standardgrenzen des Bambu Lab P1S betragen 256 × 256 × 256 mm. Die
 Assertions verwenden jedoch die konfigurierbaren Druckerwerte statt eines
-fest codierten Druckerprofils. Die Standardhülle von 162,0 × 97,2 × 33,0 mm
-lässt 94,0 mm in X, 158,8 mm in Y und 223,0 mm in Z frei. Assertions melden
+fest codierten Druckerprofils. Die Standardhülle von 170,8 × 97,2 × 33,0 mm
+lässt 85,2 mm in X, 158,8 mm in Y und 223,0 mm in Z frei. Assertions melden
 die konkret überschrittene Achse und Abmessung.
 
 ## Beschriftungssystem
@@ -203,6 +213,8 @@ Ein Merkmal gilt erst dann als abgeschlossen, wenn:
 
 Der Vier-Slot-Testkörper erfüllt die Stufen für Berechnung, Rendering,
 Manifold-Netz und supportfreie Geometrie. Slotpassung und Position der
-Kontaktauflagen benötigen weiterhin den realen PETG-Testdruck. Stapelgefühl,
-finale Ergonomie und Geometrie der vollständigen Box bleiben bewusst
-unvalidiert.
+Kontaktauflagen benötigen weiterhin den realen PETG-Testdruck. Die erste reale
+Prüfung hat die unzureichende frühere Slotlänge aufgedeckt; die korrigierten
+73,2 mm müssen nun mit demselben Modulbestand nachgedruckt und bestätigt
+werden. Stapelgefühl, finale Ergonomie und Geometrie der vollständigen Box
+bleiben bewusst unvalidiert.

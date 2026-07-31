@@ -9,6 +9,14 @@ zu folgen.
 
 ## [Unveröffentlicht]
 
+### Behoben
+
+- Die freie Standard-Slotlänge wurde nach einem realen Testdruck von 68,8 auf
+  73,2 mm erhöht. Gemessene Module von ungefähr 72,0 mm erhalten damit das
+  unveränderte gesamte Längenspiel von 1,2 mm.
+- Kalibrierkörper, Variantenkörper, abgeleitete Außenmaße und Regressionstests
+  verwenden automatisch die korrigierte zentrale SO-DIMM-Länge.
+
 ### Geändert
 
 - Projektdokumentation, Entwicklerkommentare, Diagnoseausgaben und

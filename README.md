@@ -115,6 +115,13 @@ Abgeleitete Werte und ihre Assertions befinden sich in `src/dimensions.scad`,
 damit Implementierungsdateien weder magische Zahlen noch wiederholte
 Berechnungen enthalten.
 
+Ein realer Testdruck mit ungefähr 72,0 mm langen Modulen hat gezeigt, dass die
+ursprüngliche freie Slotlänge von 68,8 mm nicht ausreichte. Der zentrale Wert
+`sodimm_length` beträgt deshalb jetzt 72,0 mm. Zusammen mit dem unveränderten
+`slot_length_clearance` von 1,2 mm wird die freie Standard-Slotlänge
+parametrisch als 73,2 mm berechnet. Testkörper und spätere Box verwenden
+dieselbe abgeleitete Maßkette.
+
 Für eine reguläre Änderung der Beschriftung muss später nur dieser Wert
 angepasst werden:
 
@@ -148,6 +155,12 @@ Die dicksten Module prüfen, die später aufbewahrt werden sollen. Ist die
 Passung zu eng oder zu locker, wird `slot_thickness_clearance` angepasst. Der
 Wert beschreibt den gesamten Zuschlag zur nominellen Moduldicke, nicht das
 Spiel pro Seite.
+
+Die Slotlänge wurde nach dem ersten realen Testdruck von 68,8 auf 73,2 mm
+korrigiert. Vor der vollständigen Box muss auch diese aktualisierte Länge mit
+den vorhandenen Modulen erneut praktisch bestätigt werden. Das Längenspiel
+wird zentral über `sodimm_length` und `slot_length_clearance` bestimmt; es darf
+nicht durch lokale Änderungen am Kalibrierkörper angepasst werden.
 
 Für einen direkten Vergleich werden folgende Werte verwendet:
 
