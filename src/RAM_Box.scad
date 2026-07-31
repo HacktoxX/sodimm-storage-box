@@ -5,3 +5,4 @@ include <body.scad>
 include <slots.scad>
 include <stacking.scad>
 include <label.scad>
+include <debug_preview.scad>
