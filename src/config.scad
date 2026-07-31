@@ -1,30 +1,61 @@
 /*
  * User-facing project configuration.
  *
- * Keep nominal hardware dimensions separate from manufacturing clearances.
- * Derived values belong in dimensions.scad, not in feature modules.
+ * Every value in this file is intended to be safe and useful to customize.
+ * Calculations, assertions, and geometry belong in their dedicated source
+ * files.
+ *
+ * All dimensions are in millimetres unless stated otherwise.
  */
 
-// SO-DIMM nominal envelope, in millimetres.
-so_dimm_length = 67.6;
-so_dimm_height = 30.0;
-so_dimm_thickness = 4.0;
+// Nominal SO-DIMM assembly envelope.
+sodimm_length = 67.6;
+sodimm_height = 30.0;
+sodimm_thickness = 4.2;
 
-// Storage layout.
-slot_columns = 2;
-slot_rows = 10;
+// Slot fit clearances.
+slot_length_clearance = 1.2;
+slot_thickness_clearance = 1.0;
 
-// Target manufacturing process.
-nozzle_diameter = 0.4;
-layer_height = 0.20;
-maximum_overhang_angle = 45;
+// Storage capacity and layout.
+slots_per_row = 2;
+row_count = 10;
+
+// Spacing between slots and slot groups.
+center_gap = 8.0;
+row_spacing = 3.2;
+
+// Main enclosure dimensions.
+wall_thickness = 3.2;
+bottom_thickness = 2.4;
+outer_margin_x = 5.0;
+outer_margin_y = 5.0;
+corner_radius = 4.0;
+
+// Vertical SO-DIMM engagement.
+insertion_depth = 29.0;
+
+// Self-centering stacking interface.
+stacking_clearance = 0.25;
+stacking_feature_height = 1.6;
+stacking_feature_width = 2.4;
+stacking_chamfer_angle = 45;
+
+// Adaptive label.
+label_text = "PC4-3200";
+label_mode = "engraved"; // "engraved", "raised", or "disabled".
+label_width = 58;
+label_height = 11;
+label_depth = 0.6;
+label_max_font_size = 6.0;
+label_min_font_size = 3.0;
+
+// Target printer and process.
 printer_build_x = 256;
 printer_build_y = 256;
 printer_build_z = 256;
+nozzle_diameter = 0.4;
+layer_height = 0.2;
 
-// Initial stacking coupon range; final value requires physical validation.
-stack_clearance = 0.275;
-
-// Adaptive label settings.
-label_text = "PC4-3200";
-label_style = "engraved"; // Supported values: "engraved" or "raised".
+// Diagnostic output and milestone-only preview geometry.
+debug_mode = true;
