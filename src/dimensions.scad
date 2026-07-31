@@ -227,3 +227,219 @@ assert(
         " mm."
     )
 );
+
+/*
+ * Four-slot calibration body
+ *
+ * These functions keep the test variants parameter-driven. The production
+ * slot dimensions remain the source of truth; only thickness clearance varies
+ * between calibration bodies.
+ */
+function slot_width_with_clearance(thickness_clearance) =
+    sodimm_thickness + thickness_clearance;
+
+function slot_test_field_width_for(thickness_clearance) =
+    (slot_test_rows * slot_width_with_clearance(thickness_clearance)) +
+    ((slot_test_rows - 1) * row_spacing);
+
+function slot_test_body_width_for(thickness_clearance) =
+    slot_test_field_width_for(thickness_clearance) +
+    (2 * slot_test_edge_width);
+
+assert(
+    render_mode == "debug" || render_mode == "slot_test",
+    "render_mode must be \"debug\" or \"slot_test\"."
+);
+assert(
+    slot_test_rows >= 1 && slot_test_rows == floor(slot_test_rows),
+    "slot_test_rows must be a whole number of at least 1."
+);
+assert(
+    slot_test_columns >= 1 &&
+    slot_test_columns == floor(slot_test_columns),
+    "slot_test_columns must be a whole number of at least 1."
+);
+assert(
+    slot_chamfer_height > 0,
+    "slot_chamfer_height must be positive."
+);
+assert(
+    slot_chamfer_expansion >= 0,
+    "slot_chamfer_expansion cannot be negative."
+);
+assert(
+    slot_chamfer_expansion <= slot_chamfer_height,
+    "slot_chamfer_expansion cannot exceed slot_chamfer_height; the entry surface would exceed 45 degrees."
+);
+assert(
+    slot_chamfer_height < insertion_depth,
+    "slot_chamfer_height must be smaller than insertion_depth."
+);
+assert(
+    slot_contact_support_length > 0 &&
+    (2 * slot_contact_support_length) < slot_length,
+    "slot_contact_support_length must leave an open contact-relief region."
+);
+assert(
+    slot_contact_relief_depth > 0,
+    "slot_contact_relief_depth must be positive."
+);
+assert(
+    (bottom_thickness - slot_contact_relief_depth) >= (3 * layer_height),
+    "The floor below the contact relief must remain at least three layers thick."
+);
+assert(
+    slot_test_outer_margin >= wall_thickness,
+    "slot_test_outer_margin must preserve at least wall_thickness."
+);
+assert(
+    slot_test_grip_depth > 0,
+    "slot_test_grip_depth must be positive."
+);
+assert(
+    slot_test_variant_mode == true || slot_test_variant_mode == false,
+    "slot_test_variant_mode must be true or false."
+);
+assert(
+    len(slot_test_clearance_variants) >= 1,
+    "slot_test_clearance_variants must contain at least one value."
+);
+for (variant_clearance = slot_test_clearance_variants) {
+    assert(
+        variant_clearance >= 0,
+        "Every slot-test thickness clearance must be non-negative."
+    );
+}
+assert(
+    slot_test_variant_spacing >= wall_thickness,
+    "slot_test_variant_spacing must be at least wall_thickness."
+);
+
+// The test edge is never thinner than the production wall.
+slot_test_edge_width = max(wall_thickness, slot_test_outer_margin);
+
+// The test uses the production slot length, center gap, and row spacing.
+slot_test_slot_length = slot_length;
+slot_test_slot_width =
+    slot_width_with_clearance(slot_thickness_clearance);
+slot_test_field_length =
+    (slot_test_columns * slot_test_slot_length) +
+    ((slot_test_columns - 1) * center_gap);
+slot_test_field_width =
+    slot_test_field_width_for(slot_thickness_clearance);
+
+slot_test_body_length =
+    slot_test_field_length + (2 * slot_test_edge_width);
+slot_test_body_width =
+    slot_test_body_width_for(slot_thickness_clearance);
+slot_test_body_height = bottom_thickness + insertion_depth;
+
+// Slot placement starts after the compact outer wall.
+slot_test_slot_start_x = slot_test_edge_width;
+slot_test_slot_start_y = slot_test_edge_width;
+slot_test_slot_start_z = bottom_thickness;
+
+// The straight guide ends where the symmetric top chamfer begins.
+slot_straight_guide_depth = insertion_depth - slot_chamfer_height;
+
+/*
+ * Two end rails remain at the nominal bottom level. The relief between them
+ * protects the contact edge while retaining a printable closed floor.
+ */
+slot_contact_relief_length =
+    slot_test_slot_length - (2 * slot_contact_support_length);
+slot_contact_floor_thickness =
+    bottom_thickness - slot_contact_relief_depth;
+
+/*
+ * The removal opening starts at the full center gap and expands one millimetre
+ * horizontally per millimetre vertically. Its 45-degree faces are support-free.
+ */
+slot_test_grip_bottom_width = center_gap;
+slot_test_grip_top_width =
+    slot_test_grip_bottom_width + (2 * slot_test_grip_depth);
+slot_test_remaining_center_web_height =
+    slot_test_body_height - slot_test_grip_depth;
+
+// Explicit web calculations prove that adjacent tapered slots do not collide.
+slot_test_column_web_width = center_gap;
+slot_test_row_web_width = row_spacing;
+slot_test_chamfer_column_web_width =
+    slot_test_column_web_width - (2 * slot_chamfer_expansion);
+slot_test_chamfer_row_web_width =
+    slot_test_row_web_width - (2 * slot_chamfer_expansion);
+slot_test_chamfer_outer_wall =
+    slot_test_edge_width - slot_chamfer_expansion;
+
+// A modeling overlap derived from the layer height avoids coplanar booleans.
+slot_test_boolean_overlap = layer_height / 10;
+
+// Variant spacing uses the widest configured body, independent of array order.
+slot_test_variant_count = len(slot_test_clearance_variants);
+slot_test_max_variant_clearance =
+    slot_test_variant_count > 0
+        ? max(slot_test_clearance_variants)
+        : slot_thickness_clearance;
+slot_test_max_variant_body_width =
+    slot_test_body_width_for(slot_test_max_variant_clearance);
+slot_test_variant_pitch =
+    slot_test_max_variant_body_width + slot_test_variant_spacing;
+slot_test_variants_width =
+    (slot_test_variant_count * slot_test_max_variant_body_width) +
+    ((slot_test_variant_count - 1) * slot_test_variant_spacing);
+
+// Overall render envelope switches between one body and the variant array.
+slot_test_render_length = slot_test_body_length;
+slot_test_render_width =
+    slot_test_variant_mode
+        ? slot_test_variants_width
+        : slot_test_body_width;
+slot_test_render_height = slot_test_body_height;
+slot_test_build_volume_ok =
+    slot_test_render_length <= printer_build_x &&
+    slot_test_render_width <= printer_build_y &&
+    slot_test_render_height <= printer_build_z;
+
+assert(
+    slot_test_slot_width > 0,
+    "The derived slot-test width must be positive."
+);
+assert(
+    slot_test_body_length > 0 &&
+    slot_test_body_width > 0 &&
+    slot_test_body_height > 0,
+    "All derived slot-test body dimensions must be positive."
+);
+assert(
+    slot_contact_relief_length > 0,
+    "The contact support rails leave no central contact relief."
+);
+assert(
+    slot_test_remaining_center_web_height >=
+        (bottom_thickness + wall_thickness),
+    "The grip clearance leaves less than wall_thickness above the bottom."
+);
+assert(
+    slot_test_chamfer_column_web_width > 0,
+    "Column chamfers collide across center_gap."
+);
+assert(
+    slot_test_chamfer_row_web_width > 0,
+    "Row chamfers collide across row_spacing."
+);
+assert(
+    slot_test_chamfer_outer_wall >= (2 * nozzle_diameter),
+    "The chamfer leaves less than two nozzle diameters at the outer wall."
+);
+assert(
+    slot_test_render_length <= printer_build_x,
+    "The slot-test render exceeds printer_build_x."
+);
+assert(
+    slot_test_render_width <= printer_build_y,
+    "The slot-test render exceeds printer_build_y."
+);
+assert(
+    slot_test_render_height <= printer_build_z,
+    "The slot-test render exceeds printer_build_z."
+);
