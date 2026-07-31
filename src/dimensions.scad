@@ -149,6 +149,19 @@ exposed_sodimm_height = sodimm_height - insertion_depth;
 wall_line_count = wall_thickness / nozzle_diameter;
 bottom_layer_count = bottom_thickness / layer_height;
 
+/*
+ * The build-volume result uses the complete printable envelope. box_height
+ * already includes the future feature below the main body; X and Y use the
+ * larger of the body and stacking footprints.
+ */
+build_volume_ok =
+    box_length <= printer_build_x &&
+    box_width <= printer_build_y &&
+    box_height <= printer_build_z;
+build_volume_remaining_x = printer_build_x - box_length;
+build_volume_remaining_y = printer_build_y - box_width;
+build_volume_remaining_z = printer_build_z - box_height;
+
 // Validate the complete chain of derived internal and external dimensions.
 assert(
     slot_length > 0 && slot_width > 0,
@@ -181,4 +194,36 @@ assert(
 assert(
     exposed_sodimm_height >= 0,
     "Derived exposed SO-DIMM height cannot be negative."
+);
+
+// Fail on the exact printer axis that cannot contain the complete box envelope.
+assert(
+    box_length <= printer_build_x,
+    str(
+        "Box length of ",
+        box_length,
+        " mm exceeds printer_build_x of ",
+        printer_build_x,
+        " mm."
+    )
+);
+assert(
+    box_width <= printer_build_y,
+    str(
+        "Box width of ",
+        box_width,
+        " mm exceeds printer_build_y of ",
+        printer_build_y,
+        " mm."
+    )
+);
+assert(
+    box_height <= printer_build_z,
+    str(
+        "Box height of ",
+        box_height,
+        " mm exceeds printer_build_z of ",
+        printer_build_z,
+        " mm."
+    )
 );
