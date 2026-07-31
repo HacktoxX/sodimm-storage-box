@@ -9,7 +9,7 @@
  */
 
 // Nominelle Gesamthülle des SO-DIMMs.
-sodimm_length = 67.6;
+sodimm_length = 72.0;
 sodimm_height = 30.0;
 sodimm_thickness = 4.2;
 
