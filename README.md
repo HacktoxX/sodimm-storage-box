@@ -7,13 +7,6 @@ Speichermodule, konstruiert in OpenSCAD für zuverlässigen FDM-3D-Druck.
 > Passungsprüfung bereit. Die Geometrie der finalen Box ist noch nicht
 > veröffentlicht.
 
-## Projektsprache
-
-Deutsch ist die verbindliche Sprache für Dokumentation, Kommentare,
-Diagnoseausgaben, Issues, Pull Requests und künftige Commit-Nachrichten.
-Technische Bezeichner, etablierte Dateinamen, Kommandozeilenoptionen und
-externe Schnittstellen bleiben unverändert, wenn eine Übersetzung die
-Kompatibilität beeinträchtigen würde.
 
 ## Projektziele
 
