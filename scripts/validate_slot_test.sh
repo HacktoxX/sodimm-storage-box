@@ -71,6 +71,19 @@ python3 "${mesh_checker}" \
     --components 1 \
     --size 152 20 31.4
 
+debug_stl="${validation_directory}/debug-preview.stl"
+debug_log="${validation_directory}/debug-preview.log"
+"${openscad_bin}" \
+    -D 'render_mode="debug"' \
+    -o "${debug_stl}" \
+    "${entry_file}" >"${debug_log}" 2>&1
+fail_on_render_diagnostics "${debug_log}"
+test -s "${debug_stl}"
+python3 "${mesh_checker}" \
+    "${debug_stl}" \
+    --components 1 \
+    --size 162 97.2 33
+
 variant_stl="${validation_directory}/slot-variants.stl"
 variant_log="${validation_directory}/slot-variants.log"
 "${openscad_bin}" \
