@@ -8,6 +8,8 @@ Thumbs.db
 *.swp
 *.swo
 *~
+__pycache__/
+*.py[cod]
 
 # OpenSCAD and slicer-generated artifacts
 *.stl
