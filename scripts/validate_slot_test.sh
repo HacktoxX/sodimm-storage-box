@@ -6,6 +6,7 @@ script_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repository_root="$(cd "${script_directory}/.." && pwd)"
 entry_file="${repository_root}/src/RAM_Box.scad"
 mesh_checker="${script_directory}/check_ascii_stl.py"
+openscad_helper="${script_directory}/lib/openscad.sh"
 validation_directory="$(mktemp -d)"
 
 cleanup() {
@@ -13,21 +14,8 @@ cleanup() {
 }
 trap cleanup EXIT
 
-find_openscad() {
-    if [[ -n "${SODIMM_OPENSCAD_BIN:-}" ]]; then
-        printf '%s\n' "${SODIMM_OPENSCAD_BIN}"
-    elif command -v openscad >/dev/null 2>&1; then
-        command -v openscad
-    elif [[ -x "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD" ]]; then
-        printf '%s\n' "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD"
-    elif [[ -x "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD" ]]; then
-        printf '%s\n' "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD"
-    else
-        printf '%s\n' "OpenSCAD CLI not found." >&2
-        return 1
-    fi
-}
-
+# shellcheck source=lib/openscad.sh
+source "${openscad_helper}"
 openscad_bin="$(find_openscad)"
 
 fail_on_render_diagnostics() {
