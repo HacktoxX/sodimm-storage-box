@@ -10,7 +10,8 @@ validation are included in the same development stage.
 - [x] Define derived dimensions, parameter validation, and P1S build-volume
   assertions.
 - [ ] Create reusable rounded-shell and transition helpers.
-- [ ] Develop and print-test a four-slot SO-DIMM fit coupon.
+- [x] Develop a four-slot SO-DIMM fit coupon.
+- [ ] Print-test the coupon with the thickest available SO-DIMMs.
 - [ ] Expand the validated slot to the 2 × 10 array.
 - [ ] Develop the lightweight body, underside pockets, and structural ribs.
 - [ ] Develop and ergonomically review the central grip recess.

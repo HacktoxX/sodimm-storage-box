@@ -18,3 +18,10 @@ and this project intends to follow [Semantic Versioning](https://semver.org/).
 - Configurable printer build-volume validation including the reserved lower
   stacking projection.
 - CLI-readable configuration diagnostics and a milestone-only envelope preview.
+- Support-free SO-DIMM slot cutouts with symmetric entry chamfers.
+- Compact 2 × 2 calibration body with a central removal clearance and
+  contact-edge relief.
+- Optional 0.8, 1.0, and 1.2 mm clearance variants with font-independent
+  engraved identifiers.
+- Automated OpenSCAD render, assertion, STL topology, dimension, component, and
+  variant-spacing validation.

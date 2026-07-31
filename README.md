@@ -3,9 +3,8 @@
 Professional, parametric, and stackable storage for SO-DIMM memory modules,
 designed in OpenSCAD for reliable FDM printing.
 
-> **Project status:** Parametric dimension system and validation preview.
-> Production geometry has not yet been released. The current STL is only the
-> calculated bounding-box diagnostic for this milestone.
+> **Project status:** Four-slot calibration geometry ready for physical fit
+> testing. Production box geometry has not yet been released.
 
 ## Project goals
 
@@ -46,10 +45,10 @@ Final slicer settings will be documented after physical validation.
 3. Render the model with **F6**.
 4. Choose **File > Export > Export as STL**.
 
-The entry point intentionally contains only include statements. Geometry will
-be assembled by the individual source modules as they are implemented. With
-`debug_mode = true`, the current milestone exports only a simple envelope
-cuboid; it is not a printable storage-box release.
+The entry point intentionally contains only include statements. Set
+`render_mode = "slot_test"` for the printable calibration body or
+`render_mode = "debug"` for the dimensional envelope preview. Neither mode
+is the final 20-slot storage-box release.
 
 ## Parameters
 
@@ -63,6 +62,44 @@ For routine relabeling, only this value will need to change:
 
 ```scad
 label_text = "PC4-3200";
+```
+
+## Calibration test
+
+Print the four-slot calibration body before committing to a full 20-slot box.
+It verifies real module thickness, PETG surface finish, printer dimensional
+behavior, insertion feel, and removal access with far less material.
+
+To generate the normal 2 × 2 test:
+
+1. Set `render_mode = "slot_test"`.
+2. Set `slot_test_variant_mode = false`.
+3. Render `src/RAM_Box.scad` with **F6** and export it as STL.
+4. Print it upright as modeled, using the target PETG profile without supports.
+
+Insert an unpowered SO-DIMM vertically with its contact edge toward the
+protected slot floor. Hold the PCB by its edges and never force it. A good fit
+passes through the entry chamfer without catching, reaches both end supports,
+does not bow the PCB, has little side play, and can be removed using the central
+clearance.
+
+Test the thickest modules intended for storage. If the fit is too tight or too
+loose, adjust `slot_thickness_clearance`. This value is the total addition to
+the nominal module thickness, not clearance per side.
+
+For a side-by-side comparison, set:
+
+```scad
+slot_test_variant_mode = true;
+slot_test_clearance_variants = [0.8, 1.0, 1.2];
+```
+
+The generated bodies are separated and engraved `0.8`, `1.0`, and `1.2`.
+Use the smallest value that inserts and releases reliably without stressing the
+module. Repeatable CLI validation is available through:
+
+```bash
+scripts/validate_slot_test.sh
 ```
 
 ## Assembly and stacking
@@ -93,6 +130,8 @@ See [DESIGN.md](docs/DESIGN.md) for design rationale and
 | `stacking.scad` | Self-centering stacking interface |
 | `label.scad` | Adaptive engraved or raised labeling |
 | `debug_preview.scad` | Milestone-only dimensions report and envelope preview |
+| `slot_test.scad` | Four-slot fit coupon and clearance variants |
+| `render.scad` | Top-level render-mode dispatcher |
 | `RAM_Box.scad` | Include-only project entry point |
 
 ## License
