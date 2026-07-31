@@ -7,6 +7,8 @@ and this project intends to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0-slot-calibration] - 2026-07-31
+
 ### Added
 
 - Initial repository and modular OpenSCAD project structure.
@@ -25,3 +27,10 @@ and this project intends to follow [Semantic Versioning](https://semver.org/).
   engraved identifiers.
 - Automated OpenSCAD render, assertion, STL topology, dimension, component, and
   variant-spacing validation.
+- Reproducible one-command export of all calibration STL files.
+- Scalable generated-export directory structure with ignored mesh artifacts.
+- Initial GitHub Actions workflow for building and retaining STL artifacts.
+- Versioned release notes for the slot-calibration release.
+
+[Unreleased]: https://github.com/HacktoxX/sodimm-storage-box/compare/v0.2.0-slot-calibration...HEAD
+[0.2.0-slot-calibration]: https://github.com/HacktoxX/sodimm-storage-box/releases/tag/v0.2.0-slot-calibration
