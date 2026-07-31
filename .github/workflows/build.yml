@@ -1,0 +1,36 @@
+name: Build STL files
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Export calibration STLs
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install OpenSCAD
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes openscad
+
+      - name: Export all STL files
+        run: scripts/export_all.sh
+
+      - name: Upload generated STL files
+        uses: actions/upload-artifact@v7
+        with:
+          name: sodimm-storage-box-stl
+          path: exports/**/*.stl
+          if-no-files-found: error
+          retention-days: 14
