@@ -11,4 +11,10 @@ and this project intends to follow [Semantic Versioning](https://semver.org/).
 
 - Initial repository and modular OpenSCAD project structure.
 - Documentation scaffold for design decisions, validation, and future work.
-- Baseline user parameters for the storage and manufacturing requirements.
+- Central user configuration for SO-DIMM, fit, enclosure, stacking, label,
+  printer, and debug parameters.
+- Central derived dimensions without repeated feature-level calculations.
+- Parameter assertions with actionable error messages.
+- Configurable printer build-volume validation including the reserved lower
+  stacking projection.
+- CLI-readable configuration diagnostics and a milestone-only envelope preview.

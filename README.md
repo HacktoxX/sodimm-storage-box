@@ -3,8 +3,9 @@
 Professional, parametric, and stackable storage for SO-DIMM memory modules,
 designed in OpenSCAD for reliable FDM printing.
 
-> **Project status:** Architecture scaffold. Geometry has not yet been released.
-> The design will be developed and validated in small, reviewable milestones.
+> **Project status:** Parametric dimension system and validation preview.
+> Production geometry has not yet been released. The current STL is only the
+> calculated bounding-box diagnostic for this milestone.
 
 ## Project goals
 
@@ -46,15 +47,17 @@ Final slicer settings will be documented after physical validation.
 4. Choose **File > Export > Export as STL**.
 
 The entry point intentionally contains only include statements. Geometry will
-be assembled by the individual source modules as they are implemented.
+be assembled by the individual source modules as they are implemented. With
+`debug_mode = true`, the current milestone exports only a simple envelope
+cuboid; it is not a printable storage-box release.
 
 ## Parameters
 
 User-facing parameters live in `src/config.scad`. The initial configuration
 records the required SO-DIMM envelope, storage layout, print process, stacking
-clearance, and label options. Derived values will live in
+clearance, and label options. Derived values and their assertions live in
 `src/dimensions.scad` so that implementation files do not contain magic
-numbers.
+numbers or repeat calculations.
 
 For routine relabeling, only this value will need to change:
 
@@ -89,6 +92,7 @@ See [DESIGN.md](docs/DESIGN.md) for design rationale and
 | `slots.scad` | Parametric SO-DIMM slot generation |
 | `stacking.scad` | Self-centering stacking interface |
 | `label.scad` | Adaptive engraved or raised labeling |
+| `debug_preview.scad` | Milestone-only dimensions report and envelope preview |
 | `RAM_Box.scad` | Include-only project entry point |
 
 ## License

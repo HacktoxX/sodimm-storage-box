@@ -7,10 +7,10 @@ validation are included in the same development stage.
 ## Core design
 
 - [x] Establish repository and modular source architecture.
-- [ ] Define derived dimensions, parameter validation, and P1S build-volume
+- [x] Define derived dimensions, parameter validation, and P1S build-volume
   assertions.
 - [ ] Create reusable rounded-shell and transition helpers.
-- [ ] Develop and print-test a single parametric SO-DIMM slot coupon.
+- [ ] Develop and print-test a four-slot SO-DIMM fit coupon.
 - [ ] Expand the validated slot to the 2 × 10 array.
 - [ ] Develop the lightweight body, underside pockets, and structural ribs.
 - [ ] Develop and ergonomically review the central grip recess.
