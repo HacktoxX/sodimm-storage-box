@@ -50,6 +50,53 @@ The entry point intentionally contains only include statements. Set
 `render_mode = "debug"` for the dimensional envelope preview. Neither mode
 is the final 20-slot storage-box release.
 
+## Building STL files
+
+The complete published STL set is generated from the repository root with one
+command:
+
+```bash
+scripts/export_all.sh
+```
+
+### Prerequisites
+
+- Bash;
+- OpenSCAD with a command-line executable.
+
+The script searches, in order:
+
+1. `SODIMM_OPENSCAD_BIN`, when explicitly set;
+2. `openscad` in `PATH`;
+3. `/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD`;
+4. the versioned macOS 2021.01 application bundle used by older installations.
+
+For a non-standard installation:
+
+```bash
+SODIMM_OPENSCAD_BIN=/absolute/path/to/openscad scripts/export_all.sh
+```
+
+### Generated files
+
+| Output | Contents |
+| --- | --- |
+| `exports/calibration/sodimm-slot-test.stl` | Standard 2 × 2 calibration body |
+| `exports/calibration/sodimm-slot-variants.stl` | Engraved 0.8, 1.0, and 1.2 mm variants |
+
+No manual change to `config.scad` is required. Render modes are passed as
+OpenSCAD command-line parameters. The script builds both files in a temporary
+directory and replaces the output files only after both renders succeed.
+
+A missing executable, OpenSCAD error or warning, assertion failure, or empty
+output produces a clear message and a non-zero exit code. Generated STL files
+remain ignored by Git; they can still be uploaded directly as GitHub Release
+assets.
+
+The initial GitHub Actions workflow performs the same export on Ubuntu 24.04
+and stores the generated files as a downloadable workflow artifact. Automated
+attachment to GitHub Releases is intentionally reserved for a later milestone.
+
 ## Parameters
 
 User-facing parameters live in `src/config.scad`. The initial configuration
@@ -70,7 +117,7 @@ Print the four-slot calibration body before committing to a full 20-slot box.
 It verifies real module thickness, PETG surface finish, printer dimensional
 behavior, insertion feel, and removal access with far less material.
 
-To generate the normal 2 × 2 test:
+To generate the normal 2 × 2 test manually in OpenSCAD:
 
 1. Set `render_mode = "slot_test"`.
 2. Set `slot_test_variant_mode = false`.
@@ -96,7 +143,8 @@ slot_test_clearance_variants = [0.8, 1.0, 1.2];
 
 The generated bodies are separated and engraved `0.8`, `1.0`, and `1.2`.
 Use the smallest value that inserts and releases reliably without stressing the
-module. Repeatable CLI validation is available through:
+module. The standard and variant STLs can both be generated with
+`scripts/export_all.sh`. Repeatable geometry validation is available through:
 
 ```bash
 scripts/validate_slot_test.sh

@@ -22,6 +22,13 @@ validation are included in the same development stage.
 - [ ] Publish verified renders, print photographs, STL files, and MakerWorld
   documentation.
 
+## Build and release automation
+
+- [x] Add reproducible one-command STL exports.
+- [x] Add a GitHub Actions STL-build workflow.
+- [ ] Attach generated STL artifacts to tagged releases automatically.
+- [ ] Add release checksums and provenance metadata.
+
 ## Future variants
 
 - [ ] Optional lid.
