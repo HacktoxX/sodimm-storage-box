@@ -1,187 +1,212 @@
-# Stackable SO-DIMM Storage Box
+# Stapelbare SO-DIMM-Aufbewahrungsbox
 
-Professional, parametric, and stackable storage for SO-DIMM memory modules,
-designed in OpenSCAD for reliable FDM printing.
+Professionelle, parametrische und stapelbare Aufbewahrung für SO-DIMM-
+Speichermodule, konstruiert in OpenSCAD für zuverlässigen FDM-3D-Druck.
 
-> **Project status:** Four-slot calibration geometry ready for physical fit
-> testing. Production box geometry has not yet been released.
+> **Projektstatus:** Die Vier-Slot-Kalibriergeometrie ist für die reale
+> Passungsprüfung bereit. Die Geometrie der finalen Box ist noch nicht
+> veröffentlicht.
 
-## Project goals
+## Projektsprache
 
-- Store 20 SO-DIMM modules in a 2-column by 10-row layout.
-- Combine identical boxes for 40- or 60-module storage.
-- Print without supports on a Bambu Lab P1S using PETG, a 0.4 mm nozzle,
-  and 0.20 mm layers.
-- Provide a self-centering, low-play, easy-release stacking interface using
-  printable 45-degree surfaces.
-- Maintain consistent wall thicknesses, generous radii, clean transitions,
-  and a ribbed, pocketed underside instead of unnecessary solid material.
-- Keep every functional dimension configurable and free of unexplained
-  constants.
+Deutsch ist die verbindliche Sprache für Dokumentation, Kommentare,
+Diagnoseausgaben, Issues, Pull Requests und künftige Commit-Nachrichten.
+Technische Bezeichner, etablierte Dateinamen, Kommandozeilenoptionen und
+externe Schnittstellen bleiben unverändert, wenn eine Übersetzung die
+Kompatibilität beeinträchtigen würde.
 
-## Images
+## Projektziele
 
-Validated renders and print photographs will be added to `images/` after the
-first geometry and print-validation milestones. Placeholder renders are not
-used because published images must represent tested geometry.
+- 20 SO-DIMM-Module in einer Anordnung aus zwei Spalten und zehn Reihen
+  aufbewahren.
+- Identische Boxen zur Aufbewahrung von 40 oder 60 Modulen kombinieren.
+- Supportfrei auf einem Bambu Lab P1S mit PETG, einer 0,4-mm-Düse und einer
+  Schichthöhe von 0,20 mm drucken.
+- Eine selbstzentrierende, spielarme und leicht lösbare Stapelmechanik mit
+  druckbaren 45-Grad-Flächen bereitstellen.
+- Gleichmäßige Wandstärken, großzügige Radien, saubere Übergänge und eine
+  verrippte Unterseite mit Taschen anstelle unnötiger Materialansammlungen
+  verwenden.
+- Alle funktionsrelevanten Maße konfigurierbar und frei von unerklärten
+  Konstanten halten.
 
-## Target print settings
+## Bilder
 
-| Setting | Target |
+Validierte Renderbilder und Druckfotos werden nach den ersten Meilensteinen
+für Geometrie und Druckprüfung unter `images/` ergänzt. Platzhalterbilder
+werden nicht verwendet, da veröffentlichte Bilder ausschließlich geprüfte
+Geometrie zeigen sollen.
+
+## Vorgesehene Druckeinstellungen
+
+| Einstellung | Vorgabe |
 | --- | --- |
-| Printer | Bambu Lab P1S |
+| Drucker | Bambu Lab P1S |
 | Material | PETG |
-| Nozzle | 0.4 mm |
-| Layer height | 0.20 mm |
-| Supports | None |
-| AMS | Supported; not required |
+| Düse | 0,4 mm |
+| Schichthöhe | 0,20 mm |
+| Stützstrukturen | Keine |
+| AMS | Unterstützt, aber nicht erforderlich |
 
-Final slicer settings will be documented after physical validation.
+Die endgültigen Slicer-Einstellungen werden nach der realen Prüfung
+dokumentiert.
 
-## STL export
+## Manueller STL-Export
 
-1. Open `src/RAM_Box.scad` in OpenSCAD.
-2. Select the desired values in `src/config.scad`.
-3. Render the model with **F6**.
-4. Choose **File > Export > Export as STL**.
+1. `src/RAM_Box.scad` in OpenSCAD öffnen.
+2. Die gewünschten Werte in `src/config.scad` einstellen.
+3. Das Modell mit **F6** rendern.
+4. **Datei > Exportieren > Als STL exportieren** auswählen.
 
-The entry point intentionally contains only include statements. Set
-`render_mode = "slot_test"` for the printable calibration body or
-`render_mode = "debug"` for the dimensional envelope preview. Neither mode
-is the final 20-slot storage-box release.
+Der Einstiegspunkt enthält absichtlich ausschließlich Include-Anweisungen.
+`render_mode = "slot_test"` erzeugt den druckbaren Kalibrierkörper,
+`render_mode = "debug"` die Vorschau des Maß- und Bauraums. Keiner dieser
+Modi entspricht bereits der finalen Aufbewahrungsbox mit 20 Slots.
 
-## Building STL files
+## STL-Dateien erzeugen
 
-The complete published STL set is generated from the repository root with one
-command:
+Der vollständige veröffentlichte STL-Satz wird mit einem einzigen Befehl aus
+dem Wurzelverzeichnis des Repositorys erzeugt:
 
 ```bash
 scripts/export_all.sh
 ```
 
-### Prerequisites
+### Voraussetzungen
 
-- Bash;
-- OpenSCAD with a command-line executable.
+- Bash
+- OpenSCAD mit ausführbarer Kommandozeilenanwendung
 
-The script searches, in order:
+Das Skript sucht OpenSCAD in dieser Reihenfolge:
 
-1. `SODIMM_OPENSCAD_BIN`, when explicitly set;
-2. `openscad` in `PATH`;
-3. `/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD`;
-4. the versioned macOS 2021.01 application bundle used by older installations.
+1. im explizit gesetzten Wert `SODIMM_OPENSCAD_BIN`,
+2. als `openscad` im `PATH`,
+3. unter `/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD`,
+4. im versionierten macOS-Programmpaket 2021.01 älterer Installationen.
 
-For a non-standard installation:
+Bei einer abweichenden Installation kann der Pfad vorgegeben werden:
 
 ```bash
-SODIMM_OPENSCAD_BIN=/absolute/path/to/openscad scripts/export_all.sh
+SODIMM_OPENSCAD_BIN=/absoluter/pfad/zu/openscad scripts/export_all.sh
 ```
 
-### Generated files
+### Erzeugte Dateien
 
-| Output | Contents |
+| Ausgabe | Inhalt |
 | --- | --- |
-| `exports/calibration/sodimm-slot-test.stl` | Standard 2 × 2 calibration body |
-| `exports/calibration/sodimm-slot-variants.stl` | Engraved 0.8, 1.0, and 1.2 mm variants |
+| `exports/calibration/sodimm-slot-test.stl` | Standard-Kalibrierkörper mit 2 × 2 Slots |
+| `exports/calibration/sodimm-slot-variants.stl` | Gravierte Varianten mit 0,8, 1,0 und 1,2 mm Spiel |
 
-No manual change to `config.scad` is required. Render modes are passed as
-OpenSCAD command-line parameters. The script builds both files in a temporary
-directory and replaces the output files only after both renders succeed.
+Eine manuelle Änderung an `config.scad` ist nicht erforderlich. Die
+Rendermodi werden als OpenSCAD-Kommandozeilenparameter übergeben. Das Skript
+erzeugt beide Dateien zunächst in einem temporären Verzeichnis und ersetzt
+die Ausgabedateien erst, wenn beide Renderdurchläufe erfolgreich waren.
 
-A missing executable, OpenSCAD error or warning, assertion failure, or empty
-output produces a clear message and a non-zero exit code. Generated STL files
-remain ignored by Git; they can still be uploaded directly as GitHub Release
-assets.
+Ein fehlendes Programm, eine OpenSCAD-Warnung oder ein OpenSCAD-Fehler, eine
+fehlgeschlagene Assertion oder eine leere Ausgabe führt zu einer verständlichen
+Meldung und einem von null verschiedenen Exit-Code. Erzeugte STL-Dateien
+bleiben von Git ignoriert, können aber direkt als Assets eines GitHub-Releases
+hochgeladen werden.
 
-The initial GitHub Actions workflow performs the same export on Ubuntu 24.04
-and stores the generated files as a downloadable workflow artifact. Automated
-attachment to GitHub Releases is intentionally reserved for a later milestone.
+Der vorbereitete GitHub-Actions-Workflow führt denselben Export unter Ubuntu
+24.04 aus und speichert die erzeugten Dateien als herunterladbares
+Workflow-Artefakt. Das automatische Anhängen an GitHub-Releases ist für einen
+späteren Meilenstein vorgesehen.
 
-## Parameters
+## Parameter
 
-User-facing parameters live in `src/config.scad`. The initial configuration
-records the required SO-DIMM envelope, storage layout, print process, stacking
-clearance, and label options. Derived values and their assertions live in
-`src/dimensions.scad` so that implementation files do not contain magic
-numbers or repeat calculations.
+Die nutzerseitigen Parameter liegen in `src/config.scad`. Die anfängliche
+Konfiguration enthält die erforderlichen SO-DIMM-Abmessungen, die Anordnung,
+den Druckprozess, das Spiel der Stapelmechanik und die Beschriftungsoptionen.
+Abgeleitete Werte und ihre Assertions befinden sich in `src/dimensions.scad`,
+damit Implementierungsdateien weder magische Zahlen noch wiederholte
+Berechnungen enthalten.
 
-For routine relabeling, only this value will need to change:
+Für eine reguläre Änderung der Beschriftung muss später nur dieser Wert
+angepasst werden:
 
 ```scad
 label_text = "PC4-3200";
 ```
 
-## Calibration test
+## Kalibrierungstest
 
-Print the four-slot calibration body before committing to a full 20-slot box.
-It verifies real module thickness, PETG surface finish, printer dimensional
-behavior, insertion feel, and removal access with far less material.
+Vor einer vollständigen Box mit 20 Slots sollte der Vier-Slot-Kalibrierkörper
+gedruckt werden. Mit deutlich weniger Material prüft er die reale Moduldicke,
+die PETG-Oberfläche, das Maßverhalten des Druckers, das Einsteckgefühl und die
+Entnahme.
 
-To generate the normal 2 × 2 test manually in OpenSCAD:
+So wird der normale 2×2-Test manuell in OpenSCAD erzeugt:
 
-1. Set `render_mode = "slot_test"`.
-2. Set `slot_test_variant_mode = false`.
-3. Render `src/RAM_Box.scad` with **F6** and export it as STL.
-4. Print it upright as modeled, using the target PETG profile without supports.
+1. `render_mode = "slot_test"` einstellen.
+2. `slot_test_variant_mode = false` einstellen.
+3. `src/RAM_Box.scad` mit **F6** rendern und als STL exportieren.
+4. Das Modell wie konstruiert aufrecht, mit dem vorgesehenen PETG-Profil und
+   ohne Stützstrukturen drucken.
 
-Insert an unpowered SO-DIMM vertically with its contact edge toward the
-protected slot floor. Hold the PCB by its edges and never force it. A good fit
-passes through the entry chamfer without catching, reaches both end supports,
-does not bow the PCB, has little side play, and can be removed using the central
-clearance.
+Ein stromloses SO-DIMM senkrecht mit der Kontaktkante zum geschützten Slotboden
+einsetzen. Die Platine nur an ihren Kanten anfassen und niemals mit Gewalt
+einführen. Bei einer guten Passung gleitet das Modul ohne Haken durch die
+Einführfase, erreicht beide Endauflagen, wird nicht durchgebogen oder seitlich
+geklemmt, hat wenig Spiel und lässt sich über die mittige Freistellung
+entnehmen.
 
-Test the thickest modules intended for storage. If the fit is too tight or too
-loose, adjust `slot_thickness_clearance`. This value is the total addition to
-the nominal module thickness, not clearance per side.
+Die dicksten Module prüfen, die später aufbewahrt werden sollen. Ist die
+Passung zu eng oder zu locker, wird `slot_thickness_clearance` angepasst. Der
+Wert beschreibt den gesamten Zuschlag zur nominellen Moduldicke, nicht das
+Spiel pro Seite.
 
-For a side-by-side comparison, set:
+Für einen direkten Vergleich werden folgende Werte verwendet:
 
 ```scad
 slot_test_variant_mode = true;
 slot_test_clearance_variants = [0.8, 1.0, 1.2];
 ```
 
-The generated bodies are separated and engraved `0.8`, `1.0`, and `1.2`.
-Use the smallest value that inserts and releases reliably without stressing the
-module. The standard and variant STLs can both be generated with
-`scripts/export_all.sh`. Repeatable geometry validation is available through:
+Die erzeugten Körper sind voneinander getrennt und mit `0.8`, `1.0` und `1.2`
+graviert. Zu verwenden ist der kleinste Wert, mit dem sich ein Modul zuverlässig
+einsetzen und entnehmen lässt, ohne es zu belasten. Standard- und Varianten-STL
+werden gemeinsam mit `scripts/export_all.sh` erzeugt. Die reproduzierbare
+Geometrieprüfung wird so gestartet:
 
 ```bash
 scripts/validate_slot_test.sh
 ```
 
-## Assembly and stacking
+## Zusammenbau und Stapeln
 
-Each box will print as a single part and require no assembly. Multiple boxes
-will locate through the integrated self-centering interface. Detailed stacking
-and separation guidance will be added after tolerance coupons and complete-box
-prints have been tested.
+Jede Box soll später als ein Bauteil gedruckt werden und keinen Zusammenbau
+erfordern. Mehrere Boxen werden durch die integrierte selbstzentrierende
+Schnittstelle ausgerichtet. Ausführliche Hinweise zum Stapeln und Trennen
+folgen nach der Prüfung der Toleranzkörper und vollständiger Testdrucke.
 
-## Customization
+## Anpassungen
 
-The architecture separates user settings, derived dimensions, reusable
-helpers, body geometry, slots, stacking, and labeling. This allows variants to
-reuse validated geometry without copying the complete model.
+Die Architektur trennt Nutzerkonfiguration, abgeleitete Maße, wiederverwendbare
+Hilfsmodule, Körpergeometrie, Slots, Stapelmechanik und Beschriftung. Varianten
+können dadurch geprüfte Geometrie wiederverwenden, ohne das vollständige Modell
+zu kopieren.
 
-See [DESIGN.md](docs/DESIGN.md) for design rationale and
-[ROADMAP.md](docs/ROADMAP.md) for planned milestones.
+Die Konstruktionsentscheidungen stehen in [DESIGN.md](docs/DESIGN.md), die
+geplanten Meilensteine in [ROADMAP.md](docs/ROADMAP.md).
 
-## Source layout
+## Quellstruktur
 
-| File | Responsibility |
+| Datei | Zuständigkeit |
 | --- | --- |
-| `config.scad` | User-facing parameters and manufacturing targets |
-| `helpers.scad` | Reusable geometry and validation helpers |
-| `dimensions.scad` | Derived dimensions and dimensional assertions |
-| `body.scad` | Shell, underside pockets, ribs, and grip recess |
-| `slots.scad` | Parametric SO-DIMM slot generation |
-| `stacking.scad` | Self-centering stacking interface |
-| `label.scad` | Adaptive engraved or raised labeling |
-| `debug_preview.scad` | Milestone-only dimensions report and envelope preview |
-| `slot_test.scad` | Four-slot fit coupon and clearance variants |
-| `render.scad` | Top-level render-mode dispatcher |
-| `RAM_Box.scad` | Include-only project entry point |
+| `config.scad` | Nutzerparameter und Fertigungsvorgaben |
+| `helpers.scad` | Wiederverwendbare Geometrie- und Prüfungshilfen |
+| `dimensions.scad` | Abgeleitete Maße und Maß-Assertions |
+| `body.scad` | Hülle, Unterseitentaschen, Rippen und Griffmulde |
+| `slots.scad` | Parametrische Erzeugung der SO-DIMM-Slots |
+| `stacking.scad` | Selbstzentrierende Stapelmechanik |
+| `label.scad` | Adaptive gravierte oder erhabene Beschriftung |
+| `debug_preview.scad` | Meilensteinbezogene Maßausgabe und Bauraumvorschau |
+| `slot_test.scad` | Vier-Slot-Passungstest und Toleranzvarianten |
+| `render.scad` | Zentrale Auswahl des Rendermodus |
+| `RAM_Box.scad` | Projekteinstiegspunkt, der nur Includes enthält |
 
-## License
+## Lizenz
 
-Licensed under the [MIT License](LICENSE).
+Lizenziert unter der [MIT-Lizenz](LICENSE). Der Lizenztext bleibt als
+rechtsverbindlicher Standardtext in englischer Sprache erhalten.

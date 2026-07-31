@@ -1,39 +1,40 @@
 # Roadmap
 
-The project advances through small, independently reviewable milestones. A
-milestone is not considered complete until its documentation and proportional
-validation are included in the same development stage.
+Das Projekt wird in kleinen, unabhängig prüfbaren Meilensteinen entwickelt.
+Ein Meilenstein gilt erst als abgeschlossen, wenn Dokumentation und angemessene
+Validierung im selben Entwicklungsschritt enthalten sind.
 
-## Core design
+## Kernkonstruktion
 
-- [x] Establish repository and modular source architecture.
-- [x] Define derived dimensions, parameter validation, and P1S build-volume
-  assertions.
-- [ ] Create reusable rounded-shell and transition helpers.
-- [x] Develop a four-slot SO-DIMM fit coupon.
-- [ ] Print-test the coupon with the thickest available SO-DIMMs.
-- [ ] Expand the validated slot to the 2 × 10 array.
-- [ ] Develop the lightweight body, underside pockets, and structural ribs.
-- [ ] Develop and ergonomically review the central grip recess.
-- [ ] Develop stacking-interface clearance coupons.
-- [ ] Integrate the self-centering 45-degree stacking interface.
-- [ ] Add adaptive engraved and raised labels.
-- [ ] Run complete-box PETG print validation on a Bambu Lab P1S.
-- [ ] Publish verified renders, print photographs, STL files, and MakerWorld
-  documentation.
+- [x] Repository und modulare Quellarchitektur anlegen.
+- [x] Abgeleitete Maße, Parameterprüfung und Assertions für den P1S-Bauraum
+  definieren.
+- [ ] Wiederverwendbare Hilfsmodule für gerundete Hüllen und Übergänge
+  entwickeln.
+- [x] Vier-Slot-Passungstest für SO-DIMMs entwickeln.
+- [ ] Testkörper mit den dicksten verfügbaren SO-DIMMs drucken und prüfen.
+- [ ] Den validierten Slot auf die 2×10-Matrix erweitern.
+- [ ] Leichten Körper, Unterseitentaschen und tragende Rippen entwickeln.
+- [ ] Mittige Griffmulde entwickeln und ergonomisch prüfen.
+- [ ] Toleranzkörper für die Stapelmechanik entwickeln.
+- [ ] Selbstzentrierende Stapelmechanik mit 45-Grad-Flächen integrieren.
+- [ ] Adaptive gravierte und erhabene Beschriftung ergänzen.
+- [ ] Vollständige Box auf einem Bambu Lab P1S mit PETG drucken und prüfen.
+- [ ] Geprüfte Renderbilder, Druckfotos, STL-Dateien und MakerWorld-
+  Dokumentation veröffentlichen.
 
-## Build and release automation
+## Build- und Release-Automatisierung
 
-- [x] Add reproducible one-command STL exports.
-- [x] Add a GitHub Actions STL-build workflow.
-- [ ] Attach generated STL artifacts to tagged releases automatically.
-- [ ] Add release checksums and provenance metadata.
+- [x] Reproduzierbaren Ein-Befehl-Export der STL-Dateien bereitstellen.
+- [x] GitHub-Actions-Workflow für den STL-Build ergänzen.
+- [ ] Erzeugte STL-Artefakte automatisch an getaggte Releases anhängen.
+- [ ] Prüfsummen und Herkunftsmetadaten für Releases ergänzen.
 
-## Future variants
+## Zukünftige Varianten
 
-- [ ] Optional lid.
-- [ ] Gridfinity adapter.
-- [ ] Magnet pockets.
-- [ ] Wall-mount adapter.
-- [ ] Full-size DIMM version.
-- [ ] M.2 SSD version.
+- [ ] Optionaler Deckel.
+- [ ] Gridfinity-Adapter.
+- [ ] Magnetaufnahmen.
+- [ ] Wandhalterung.
+- [ ] Version für DIMMs voller Baugröße.
+- [ ] Version für M.2-SSDs.

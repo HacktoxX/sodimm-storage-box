@@ -1,20 +1,21 @@
-# Generated exports
+# Erzeugte Exporte
 
-This directory is the stable output tree for reproducible OpenSCAD exports.
-Generated mesh files are intentionally excluded from Git and should be created
-with:
+Dieses Verzeichnis bildet die stabile Ausgabestruktur für reproduzierbare
+OpenSCAD-Exporte. Erzeugte Netzdateien werden absichtlich nicht in Git
+aufgenommen und mit folgendem Befehl erstellt:
 
 ```bash
 scripts/export_all.sh
 ```
 
-Current and reserved categories:
+Aktuelle und reservierte Kategorien:
 
-- `calibration/` — fit coupons and tolerance variants;
-- `final/` — future validated production models;
-- `prototypes/` — future development-only geometry;
-- `examples/` — future example configurations.
+- `calibration/` — Passungstestkörper und Toleranzvarianten
+- `final/` — zukünftige validierte Produktionsmodelle
+- `prototypes/` — zukünftige Geometrie nur für die Entwicklung
+- `examples/` — zukünftige Beispielkonfigurationen
 
-The repository-wide `*.stl` ignore rule keeps generated models out of normal
-commits. A maintainer can still add one deliberately with `git add -f`, but
-GitHub Release assets should normally be uploaded directly from this tree.
+Die repositoryweite Regel `*.stl` hält erzeugte Modelle aus regulären Commits
+heraus. Verantwortliche können eine Datei bei Bedarf bewusst mit `git add -f`
+aufnehmen; Assets für GitHub-Releases sollten normalerweise direkt aus dieser
+Ausgabestruktur hochgeladen werden.

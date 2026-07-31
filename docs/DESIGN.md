@@ -1,193 +1,208 @@
-# Design Decisions
+# Konstruktionsentscheidungen
 
 ## Status
 
-This document distinguishes calculated design decisions from print-validated
-results. The dimensional system and assertions are implemented and CLI-tested.
-Fit values remain test targets until representative PETG coupons have been
-printed with real SO-DIMMs.
+Dieses Dokument unterscheidet zwischen berechneten Konstruktionsentscheidungen
+und durch Druckversuche bestätigten Ergebnissen. Das Maßsystem und die
+Assertions sind implementiert und über die Kommandozeile geprüft. Passungswerte
+bleiben Prüfziele, bis repräsentative PETG-Testkörper mit realen SO-DIMMs
+gedruckt wurden.
 
-## Design inputs
+## Konstruktionsvorgaben
 
-| Input | Initial value | Purpose |
+| Vorgabe | Anfangswert | Zweck |
 | --- | ---: | --- |
-| SO-DIMM PCB length | 67.6 mm | Defines the module envelope |
-| SO-DIMM PCB height | 30.0 mm | Defines insertion depth and support area |
-| SO-DIMM assembly thickness | 4.2 mm | Conservative default component envelope |
-| Capacity | 20 modules | Required box capacity |
-| Layout | 2 columns × 10 rows | Required organization |
-| Stack-interface clearance | 0.25 mm | Lower end of the PETG test range |
-| Maximum intentional overhang | 45° | Support-free print constraint |
-| Printer envelope | 256 × 256 × 256 mm | Bambu Lab P1S build volume |
+| SO-DIMM-Platinenlänge | 67,6 mm | Definiert den Bauraum des Moduls |
+| SO-DIMM-Platinenhöhe | 30,0 mm | Definiert Einstecktiefe und Auflagebereich |
+| SO-DIMM-Gesamtdicke | 4,2 mm | Konservative Standardhülle der Komponenten |
+| Kapazität | 20 Module | Geforderte Kapazität der Box |
+| Anordnung | 2 Spalten × 10 Reihen | Geforderte Organisation |
+| Spiel der Stapelschnittstelle | 0,25 mm | Unteres Ende des PETG-Prüfbereichs |
+| Maximaler beabsichtigter Überhang | 45° | Vorgabe für supportfreien Druck |
+| Druckerbauraum | 256 × 256 × 256 mm | Bauraum des Bambu Lab P1S |
 
-All values that affect geometry must remain configurable. Nominal part size,
-manufacturing clearance, and derived geometry are kept separate so that a
-printer adjustment cannot silently change the SO-DIMM reference dimensions.
+Alle geometriewirksamen Werte müssen konfigurierbar bleiben. Nominelle
+Bauteilmaße, Fertigungsspiel und abgeleitete Geometrie werden getrennt gehalten,
+damit eine Druckeranpassung die SO-DIMM-Referenzmaße nicht unbemerkt verändert.
 
-The 67.6 × 30.0 × 4.2 mm envelope is an engineering input, not a claim that
-every manufactured module has the same component height. Heat spreaders,
-unusually thick packages, labels, and PCB variation can exceed the default.
-The next fit coupon must therefore be tested with the thickest modules that
-will actually be stored.
+Die Hülle von 67,6 × 30,0 × 4,2 mm ist eine technische Vorgabe und keine
+Behauptung, dass jedes gefertigte Modul dieselbe Komponentenstärke besitzt.
+Heatspreader, ungewöhnlich hohe Bauteile, Aufkleber und Platinenabweichungen
+können den Standardwert überschreiten. Der Passungstest muss deshalb mit den
+dicksten Modulen erfolgen, die tatsächlich aufbewahrt werden sollen.
 
-## Architecture
+## Architektur
 
-The model is divided by responsibility. `config.scad` is the public parameter
-surface; `dimensions.scad` owns derived values and assertions; geometry files
-own one feature family each. `RAM_Box.scad` contains only includes. This keeps
-changes reviewable and makes future variants reuse the same validated feature
-modules.
+Das Modell ist nach Zuständigkeiten getrennt. `config.scad` bildet die
+öffentliche Parameteroberfläche, `dimensions.scad` verwaltet abgeleitete Werte
+und Assertions, und jede Geometriedatei besitzt genau eine Merkmalsfamilie.
+`RAM_Box.scad` enthält ausschließlich Includes. Änderungen bleiben dadurch gut
+prüfbar und künftige Varianten können dieselben validierten Module verwenden.
 
-## Parameter ownership and derived dimensions
+## Parameterhoheit und abgeleitete Maße
 
-`config.scad` contains only values a user may reasonably change: hardware
-envelope, clearances, layout, enclosure targets, label settings, printer
-limits, and debug mode. It contains no calculated values or geometry.
+`config.scad` enthält ausschließlich Werte, die ein Nutzer sinnvoll ändern
+kann: Hardwarehülle, Spiele, Anordnung, Gehäusevorgaben, Beschriftung,
+Druckergrenzen und Debug-Modus. Berechnete Werte und Geometrie gehören nicht in
+diese Datei.
 
-`dimensions.scad` converts those inputs into one authoritative dimensional
-chain. The standard configuration produces:
+`dimensions.scad` überführt diese Eingaben in eine einzige verbindliche
+Maßkette. Die Standardkonfiguration ergibt:
 
-| Derived value | Result |
+| Abgeleiteter Wert | Ergebnis |
 | --- | ---: |
-| Slot size | 68.8 × 5.2 mm |
-| Slot-field size | 145.6 × 80.8 mm |
-| Main body envelope | 162.0 × 97.2 × 31.4 mm |
-| Complete print envelope | 162.0 × 97.2 × 33.0 mm |
-| Exposed SO-DIMM height | 1.0 mm |
+| Slotabmessung | 68,8 × 5,2 mm |
+| Slotfeld | 145,6 × 80,8 mm |
+| Hauptkörper | 162,0 × 97,2 × 31,4 mm |
+| Gesamter Druckbauraum | 162,0 × 97,2 × 33,0 mm |
+| Freiliegende SO-DIMM-Höhe | 1,0 mm |
 
-The complete height includes the reserved 1.6 mm downward stacking feature.
-The planned stacking ridge remains inside the X/Y body footprint. Any later
-feature that extends farther outward must update the central envelope
-calculation rather than bypassing the build-volume assertions.
+Die Gesamthöhe enthält die reservierte, 1,6 mm nach unten ragende
+Stapelfunktion. Der geplante Stapelsteg bleibt innerhalb der X-/Y-Grundfläche
+des Körpers. Jedes spätere Merkmal, das weiter nach außen reicht, muss die
+zentrale Bauraumberechnung aktualisieren, statt die Bauraum-Assertions zu
+umgehen.
 
-## Fit clearances
+## Passungsspiele
 
-The initial slot adds 1.2 mm to nominal module length and 1.0 mm to nominal
-assembly thickness. When centered, these correspond to 0.6 mm at each end and
-0.5 mm on each broad face. The intentionally conservative baseline accounts
-for PETG surface texture, elephant-foot risk, printer variation, and variation
-between SO-DIMM packages. Entry chamfers and rounded supports will control the
-actual feel; the numerical defaults must be confirmed with a four-slot coupon
-before the 20-slot array is released.
+Der anfängliche Slot addiert 1,2 mm zur nominellen Modullänge und 1,0 mm zur
+nominellen Gesamtdicke. Zentriert entsprechen diese Werte 0,6 mm an jedem Ende
+und 0,5 mm an jeder Breitseite. Die bewusst konservative Ausgangsbasis
+berücksichtigt PETG-Oberflächenstruktur, Elefantenfuß, Druckerabweichungen und
+Unterschiede zwischen SO-DIMM-Bauformen. Einführfasen und gerundete Auflagen
+bestimmen das tatsächliche Gefühl; die Zahlenwerte müssen vor Freigabe des
+20-Slot-Feldes mit dem Vier-Slot-Testkörper bestätigt werden.
 
-The stacking clearance starts at 0.25 mm, the tighter end of the requested
-0.25–0.30 mm range. It is not considered validated until repeated stacking and
-separation tests show both low play and easy release.
+Das Spiel der Stapelmechanik beginnt mit 0,25 mm am engeren Ende des geforderten
+Bereichs von 0,25 bis 0,30 mm. Es gilt erst als validiert, wenn wiederholte
+Stapel- und Trennversuche sowohl geringes Spiel als auch leichtes Lösen zeigen.
 
-## Four-slot calibration geometry
+## Vier-Slot-Kalibriergeometrie
 
-The calibration body reproduces two columns and two rows using the same
-`slot_length`, center gap, row spacing, bottom thickness, insertion depth, and
-minimum wall thickness planned for the full box. The default single body is
-152.0 × 20.0 × 31.4 mm. Subtracting the four slot volumes from one compact
-prism leaves only the closed floor, outer walls, center web, and row
-separators—there is no unrelated solid core.
+Der Kalibrierkörper bildet zwei Spalten und zwei Reihen mit derselben
+`slot_length`, demselben Mittelabstand, Reihenabstand, derselben Bodenstärke,
+Einstecktiefe und Mindestwandstärke wie die geplante vollständige Box ab. Der
+einzelne Standardkörper misst 152,0 × 20,0 × 31,4 mm. Werden die vier
+Slotvolumen von einem kompakten Grundkörper abgezogen, bleiben nur der
+geschlossene Boden, Außenwände, Mittelsteg und Reihentrenner zurück; ein
+funktionsloser massiver Kern entsteht nicht.
 
-Each slot has a 27.8 mm straight guide and a 1.2 mm entry region within the
-29.0 mm insertion depth. The entry expands by 0.8 mm on all four sides. Because
-horizontal expansion is smaller than vertical rise, every chamfer surface
-stays within the 45-degree support-free constraint. The expanded openings leave
-6.4 mm between columns, 1.6 mm between rows, and 2.4 mm at the outer edge; all
-remain positive and are asserted before geometry is evaluated.
+Jeder Slot besitzt innerhalb der 29,0 mm Einstecktiefe eine 27,8 mm lange
+gerade Führung und einen 1,2 mm hohen Einführbereich. Die Öffnung erweitert sich
+an allen vier Seiten um 0,8 mm. Da die horizontale Erweiterung kleiner als die
+vertikale Höhe ist, bleiben alle Fasen innerhalb der supportfrei druckbaren
+45-Grad-Grenze. Zwischen den erweiterten Öffnungen verbleiben 6,4 mm zwischen
+den Spalten, 1,6 mm zwischen den Reihen und 2,4 mm am Außenrand. Alle Werte
+bleiben positiv und werden vor der Geometrieauswertung geprüft.
 
-The functional removal opening is intentionally not the final ergonomic grip.
-It starts at the 8.0 mm center gap and widens upward at 45 degrees across the
-test body. Its 8.0 mm depth leaves a 23.4 mm-high center web from the build
-plate—well above the required 3.2 mm load-bearing section.
+Die funktionale Entnahmeöffnung ist absichtlich noch nicht die finale
+ergonomische Griffmulde. Sie beginnt am 8,0 mm breiten Mittelabstand und weitet
+sich über dem Testkörper mit 45 Grad nach oben. Ihre Tiefe von 8,0 mm lässt vom
+Druckbett aus einen 23,4 mm hohen Mittelsteg stehen und liegt damit deutlich
+über dem geforderten tragenden Bereich von 3,2 mm.
 
-## Contact-edge protection
+## Schutz der Kontaktkante
 
-The bottom of each slot uses two flat 5.0 mm end supports. Between them, a
-58.8 mm-long relief is recessed by 0.8 mm. The module therefore rests at its
-outer PCB ends while most of the contact edge remains suspended above the
-floor. No lateral bumps or clips enter the slot, so components and contacts are
-not side-clamped. The floor below the relief remains 1.6 mm, or eight target
-layers.
+Am Boden jedes Slots bleiben zwei flache, jeweils 5,0 mm lange Endauflagen
+stehen. Dazwischen wird eine 58,8 mm lange Freistellung um 0,8 mm vertieft. Das
+Modul liegt dadurch an den äußeren Platinenenden auf, während der größte Teil
+der Kontaktkante über dem Boden frei bleibt. Seitliche Noppen oder Clips ragen
+nicht in den Slot, sodass weder Komponenten noch Kontakte seitlich geklemmt
+werden. Unter der Freistellung verbleiben 1,6 mm beziehungsweise acht
+Zielschichten.
 
-SO-DIMM contact layouts vary. Before approving this arrangement for the full
-box, visually confirm that the end supports land on safe PCB edge regions of
-the actual modules. Do not force a module whose contacts or components touch a
-support.
+SO-DIMM-Kontaktanordnungen unterscheiden sich. Vor Übernahme dieser Lösung in
+die vollständige Box muss visuell geprüft werden, ob die Endauflagen auf
+unbedenklichen Platinenbereichen der realen Module liegen. Ein Modul, dessen
+Kontakte oder Komponenten eine Auflage berühren, darf nicht mit Kraft
+eingesetzt werden.
 
-## Calibration tolerances
+## Kalibriertoleranzen
 
-The normal body uses the shared 1.0 mm thickness clearance. Variant mode renders
-0.8, 1.0, and 1.2 mm bodies with front-face numeric engravings. The values are
-total additions to the nominal 4.2 mm assembly thickness, producing 5.0, 5.2,
-and 5.4 mm slot widths. Bodies are placed from the widest configured variant,
-leaving at least the configured 12.0 mm separation and preventing accidental
-mesh contact.
+Der normale Körper verwendet das gemeinsame Dickenspiel von 1,0 mm. Im
+Variantenmodus werden Körper mit 0,8, 1,0 und 1,2 mm sowie einer numerischen
+Gravur an der Vorderseite erzeugt. Die Werte sind Gesamtzuschläge zur
+nominellen Moduldicke von 4,2 mm und ergeben Slotbreiten von 5,0, 5,2 und
+5,4 mm. Die Anordnung richtet sich nach der breitesten konfigurierten Variante,
+hält mindestens den eingestellten Abstand von 12,0 mm ein und verhindert eine
+unbeabsichtigte Berührung der Netze.
 
-Calculated clearances cannot predict PETG flow, cooling, elephant foot, surface
-texture, or the thickest installed package. A physical coupon made with the
-target printer, material, layer height, and real modules is therefore required
-before the complete slot matrix is designed.
+Berechnete Spiele können PETG-Fluss, Abkühlung, Elefantenfuß,
+Oberflächenstruktur oder das dickste bestückte Modul nicht vorhersagen. Vor der
+Konstruktion der vollständigen Slotmatrix ist deshalb ein realer Testkörper
+mit dem Zieldrucker, dem vorgesehenen Material, der Schichthöhe und echten
+Modulen erforderlich.
 
-## Wall and bottom thickness
+## Wand- und Bodenstärke
 
-The 3.2 mm wall equals eight nominal 0.4 mm nozzle diameters. It provides a
-stiff baseline for the tall slot field and leaves enough section for rounded
-transitions and the future stacking receiver. Actual slicer extrusion width may
-differ from nozzle diameter, so perimeter generation must still be inspected.
+Die 3,2-mm-Wand entspricht acht nominellen Düsendurchmessern von 0,4 mm. Sie
+bildet eine steife Ausgangsbasis für das hohe Slotfeld und bietet genügend
+Querschnitt für gerundete Übergänge und die spätere Stapelaufnahme. Da die
+tatsächliche Extrusionsbreite des Slicers vom Düsendurchmesser abweichen kann,
+muss die Erzeugung der Wandlinien trotzdem geprüft werden.
 
-The 2.4 mm bottom equals twelve 0.20 mm layers. This provides a continuous
-structural skin while leaving enough depth for later underside pockets and
-ribs. Local reinforcement will use ribs and smooth transitions instead of
-hidden solid blocks.
+Der 2,4-mm-Boden entspricht zwölf Schichten mit 0,20 mm Höhe. Er bildet eine
+durchgehende tragende Haut und lässt zugleich ausreichend Tiefe für spätere
+Unterseitentaschen und Rippen. Lokale Verstärkungen werden mit Rippen und
+weichen Übergängen statt mit verborgenen massiven Blöcken ausgeführt.
 
-## Slot geometry
+## Slotgeometrie
 
-Each slot will be developed as a reusable generator with an entry chamfer,
-rounded internal transitions, controlled fit clearance, and access for an
-ergonomic finger or thumb motion. A four-slot coupon representing both columns
-and two rows will be printed before the full array is committed as validated
-geometry.
+Jeder Slot wird als wiederverwendbarer Generator mit Einführfase, gerundeten
+Innenübergängen, kontrolliertem Passungsspiel und ergonomischem Zugriff für
+Finger oder Daumen entwickelt. Vor der Freigabe des vollständigen Feldes wird
+ein Vier-Slot-Testkörper mit beiden Spalten und zwei Reihen gedruckt.
 
-## Stacking interface
+## Stapelmechanik
 
-The stacking system is treated as a separate functional subsystem. The planned
-interface uses continuous tapered locating surfaces rather than rectangular
-feet. Opposing 45-degree faces provide self-centering while remaining
-support-free in the intended print orientation. The 0.25–0.30 mm clearance is
-a test range; the released value will be based on repeated PETG stack and
-separation tests, not visual fit alone.
+Das Stapelsystem wird als eigenständiges funktionales Teilsystem behandelt.
+Die geplante Schnittstelle verwendet durchgehende konische Führungsflächen
+anstelle rechteckiger Füße. Gegenüberliegende 45-Grad-Flächen sorgen für
+Selbstzentrierung und bleiben in der vorgesehenen Druckausrichtung supportfrei.
+Das Spiel von 0,25 bis 0,30 mm ist ein Prüfbereich. Der veröffentlichte Wert
+wird anhand wiederholter PETG-Stapel- und Trennversuche festgelegt, nicht nur
+anhand einer optischen Passung.
 
-## Radii and transitions
+## Radien und Übergänge
 
-External radii will be large enough to avoid a prototype-like appearance and
-to reduce impact-sensitive corners. Internal radii will remove stress
-concentrations and abrupt extrusion-path changes. The 4.0 mm default corner
-radius is constrained to be at least the 3.2 mm wall thickness, preserving a
-non-negative inner radius, and no greater than half the shortest body
-dimension. Larger feature-specific radii can be derived later without hiding
-constants in geometry modules.
+Außenradien werden groß genug gewählt, um eine prototypische Anmutung zu
+vermeiden und stoßempfindliche Ecken zu reduzieren. Innenradien vermeiden
+Spannungsspitzen und abrupte Änderungen der Extrusionsbahn. Der Standardradius
+von 4,0 mm muss mindestens der Wandstärke von 3,2 mm entsprechen, damit der
+Innenradius nicht negativ wird, und darf höchstens halb so groß wie die
+kürzeste Körperabmessung sein. Größere merkmalsspezifische Radien können später
+abgeleitet werden, ohne Konstanten in Geometriemodulen zu verstecken.
 
-## Printer build-volume limits
+## Grenzen des Druckerbauraums
 
-The default Bambu Lab P1S limits are 256 × 256 × 256 mm, but the assertions use
-the configurable printer values rather than a hard-coded printer profile. The
-standard 162.0 × 97.2 × 33.0 mm envelope leaves 94.0 mm in X, 158.8 mm in Y,
-and 223.0 mm in Z. Assertions report the exact failing axis and dimension.
+Die Standardgrenzen des Bambu Lab P1S betragen 256 × 256 × 256 mm. Die
+Assertions verwenden jedoch die konfigurierbaren Druckerwerte statt eines
+fest codierten Druckerprofils. Die Standardhülle von 162,0 × 97,2 × 33,0 mm
+lässt 94,0 mm in X, 158,8 mm in Y und 223,0 mm in Z frei. Assertions melden
+die konkret überschrittene Achse und Abmessung.
 
-## Label system
+## Beschriftungssystem
 
-The label subsystem will compute its scale from the available panel width and
-height, center text in both axes, and support engraved and raised output. Text
-content remains a single user parameter. Multi-material output will remain
-optional so the base model also works without AMS.
+Das Beschriftungssystem wird seine Skalierung aus der verfügbaren Breite und
+Höhe der Fläche berechnen, den Text in beiden Achsen zentrieren und gravierte
+sowie erhabene Ausgabe unterstützen. Der Textinhalt bleibt ein einzelner
+Nutzerparameter. Mehrfarbdruck bleibt optional, damit das Grundmodell auch
+ohne AMS funktioniert.
 
-## Validation gates
+## Validierungsstufen
 
-A feature is considered complete only after:
+Ein Merkmal gilt erst dann als abgeschlossen, wenn:
 
-1. parameter and derived-dimension assertions pass;
-2. OpenSCAD preview and render complete without warnings;
-3. the exported mesh is manifold;
-4. the orientation respects the 45-degree support-free constraint;
-5. a representative PETG coupon or full print verifies the functional fit;
-6. the rationale and observed result are recorded here.
+1. Parameter- und Maß-Assertions erfolgreich sind,
+2. OpenSCAD-Vorschau und -Renderdurchlauf ohne Warnungen abgeschlossen werden,
+3. das exportierte Netz manifold ist,
+4. die Ausrichtung die supportfreie 45-Grad-Grenze einhält,
+5. ein repräsentativer PETG-Testkörper oder vollständiger Druck die Funktion
+   bestätigt und
+6. Begründung und beobachtetes Ergebnis hier dokumentiert sind.
 
-The four-slot coupon satisfies the calculation, render, manifold, and
-support-free geometry gates. Slot fit and contact-support placement still
-require the real PETG test print. Stack feel, final ergonomics, and production
-box geometry remain deliberately unvalidated.
+Der Vier-Slot-Testkörper erfüllt die Stufen für Berechnung, Rendering,
+Manifold-Netz und supportfreie Geometrie. Slotpassung und Position der
+Kontaktauflagen benötigen weiterhin den realen PETG-Testdruck. Stapelgefühl,
+finale Ergonomie und Geometrie der vollständigen Box bleiben bewusst
+unvalidiert.
