@@ -1,6 +1,6 @@
 /*
- * Main body feature family.
+ * Merkmalsfamilie des Hauptkörpers.
  *
- * Owns the rounded shell, ergonomic central grip recess, underside pockets,
- * structural ribs, and transitions to adjacent systems.
+ * Zuständig für die gerundete Hülle, mittige ergonomische Griffmulde,
+ * Unterseitentaschen, tragende Rippen und Übergänge zu angrenzenden Systemen.
  */

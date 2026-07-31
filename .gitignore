@@ -1,8 +1,8 @@
-# Operating-system metadata
+# Metadaten des Betriebssystems
 .DS_Store
 Thumbs.db
 
-# Editor metadata
+# Metadaten von Editoren
 .idea/
 .vscode/
 *.swp
@@ -11,7 +11,7 @@ Thumbs.db
 __pycache__/
 *.py[cod]
 
-# OpenSCAD and slicer-generated artifacts
+# Von OpenSCAD und Slicern erzeugte Artefakte
 *.stl
 *.3mf
 *.amf
@@ -19,6 +19,6 @@ __pycache__/
 *.gcode
 *.bgcode
 
-# Local build and export directories
+# Lokale Build- und Exportverzeichnisse
 build/
 dist/

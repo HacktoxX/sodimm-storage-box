@@ -1,7 +1,7 @@
 /*
- * Top-level render dispatcher.
+ * Zentrale Auswahl des Rendermodus.
  *
- * Keeping selection here preserves RAM_Box.scad as an include-only entry point.
+ * Die Auswahl an dieser Stelle erhält RAM_Box.scad als reinen Include-Einstieg.
  */
 
 if (render_mode == "debug") {

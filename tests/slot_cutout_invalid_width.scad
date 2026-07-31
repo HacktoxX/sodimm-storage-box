@@ -1,6 +1,6 @@
 /*
- * Negative test fixture: direct module invocation proves that reusable slot
- * geometry rejects a zero-width opening independently of global parameters.
+ * Negativtest: Der direkte Modulaufruf belegt, dass die wiederverwendbare
+ * Slotgeometrie unabhängig von globalen Parametern eine Breite von null ablehnt.
  */
 
 include <../src/config.scad>

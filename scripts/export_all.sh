@@ -24,26 +24,26 @@ render_stl() {
     shift 2
     local render_log="${temporary_output}.log"
 
-    printf '%s\n' "Rendering ${description}..."
+    printf '%s\n' "Rendere ${description} ..."
     if ! "${openscad_bin}" \
         "$@" \
         -o "${temporary_output}" \
         "${entry_file}" >"${render_log}" 2>&1; then
         cat "${render_log}" >&2
-        printf '%s\n' "OpenSCAD failed while rendering ${description}." >&2
+        printf '%s\n' "OpenSCAD konnte ${description} nicht rendern." >&2
         return 1
     fi
 
     if grep -Eiq 'warning|error:' "${render_log}"; then
         cat "${render_log}" >&2
         printf '%s\n' \
-            "OpenSCAD reported a diagnostic while rendering ${description}." \
+            "OpenSCAD meldete beim Rendern von ${description} eine Diagnose." \
             >&2
         return 1
     fi
 
     if [[ ! -s "${temporary_output}" ]]; then
-        printf '%s\n' "OpenSCAD produced an empty file for ${description}." >&2
+        printf '%s\n' "OpenSCAD erzeugte für ${description} eine leere Datei." >&2
         return 1
     fi
 }
@@ -52,14 +52,14 @@ slot_test_temporary="${export_directory}/sodimm-slot-test.stl"
 slot_variants_temporary="${export_directory}/sodimm-slot-variants.stl"
 
 render_stl \
-    "the four-slot calibration body" \
+    "den Vier-Slot-Kalibrierkörper" \
     "${slot_test_temporary}" \
     -D 'render_mode="slot_test"' \
     -D 'slot_test_variant_mode=false' \
     -D 'debug_mode=false'
 
 render_stl \
-    "the clearance-variant bodies" \
+    "die Körper der Toleranzvarianten" \
     "${slot_variants_temporary}" \
     -D 'render_mode="slot_test"' \
     -D 'slot_test_variant_mode=true' \
@@ -73,7 +73,7 @@ mv -f \
     "${slot_variants_temporary}" \
     "${calibration_directory}/sodimm-slot-variants.stl"
 
-printf '%s\n' "STL export completed:"
+printf '%s\n' "STL-Export abgeschlossen:"
 printf '  %s\n' \
     "${calibration_directory}/sodimm-slot-test.stl" \
     "${calibration_directory}/sodimm-slot-variants.stl"

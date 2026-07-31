@@ -22,7 +22,7 @@ fail_on_render_diagnostics() {
     local log_file="$1"
 
     if grep -Eiq 'warning|error:' "${log_file}"; then
-        printf '%s\n' "Unexpected OpenSCAD diagnostic:" >&2
+        printf '%s\n' "Unerwartete OpenSCAD-Diagnose:" >&2
         cat "${log_file}" >&2
         return 1
     fi
@@ -41,7 +41,7 @@ expect_assertion() {
 
     if ! grep -Fq "ERROR: Assertion" "${log_file}" ||
         ! grep -Fq "${expected_message}" "${log_file}"; then
-        printf '%s\n' "Expected assertion '${name}' did not fire." >&2
+        printf '%s\n' "Die erwartete Assertion '${name}' wurde nicht ausgelöst." >&2
         cat "${log_file}" >&2
         return 1
     fi
@@ -89,27 +89,27 @@ python3 "${mesh_checker}" \
 expect_assertion \
     "negative-chamfer-height" \
     "slot_chamfer_height=-0.1" \
-    "slot_chamfer_height must be positive."
+    "slot_chamfer_height muss positiv sein."
 expect_assertion \
     "negative-chamfer-expansion" \
     "slot_chamfer_expansion=-0.1" \
-    "slot_chamfer_expansion cannot be negative."
+    "slot_chamfer_expansion darf nicht negativ sein."
 expect_assertion \
     "chamfer-over-45-degrees" \
     "slot_chamfer_expansion=1.3" \
-    "slot_chamfer_expansion cannot exceed slot_chamfer_height"
+    "slot_chamfer_expansion darf slot_chamfer_height nicht überschreiten"
 expect_assertion \
     "invalid-render-mode" \
     'render_mode="invalid"' \
-    "render_mode must be"
+    "render_mode muss"
 expect_assertion \
     "invalid-test-rows" \
     "slot_test_rows=0" \
-    "slot_test_rows must be a whole number of at least 1."
+    "slot_test_rows muss eine ganze Zahl von mindestens 1 sein."
 expect_assertion \
     "invalid-test-columns" \
     "slot_test_columns=0" \
-    "slot_test_columns must be a whole number of at least 1."
+    "slot_test_columns muss eine ganze Zahl von mindestens 1 sein."
 
 invalid_width_log="${validation_directory}/invalid-slot-width.log"
 "${openscad_bin}" \
@@ -117,11 +117,11 @@ invalid_width_log="${validation_directory}/invalid-slot-width.log"
     "${repository_root}/tests/slot_cutout_invalid_width.scad" \
     >"${invalid_width_log}" 2>&1 || true
 if ! grep -Fq "ERROR: Assertion" "${invalid_width_log}" ||
-    ! grep -Fq "SO-DIMM slot cutout dimensions must be positive." \
+    ! grep -Fq "Die Maße des SO-DIMM-Slotausschnitts müssen positiv sein." \
         "${invalid_width_log}"; then
-    printf '%s\n' "Expected zero-width slot assertion did not fire." >&2
+    printf '%s\n' "Die erwartete Assertion für eine Slotbreite von null wurde nicht ausgelöst." >&2
     cat "${invalid_width_log}" >&2
     exit 1
 fi
 
-printf '%s\n' "Slot-test validation passed."
+printf '%s\n' "Prüfung des Slot-Tests erfolgreich."

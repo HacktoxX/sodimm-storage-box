@@ -1,6 +1,6 @@
 /*
- * Self-centering stacking feature family.
+ * Merkmalsfamilie der selbstzentrierenden Stapelmechanik.
  *
- * Owns matching tapered interfaces, 45-degree printable faces, release
- * clearance, and stack-location behavior.
+ * Zuständig für zueinander passende konische Schnittstellen, druckbare
+ * 45-Grad-Flächen, Lösespiel und die Ausrichtung im Stapel.
  */

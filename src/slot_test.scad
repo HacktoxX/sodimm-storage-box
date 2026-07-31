@@ -1,8 +1,8 @@
 /*
- * Compact calibration body for validating four real SO-DIMM slots.
+ * Kompakter Kalibrierkörper zur Prüfung von vier realen SO-DIMM-Slots.
  *
- * This file deliberately contains no production shell, stacking interface, or
- * final grip geometry. It reuses the central dimensions and slot cutouts.
+ * Diese Datei enthält bewusst weder die finale Hülle noch Stapelschnittstelle
+ * oder Griffgeometrie. Sie verwendet die zentralen Maße und Slotausschnitte.
  */
 
 slot_test_label_decimal_scale = 10;
@@ -46,11 +46,11 @@ module slot_test_seven_segment_digit(
 
     assert(
         horizontal_length > 0 && vertical_length > 0,
-        "Slot-test numeric mark is too small for the configured nozzle."
+        "Die numerische Kennzeichnung ist für die konfigurierte Düse zu klein."
     );
 
-    // Segment order: top, upper-right, lower-right, bottom,
-    // lower-left, upper-left, middle.
+    // Segmentreihenfolge: oben, rechts oben, rechts unten, unten,
+    // links unten, links oben, Mitte.
     if (segments[0]) {
         translate([stroke_width / 2, digit_height - stroke_width])
             square([horizontal_length, stroke_width]);
@@ -125,11 +125,11 @@ module slot_test_grip_clearance(
 ) {
     assert(
         grip_depth > 0 && grip_depth < body_height,
-        "Grip clearance depth must be positive and smaller than body height."
+        "Die Tiefe der Entnahmefreistellung muss positiv und kleiner als die Körperhöhe sein."
     );
     assert(
         top_width >= bottom_width && bottom_width > 0,
-        "Grip clearance widths must be positive and expand toward the top."
+        "Die Breiten der Entnahmefreistellung müssen positiv sein und sich nach oben erweitern."
     );
 
     translate([
@@ -168,11 +168,11 @@ module slot_test_identification_mark(
 
     assert(
         mark_depth > 0 && mark_depth < body_height,
-        "Slot-test identification depth is invalid."
+        "Die Tiefe der Slot-Test-Kennzeichnung ist ungültig."
     );
     assert(
         mark_size > 0,
-        "The outer wall is too narrow for a slot-test identification mark."
+        "Die Außenwand ist für die Kennzeichnung des Slot-Tests zu schmal."
     );
 
     translate([
@@ -205,11 +205,11 @@ module slot_test_body(
 
     assert(
         rows >= 1 && columns >= 1,
-        "Slot-test body rows and columns must be positive."
+        "Reihen und Spalten des Slot-Test-Körpers müssen positiv sein."
     );
     assert(
         test_slot_width > 0,
-        "Slot-test body requires a positive slot width."
+        "Der Slot-Test-Körper benötigt eine positive Slotbreite."
     );
 
     difference() {
@@ -286,24 +286,24 @@ module slot_test_configuration(thickness_clearance) {
     test_body_width =
         slot_test_body_width_for(thickness_clearance, slot_test_rows);
 
-    echo("SO-DIMM slot test");
+    echo("SO-DIMM-Slot-Test");
     echo(str(
-        "Layout: ",
+        "Anordnung: ",
         slot_test_columns,
         " x ",
         slot_test_rows
     ));
-    echo(str("Slot length: ", slot_test_slot_length, " mm"));
-    echo(str("Slot width: ", test_slot_width, " mm"));
-    echo(str("Insertion depth: ", insertion_depth, " mm"));
-    echo(str("Chamfer height: ", slot_chamfer_height, " mm"));
+    echo(str("Slotlänge: ", slot_test_slot_length, " mm"));
+    echo(str("Slotbreite: ", test_slot_width, " mm"));
+    echo(str("Einstecktiefe: ", insertion_depth, " mm"));
+    echo(str("Fasenhöhe: ", slot_chamfer_height, " mm"));
     echo(str(
-        "Chamfer expansion: ",
+        "Fasenerweiterung: ",
         slot_chamfer_expansion,
         " mm"
     ));
     echo(str(
-        "Test body dimensions: ",
+        "Abmessungen des Testkörpers: ",
         slot_test_body_length,
         " x ",
         test_body_width,
@@ -312,12 +312,12 @@ module slot_test_configuration(thickness_clearance) {
         " mm"
     ));
     echo(str(
-        "Thickness clearance: ",
+        "Dickenspiel: ",
         thickness_clearance,
         " mm"
     ));
     echo(str(
-        "Estimated module protrusion: ",
+        "Geschätzter Modulüberstand: ",
         exposed_sodimm_height,
         " mm"
     ));
@@ -334,9 +334,9 @@ module slot_test() {
 
             if (debug_mode) {
                 echo(str(
-                    "Variant ",
+                    "Variante ",
                     variant_index + 1,
-                    " of ",
+                    " von ",
                     slot_test_variant_count
                 ));
                 slot_test_configuration(variant_clearance);

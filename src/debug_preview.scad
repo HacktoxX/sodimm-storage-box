@@ -1,27 +1,27 @@
 /*
- * Milestone-only diagnostic output and envelope preview.
+ * Meilensteinbezogene Diagnoseausgabe und Bauraumvorschau.
  *
- * This is intentionally not production geometry. The solid cuboid validates
- * the complete printer envelope; transparent background objects show where the
- * future slot generators will be placed without becoming part of an STL.
+ * Dies ist bewusst keine finale Geometrie. Der massive Quader prüft den
+ * vollständigen Druckbauraum; transparente Hintergrundobjekte zeigen die
+ * Positionen der späteren Slots, ohne Bestandteil einer STL zu werden.
  */
 
 debug_body_color = [0.20, 0.55, 0.85, 0.30];
 debug_slot_color = [0.95, 0.45, 0.15, 0.65];
 
 module debug_configuration() {
-    echo("SO-DIMM storage box configuration");
+    echo("Konfiguration der SO-DIMM-Aufbewahrungsbox");
     echo(str("Slots: ", total_slot_count));
-    echo(str("Layout: ", slots_per_row, " x ", row_count));
+    echo(str("Anordnung: ", slots_per_row, " x ", row_count));
     echo(str(
-        "Slot dimensions: ",
+        "Slotabmessungen: ",
         slot_length,
         " x ",
         slot_width,
         " mm"
     ));
     echo(str(
-        "Box dimensions: ",
+        "Boxabmessungen: ",
         box_length,
         " x ",
         box_width,
@@ -29,29 +29,29 @@ module debug_configuration() {
         box_height,
         " mm"
     ));
-    echo(str("Insertion depth: ", insertion_depth, " mm"));
+    echo(str("Einstecktiefe: ", insertion_depth, " mm"));
     echo(str(
-        "Exposed SO-DIMM height: ",
+        "Freiliegende SO-DIMM-Höhe: ",
         exposed_sodimm_height,
         " mm"
     ));
     echo(str(
-        "Wall thickness: ",
+        "Wandstärke: ",
         wall_thickness,
         " mm / ",
         wall_line_count,
-        " nozzle lines"
+        " Düsenlinien"
     ));
     echo(str(
-        "Bottom thickness: ",
+        "Bodenstärke: ",
         bottom_thickness,
         " mm / ",
         bottom_layer_count,
-        " layers"
+        " Schichten"
     ));
-    echo(str("Stacking clearance: ", stacking_clearance, " mm"));
+    echo(str("Stapelspiel: ", stacking_clearance, " mm"));
     echo(str(
-        "Configured build volume: ",
+        "Konfigurierter Bauraum: ",
         printer_build_x,
         " x ",
         printer_build_y,
@@ -60,8 +60,8 @@ module debug_configuration() {
         " mm"
     ));
     echo(str(
-        "P1S / configured build volume: ",
-        build_volume_ok ? "OK" : "EXCEEDED"
+        "P1S / konfigurierter Bauraum: ",
+        build_volume_ok ? "OK" : "ÜBERSCHRITTEN"
     ));
 }
 
@@ -84,7 +84,7 @@ module debug_preview() {
     color(debug_body_color)
         cube([box_length, box_width, box_height]);
 
-    // Background geometry stays visible in preview but is excluded from export.
+    // Hintergrundgeometrie bleibt sichtbar, wird aber nicht exportiert.
     %color(debug_slot_color)
         debug_slot_placeholders();
 }

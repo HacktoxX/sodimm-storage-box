@@ -1,6 +1,6 @@
 /*
- * Reusable geometry and validation helpers.
+ * Wiederverwendbare Geometrie- und Prüfungshilfen.
  *
- * Rounded profiles, chamfers, transition utilities, and assertion helpers will
- * be implemented here after the dimension system is reviewed.
+ * Gerundete Profile, Fasen, Übergangshilfen und Assertion-Hilfen werden hier
+ * nach Prüfung des Maßsystems implementiert.
  */

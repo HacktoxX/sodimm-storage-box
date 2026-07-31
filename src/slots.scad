@@ -1,16 +1,16 @@
 /*
- * Parametric SO-DIMM slot feature family.
+ * Parametrische Merkmalsfamilie für SO-DIMM-Slots.
  *
- * This milestone implements only the reusable negative geometry required by
- * the calibration body. It does not place the production 2 x 10 slot array.
+ * Dieser Meilenstein implementiert nur die wiederverwendbare Negativgeometrie
+ * des Kalibrierkörpers. Die spätere 2×10-Slotmatrix wird noch nicht angeordnet.
  */
 
 /*
- * Creates one slot-shaped subtraction volume centered on X and Y.
+ * Erzeugt ein in X und Y zentriertes, slotförmiges Subtraktionsvolumen.
  *
- * The lower section is a straight guide. The upper section expands equally on
- * all four sides, so chamfer_expansion <= chamfer_height limits each entry
- * surface to a support-free 45-degree slope.
+ * Der untere Abschnitt ist eine gerade Führung. Der obere Abschnitt erweitert
+ * sich an allen vier Seiten gleichmäßig. chamfer_expansion <= chamfer_height
+ * begrenzt dadurch jede Einführfläche auf supportfreie 45 Grad.
  */
 module sodimm_slot_cutout(
     length,
@@ -28,20 +28,20 @@ module sodimm_slot_cutout(
 
     assert(
         length > 0 && width > 0 && depth > 0,
-        "SO-DIMM slot cutout dimensions must be positive."
+        "Die Maße des SO-DIMM-Slotausschnitts müssen positiv sein."
     );
     assert(
         chamfer_height > 0 && chamfer_height < depth,
-        "Slot chamfer height must be positive and smaller than slot depth."
+        "Die Höhe der Slotfase muss positiv und kleiner als die Slottiefe sein."
     );
     assert(
         chamfer_expansion >= 0 &&
         chamfer_expansion <= chamfer_height,
-        "Slot chamfer expansion must remain between zero and chamfer height."
+        "Die Erweiterung der Slotfase muss zwischen null und der Fasenhöhe liegen."
     );
     assert(
         boolean_overlap >= 0,
-        "Boolean overlap cannot be negative."
+        "Die Boolean-Überlappung darf nicht negativ sein."
     );
 
     union() {
@@ -62,9 +62,9 @@ module sodimm_slot_cutout(
 }
 
 /*
- * Extends only the central part of the slot below its nominal support plane.
- * The untouched regions at both X ends become flat PCB support rails, keeping
- * the contact edge suspended above the relieved floor.
+ * Vertieft nur den mittleren Teil des Slots unter seine nominelle Auflageebene.
+ * Die unveränderten Bereiche an beiden X-Enden werden zu flachen
+ * Platinenauflagen und halten die Kontaktkante über dem freigestellten Boden.
  */
 module sodimm_contact_relief_cutout(
     length,
@@ -77,15 +77,15 @@ module sodimm_contact_relief_cutout(
 
     assert(
         support_length > 0 && relief_length > 0,
-        "Contact support rails must leave a positive central relief length."
+        "Die Kontaktauflagen müssen eine positive mittige Freistellung lassen."
     );
     assert(
         width > 0 && relief_depth > 0,
-        "Contact relief width and depth must be positive."
+        "Breite und Tiefe der Kontaktfreistellung müssen positiv sein."
     );
     assert(
         boolean_overlap >= 0,
-        "Boolean overlap cannot be negative."
+        "Die Boolean-Überlappung darf nicht negativ sein."
     );
 
     translate([

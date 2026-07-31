@@ -1,4 +1,4 @@
-name: Build STL files
+name: STL-Dateien erzeugen
 
 on:
   push:
@@ -12,22 +12,22 @@ permissions:
 
 jobs:
   build:
-    name: Export calibration STLs
+    name: Kalibrier-STLs exportieren
     runs-on: ubuntu-24.04
 
     steps:
-      - name: Check out repository
+      - name: Repository auschecken
         uses: actions/checkout@v6
 
-      - name: Install OpenSCAD
+      - name: OpenSCAD installieren
         run: |
           sudo apt-get update
           sudo apt-get install --yes openscad
 
-      - name: Export all STL files
+      - name: Alle STL-Dateien exportieren
         run: scripts/export_all.sh
 
-      - name: Upload generated STL files
+      - name: Erzeugte STL-Dateien hochladen
         uses: actions/upload-artifact@v7
         with:
           name: sodimm-storage-box-stl

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-# Resolve OpenSCAD consistently for local validation, exports, and CI.
+# OpenSCAD für lokale Prüfungen, Exporte und CI einheitlich ermitteln.
 find_openscad() {
     if [[ -n "${SODIMM_OPENSCAD_BIN:-}" ]]; then
         if [[ ! -x "${SODIMM_OPENSCAD_BIN}" ]]; then
             printf '%s\n' \
-                "SODIMM_OPENSCAD_BIN is not executable: ${SODIMM_OPENSCAD_BIN}" \
+                "SODIMM_OPENSCAD_BIN ist nicht ausführbar: ${SODIMM_OPENSCAD_BIN}" \
                 >&2
             return 1
         fi
@@ -18,10 +18,10 @@ find_openscad() {
         printf '%s\n' "/Applications/OpenSCAD-2021.01.app/Contents/MacOS/OpenSCAD"
     else
         printf '%s\n' \
-            "OpenSCAD was not found in PATH or a supported macOS app bundle." \
+            "OpenSCAD wurde weder im PATH noch in einem unterstützten macOS-Programmpaket gefunden." \
             >&2
         printf '%s\n' \
-            "Install OpenSCAD or set SODIMM_OPENSCAD_BIN to its executable." \
+            "OpenSCAD installieren oder SODIMM_OPENSCAD_BIN auf die ausführbare Datei setzen." \
             >&2
         return 1
     fi

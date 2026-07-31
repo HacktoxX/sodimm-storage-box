@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate topology, component count, spacing, and bounds of an ASCII STL."""
+"""Prüft Topologie, Komponenten, Abstände und Grenzen einer ASCII-STL."""
 
 from __future__ import annotations
 
@@ -28,9 +28,9 @@ def parse_ascii_stl(path: Path) -> list[Triangle]:
                     current = []
 
     if current:
-        raise ValueError("STL ended with an incomplete triangle.")
+        raise ValueError("Die STL endet mit einem unvollständigen Dreieck.")
     if not triangles:
-        raise ValueError("STL contains no triangles.")
+        raise ValueError("Die STL enthält keine Dreiecke.")
 
     return triangles
 
@@ -133,18 +133,35 @@ def close(actual: float, expected: float, tolerance: float) -> bool:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("stl", type=Path)
-    parser.add_argument("--components", type=int, required=True)
+    parser = argparse.ArgumentParser(
+        description="Prüft eine von OpenSCAD erzeugte ASCII-STL."
+    )
+    parser.add_argument("stl", type=Path, help="Pfad zur prüfenden STL-Datei")
+    parser.add_argument(
+        "--components",
+        type=int,
+        required=True,
+        help="Erwartete Anzahl getrennter Komponenten",
+    )
     parser.add_argument(
         "--size",
         type=float,
         nargs=3,
         metavar=("X", "Y", "Z"),
         required=True,
+        help="Erwartete Gesamtabmessungen in Millimetern",
     )
-    parser.add_argument("--min-y-gap", type=float)
-    parser.add_argument("--tolerance", type=float, default=0.001)
+    parser.add_argument(
+        "--min-y-gap",
+        type=float,
+        help="Kleinster zulässiger Y-Abstand zwischen Komponenten",
+    )
+    parser.add_argument(
+        "--tolerance",
+        type=float,
+        default=0.001,
+        help="Zulässige Maßabweichung; Standard: 0.001",
+    )
     args = parser.parse_args()
 
     try:
@@ -156,20 +173,20 @@ def main() -> int:
             component_bounds,
         ) = mesh_analysis(triangles)
     except (OSError, ValueError) as error:
-        print(f"STL validation failed: {error}", file=sys.stderr)
+        print(f"STL-Prüfung fehlgeschlagen: {error}", file=sys.stderr)
         return 1
 
     actual_size = dimensions(overall_bounds)
     if nonmanifold_edges:
         print(
-            f"STL has {nonmanifold_edges} edges without exactly two faces.",
+            f"Die STL besitzt {nonmanifold_edges} Kanten ohne genau zwei Flächen.",
             file=sys.stderr,
         )
         return 1
     if len(component_bounds) != args.components:
         print(
-            "Expected "
-            f"{args.components} components, found {len(component_bounds)}.",
+            f"Erwartet: {args.components} Komponenten; "
+            f"gefunden: {len(component_bounds)}.",
             file=sys.stderr,
         )
         return 1
@@ -178,7 +195,8 @@ def main() -> int:
         for actual, expected in zip(actual_size, args.size)
     ):
         print(
-            f"Expected size {tuple(args.size)}, found {actual_size}.",
+            f"Erwartete Abmessungen: {tuple(args.size)}; "
+            f"gefunden: {actual_size}.",
             file=sys.stderr,
         )
         return 1
@@ -194,16 +212,17 @@ def main() -> int:
             gap + args.tolerance < args.min_y_gap for gap in y_gaps
         ):
             print(
-                f"Expected Y gaps of at least {args.min_y_gap}, found {y_gaps}.",
+                f"Erwartete Y-Abstände von mindestens {args.min_y_gap}; "
+                f"gefunden: {y_gaps}.",
                 file=sys.stderr,
             )
             return 1
 
     print(
-        f"{args.stl.name}: triangles={triangle_count}, "
-        f"components={len(component_bounds)}, "
-        f"nonmanifold_edges={nonmanifold_edges}, "
-        f"size={actual_size}, y_gaps={y_gaps}"
+        f"{args.stl.name}: Dreiecke={triangle_count}, "
+        f"Komponenten={len(component_bounds)}, "
+        f"Nicht-Manifold-Kanten={nonmanifold_edges}, "
+        f"Abmessungen={actual_size}, Y-Abstände={y_gaps}"
     )
     return 0
 

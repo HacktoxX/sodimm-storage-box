@@ -1,6 +1,6 @@
 /*
- * Adaptive label feature family.
+ * Merkmalsfamilie der adaptiven Beschriftung.
  *
- * Owns horizontal and vertical centering, fit-to-panel scaling, and engraved
- * or raised output.
+ * Zuständig für horizontale und vertikale Zentrierung, Skalierung auf die
+ * verfügbare Fläche sowie gravierte oder erhabene Ausgabe.
  */
