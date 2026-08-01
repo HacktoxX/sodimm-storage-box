@@ -53,6 +53,8 @@ slot_test_temporary="${export_directory}/sodimm-slot-test.stl"
 slot_variants_temporary="${export_directory}/sodimm-slot-variants.stl"
 full_box_temporary="${export_directory}/sodimm-box-v3-body.stl"
 short_box_temporary="${export_directory}/sodimm-box-v3-short.stl"
+stacking_test_temporary="${export_directory}/stacking-test.stl"
+stacking_variants_temporary="${export_directory}/stacking-test-variants.stl"
 
 render_stl \
     "den Vier-Slot-Kalibrierkörper" \
@@ -80,6 +82,18 @@ render_stl \
     -D 'render_mode="full_box_short"' \
     -D 'debug_mode=false'
 
+render_stl \
+    "das Kalibrierpaar der Stapelschnittstelle" \
+    "${stacking_test_temporary}" \
+    -D 'render_mode="stacking_test"' \
+    -D 'debug_mode=false'
+
+render_stl \
+    "die Spielvarianten der Stapelschnittstelle" \
+    "${stacking_variants_temporary}" \
+    -D 'render_mode="stacking_test_variants"' \
+    -D 'debug_mode=false'
+
 mkdir -p "${calibration_directory}" "${prototype_directory}"
 mv -f \
     "${slot_test_temporary}" \
@@ -93,10 +107,18 @@ mv -f \
 mv -f \
     "${short_box_temporary}" \
     "${prototype_directory}/sodimm-box-v3-short.stl"
+mv -f \
+    "${stacking_test_temporary}" \
+    "${calibration_directory}/stacking-test.stl"
+mv -f \
+    "${stacking_variants_temporary}" \
+    "${calibration_directory}/stacking-test-variants.stl"
 
 printf '%s\n' "STL-Export abgeschlossen:"
 printf '  %s\n' \
     "${calibration_directory}/sodimm-slot-test.stl" \
     "${calibration_directory}/sodimm-slot-variants.stl" \
+    "${calibration_directory}/stacking-test.stl" \
+    "${calibration_directory}/stacking-test-variants.stl" \
     "${prototype_directory}/sodimm-box-v3-body.stl" \
     "${prototype_directory}/sodimm-box-v3-short.stl"
