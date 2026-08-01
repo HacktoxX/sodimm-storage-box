@@ -60,7 +60,8 @@ module final_storage_box_body() {
                     local_slot_start_x = final_slot_start_x,
                     local_slot_start_y = final_slot_start_y,
                     relief_depth_x = final_body_relief_depth,
-                    relief_depth_y = final_body_relief_depth
+                    relief_depth_y = final_body_relief_depth,
+                    relief_front = false
                 );
             }
 
@@ -79,6 +80,23 @@ module final_storage_box_body() {
                     clearance = stacking_clearance,
                     boolean_overlap = boolean_overlap
                 );
+
+            adaptive_label_negative_features(
+                center_x = final_label_center_x,
+                center_z = final_label_center_z,
+                text_value = label_text,
+                mode = label_mode,
+                width = label_width,
+                height = label_height,
+                recess_depth = label_panel_recess_depth,
+                text_depth = label_depth,
+                bevel = label_panel_bevel,
+                corner_radius = label_panel_corner_radius,
+                font_size = final_label_font_size,
+                font_name = label_font,
+                boolean_overlap = boolean_overlap,
+                resolution = curve_resolution
+            );
         }
 
         translate([
@@ -109,6 +127,19 @@ module final_storage_box_body() {
                 radius = nozzle_diameter,
                 boolean_overlap = boolean_overlap
             );
+
+        adaptive_label_positive_features(
+            center_x = final_label_center_x,
+            center_z = final_label_center_z,
+            text_value = label_text,
+            mode = label_mode,
+            recess_depth = label_panel_recess_depth,
+            text_depth = label_depth,
+            font_size = final_label_font_size,
+            font_name = label_font,
+            boolean_overlap = boolean_overlap,
+            resolution = curve_resolution
+        );
     }
 }
 
@@ -130,6 +161,16 @@ module final_box_configuration() {
     echo(str("Mittelsteg: ", body_center_web_width, " mm"));
     echo(str("Außenwand: ", wall_thickness, " mm"));
     echo(str("Modulüberstand: ", exposed_sodimm_height, " mm"));
+    echo(str("Beschriftung: ", label_text));
+    echo(str("Beschriftungsmodus: ", label_mode));
+    echo(str(
+        "Beschriftungsfeld: ",
+        label_width,
+        " x ",
+        label_height,
+        " mm"
+    ));
+    echo(str("Adaptive Schriftgröße: ", final_label_font_size, " mm"));
     echo(str("Stapelspiel gesamt: ", stacking_clearance, " mm"));
     echo(str("Stapelspiel je Seite: ", stacking_clearance_per_side, " mm"));
     echo(str("Flankenwinkel: ", stacking_chamfer_angle, " Grad"));

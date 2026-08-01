@@ -11,6 +11,7 @@ include <../src/dimensions.scad>
 include <../src/slots.scad>
 include <../src/body.scad>
 include <../src/stacking.scad>
+include <../src/label.scad>
 include <../src/final_box.scad>
 
 final_storage_box_body();

@@ -89,7 +89,11 @@ module storage_body_perimeter_reliefs(
     local_slot_start_x = slot_start_x,
     local_slot_start_y = slot_start_y,
     relief_depth_x = body_relief_depth_x,
-    relief_depth_y = body_relief_depth_y
+    relief_depth_y = body_relief_depth_y,
+    relief_left = true,
+    relief_right = true,
+    relief_front = true,
+    relief_back = true
 ) {
     matrix_slot_width =
         slot_width_with_clearance(thickness_clearance);
@@ -101,6 +105,14 @@ module storage_body_perimeter_reliefs(
     );
     relief_height = body_relief_height + boolean_overlap;
 
+    assert(
+        (relief_left == true || relief_left == false) &&
+        (relief_right == true || relief_right == false) &&
+        (relief_front == true || relief_front == false) &&
+        (relief_back == true || relief_back == false),
+        "Alle Schalter der Randreliefs müssen boolesch sein."
+    );
+
     for (row_index = [0 : rows - 1]) {
         relief_start_y =
             local_slot_start_y +
@@ -109,31 +121,35 @@ module storage_body_perimeter_reliefs(
                 (matrix_slot_width + row_spacing)
             );
 
-        translate([
-            -boolean_overlap,
-            relief_start_y,
-            bottom_thickness
-        ])
-            rounded_prism(
-                length = relief_depth_x + boolean_overlap,
-                width = matrix_slot_width,
-                height = relief_height,
-                radius = relief_radius,
-                resolution = curve_resolution
-            );
+        if (relief_left) {
+            translate([
+                -boolean_overlap,
+                relief_start_y,
+                bottom_thickness
+            ])
+                rounded_prism(
+                    length = relief_depth_x + boolean_overlap,
+                    width = matrix_slot_width,
+                    height = relief_height,
+                    radius = relief_radius,
+                    resolution = curve_resolution
+                );
+        }
 
-        translate([
-            local_body_length - relief_depth_x,
-            relief_start_y,
-            bottom_thickness
-        ])
-            rounded_prism(
-                length = relief_depth_x + boolean_overlap,
-                width = matrix_slot_width,
-                height = relief_height,
-                radius = relief_radius,
-                resolution = curve_resolution
-            );
+        if (relief_right) {
+            translate([
+                local_body_length - relief_depth_x,
+                relief_start_y,
+                bottom_thickness
+            ])
+                rounded_prism(
+                    length = relief_depth_x + boolean_overlap,
+                    width = matrix_slot_width,
+                    height = relief_height,
+                    radius = relief_radius,
+                    resolution = curve_resolution
+                );
+        }
     }
 
     for (column_index = [0 : columns - 1]) {
@@ -144,31 +160,35 @@ module storage_body_perimeter_reliefs(
                 (slot_length + center_gap)
             );
 
-        translate([
-            relief_start_x,
-            -boolean_overlap,
-            bottom_thickness
-        ])
-            rounded_prism(
-                length = slot_length,
-                width = relief_depth_y + boolean_overlap,
-                height = relief_height,
-                radius = relief_radius,
-                resolution = curve_resolution
-            );
+        if (relief_front) {
+            translate([
+                relief_start_x,
+                -boolean_overlap,
+                bottom_thickness
+            ])
+                rounded_prism(
+                    length = slot_length,
+                    width = relief_depth_y + boolean_overlap,
+                    height = relief_height,
+                    radius = relief_radius,
+                    resolution = curve_resolution
+                );
+        }
 
-        translate([
-            relief_start_x,
-            local_body_width - relief_depth_y,
-            bottom_thickness
-        ])
-            rounded_prism(
-                length = slot_length,
-                width = relief_depth_y + boolean_overlap,
-                height = relief_height,
-                radius = relief_radius,
-                resolution = curve_resolution
-            );
+        if (relief_back) {
+            translate([
+                relief_start_x,
+                local_body_width - relief_depth_y,
+                bottom_thickness
+            ])
+                rounded_prism(
+                    length = slot_length,
+                    width = relief_depth_y + boolean_overlap,
+                    height = relief_height,
+                    radius = relief_radius,
+                    resolution = curve_resolution
+                );
+        }
     }
 }
 
