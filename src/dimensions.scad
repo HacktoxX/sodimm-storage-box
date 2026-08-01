@@ -117,17 +117,42 @@ assert(
 );
 assert(
     label_mode == "engraved" ||
-    label_mode == "raised" ||
-    label_mode == "disabled",
-    "label_mode muss \"engraved\", \"raised\" oder \"disabled\" sein."
+    label_mode == "raised",
+    "label_mode muss \"engraved\" oder \"raised\" sein."
 );
 assert(
     label_width > 0 && label_height > 0 && label_depth > 0,
     "Die Beschriftungsmaße müssen positiv sein."
 );
 assert(
-    label_depth <= wall_thickness,
-    "label_depth darf wall_thickness nicht überschreiten."
+    is_string(label_text) && len(label_text) > 0,
+    "label_text muss eine nichtleere Zeichenkette sein."
+);
+assert(
+    is_string(label_font) && len(label_font) > 0,
+    "label_font muss eine nichtleere Zeichenkette sein."
+);
+assert(
+    label_depth >= layer_height &&
+    label_panel_recess_depth >= layer_height,
+    "Beschriftungs- und Feldtiefe müssen mindestens einer Schicht entsprechen."
+);
+assert(
+    label_panel_bevel > 0 &&
+    label_panel_bevel <= label_panel_recess_depth,
+    "Die Feldfase muss positiv sein und darf die Feldtiefe nicht überschreiten."
+);
+assert(
+    label_panel_padding >= nozzle_diameter,
+    "Der Innenabstand des Beschriftungsfelds muss mindestens einer Düsenbreite entsprechen."
+);
+assert(
+    label_panel_corner_radius > label_panel_bevel,
+    "Der Feldradius muss größer als die Feldfase sein."
+);
+assert(
+    label_character_width_ratio > 0,
+    "label_character_width_ratio muss positiv sein."
 );
 assert(
     label_min_font_size > 0 &&
@@ -1137,6 +1162,46 @@ final_support_land_inner_x_distance =
 final_support_land_inner_y_distance =
     final_support_land_outer_margin + stacking_support_land_width;
 
+/*
+ * Adaptives frontseitiges Beschriftungsfeld.
+ *
+ * Die Schriftgröße wird konservativ aus verfügbarer Breite, Höhe und
+ * Zeichenanzahl ermittelt. Gravur und Relief bleiben vollständig innerhalb
+ * eines vertieften Felds und verändern daher die Außenhülle nicht.
+ */
+function adaptive_label_font_size_for(
+    text_value,
+    available_width,
+    available_height
+) =
+    min(
+        label_max_font_size,
+        available_height,
+        available_width /
+            (max(1, len(text_value)) * label_character_width_ratio)
+    );
+
+final_label_inner_width = label_width - (2 * label_panel_bevel);
+final_label_inner_height = label_height - (2 * label_panel_bevel);
+final_label_content_width =
+    final_label_inner_width - (2 * label_panel_padding);
+final_label_content_height =
+    final_label_inner_height - (2 * label_panel_padding);
+final_label_font_size = adaptive_label_font_size_for(
+    label_text,
+    final_label_content_width,
+    final_label_content_height
+);
+final_label_center_x = final_body_length / 2;
+final_label_center_z = final_body_height / 2;
+final_label_left_x = final_label_center_x - (label_width / 2);
+final_label_right_x = final_label_center_x + (label_width / 2);
+final_label_bottom_z = final_label_center_z - (label_height / 2);
+final_label_top_z = final_label_center_z + (label_height / 2);
+final_label_max_cut_depth = label_panel_recess_depth + label_depth;
+final_label_to_male_distance =
+    final_stack_male_outer_edge_distance - final_label_max_cut_depth;
+
 final_stack_pitch = final_body_height + stacking_standoff;
 final_box_length = final_body_length;
 final_box_width = final_body_width;
@@ -1208,6 +1273,36 @@ assert(
         final_stack_female_tangential_edge_distance +
             body_calculation_epsilon,
     "Die finalen Stapelauflagen kollidieren mit Nut, Relief oder Slotfeld."
+);
+assert(
+    final_label_inner_width > 0 &&
+    final_label_inner_height > 0 &&
+    final_label_content_width > 0 &&
+    final_label_content_height > 0,
+    "Das Beschriftungsfeld lässt keine positive nutzbare Textfläche übrig."
+);
+assert(
+    final_label_font_size + body_calculation_epsilon >=
+        label_min_font_size,
+    "label_text ist für Beschriftungsfeld und minimale Schriftgröße zu lang."
+);
+assert(
+    final_label_left_x >= (corner_radius + wall_thickness) &&
+    final_label_right_x <=
+        final_body_length - corner_radius - wall_thickness,
+    "Das Beschriftungsfeld liegt zu dicht an den gerundeten Außenecken."
+);
+assert(
+    final_label_bottom_z >=
+        bottom_thickness + stacking_female_depth + nozzle_diameter &&
+    final_label_top_z <=
+        access_grip_remaining_web_height - nozzle_diameter,
+    "Das Beschriftungsfeld kollidiert mit Boden, Stapelnut oder Entnahmezone."
+);
+assert(
+    final_label_to_male_distance + body_calculation_epsilon >=
+        stacking_min_feature_thickness,
+    "Hinter dem Beschriftungsfeld bleibt zu wenig Material bis zur Stapelfeder."
 );
 assert(
     final_box_build_volume_ok,

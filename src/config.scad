@@ -80,10 +80,16 @@ stacking_test_mark_depth = 0.4;
 
 // Adaptive Beschriftung.
 label_text = "PC4-3200";
-label_mode = "engraved"; // "engraved", "raised" oder "disabled".
+label_mode = "engraved"; // "engraved" oder "raised".
 label_width = 58;
 label_height = 11;
-label_depth = 0.6;
+label_depth = 0.4;
+label_panel_recess_depth = 0.4;
+label_panel_bevel = 0.4;
+label_panel_padding = 1.2;
+label_panel_corner_radius = 1.6;
+label_character_width_ratio = 0.62;
+label_font = "Liberation Sans:style=Bold";
 label_max_font_size = 6.0;
 label_min_font_size = 3.0;
 
