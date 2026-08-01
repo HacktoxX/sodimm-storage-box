@@ -36,7 +36,7 @@ render_stl() {
         return 1
     fi
 
-    if grep -Eiq 'warning|error:' "${render_log}"; then
+    if openscad_log_has_actionable_diagnostics "${render_log}"; then
         cat "${render_log}" >&2
         printf '%s\n' \
             "OpenSCAD meldete beim Rendern von ${description} eine Diagnose." \

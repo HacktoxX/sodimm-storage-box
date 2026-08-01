@@ -26,3 +26,17 @@ find_openscad() {
         return 1
     fi
 }
+
+# OpenSCAD 2021.01 unter macOS verwendet eine neuere Fontconfig-Datei als die
+# gebündelte Bibliothek vollständig versteht. Die einzelne Meldung zum Element
+# "blank" stammt aus dieser Laufzeitumgebung und nicht aus dem SCAD-Modell.
+# Alle übrigen Warnungen und Fehler bleiben weiterhin harte Prüffehler.
+openscad_log_has_actionable_diagnostics() {
+    local log_file="$1"
+
+    awk '
+        !/^Fontconfig warning: .*unknown element "blank"$/ {
+            print
+        }
+    ' "${log_file}" | grep -Eiq 'warning|error:'
+}

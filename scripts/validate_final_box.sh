@@ -23,7 +23,7 @@ openscad_bin="$(find_openscad)"
 fail_on_render_diagnostics() {
     local log_file="$1"
 
-    if grep -Eiq 'warning|error:' "${log_file}"; then
+    if openscad_log_has_actionable_diagnostics "${log_file}"; then
         printf '%s\n' "Unerwartete OpenSCAD-Diagnose:" >&2
         cat "${log_file}" >&2
         return 1
@@ -78,6 +78,10 @@ expect_log_message "${final_log}" "Slotlänge: 73.2 mm" "physisch validierte Slo
 expect_log_message "${final_log}" "Slotbreite: 5.4 mm" "physisch validierte Slotbreite"
 expect_log_message "${final_log}" "Dickenspiel: 1.2 mm" "physisch validiertes Dickenspiel"
 expect_log_message "${final_log}" "Slotfeld: 154.4 x 82.8 mm" "Slotfeldgröße"
+expect_log_message "${final_log}" "Beschriftung: PC4-3200" "variable Standardbeschriftung"
+expect_log_message "${final_log}" "Beschriftungsmodus: engraved" "gravierte Standardausgabe"
+expect_log_message "${final_log}" "Beschriftungsfeld: 58 x 11 mm" "Abmessungen des Beschriftungsfelds"
+expect_log_message "${final_log}" "Adaptive Schriftgröße: 6 mm" "adaptive Standardschriftgröße"
 expect_log_message "${final_log}" "Stapelspiel gesamt: 0.25 mm" "physisch validiertes Stapelspiel"
 expect_log_message "${final_log}" "Stapelspiel je Seite: 0.125 mm" "korrekt verteiltes Stapelspiel"
 expect_log_message "${final_log}" "Flankenwinkel: 45 Grad" "supportfreie Stapelflanken"
@@ -100,7 +104,45 @@ python3 "${mesh_checker}" \
     "${final_stl}" \
     --components 1 \
     --size 176.8 105.2 33.6 \
-    --volume-range 325000 340000
+    --volume-range 330000 345000
+
+raised_stl="${validation_directory}/sodimm-storage-box-raised-label.stl"
+raised_log="${validation_directory}/sodimm-storage-box-raised-label.log"
+"${openscad_bin}" \
+    -D 'render_mode="final_box"' \
+    -D 'label_mode="raised"' \
+    -D 'debug_mode=true' \
+    -o "${raised_stl}" \
+    "${entry_file}" >"${raised_log}" 2>&1
+fail_on_render_diagnostics "${raised_log}"
+test -s "${raised_stl}"
+
+expect_log_message \
+    "${raised_log}" \
+    "Beschriftungsmodus: raised" \
+    "geschützte erhabene Beschriftung"
+python3 "${mesh_checker}" \
+    "${raised_stl}" \
+    --components 1 \
+    --size 176.8 105.2 33.6 \
+    --volume-range 330000 345000
+
+adaptive_label_log="${validation_directory}/adaptive-label.log"
+"${openscad_bin}" \
+    -D 'render_mode="final_box"' \
+    -D 'label_text="SERVER-RAM-PC4-3200"' \
+    -D 'debug_mode=true' \
+    -o "${validation_directory}/adaptive-label.csg" \
+    "${entry_file}" >"${adaptive_label_log}" 2>&1
+fail_on_render_diagnostics "${adaptive_label_log}"
+expect_log_message \
+    "${adaptive_label_log}" \
+    "Beschriftung: SERVER-RAM-PC4-3200" \
+    "überschriebener variabler Beschriftungstext"
+expect_log_message \
+    "${adaptive_label_log}" \
+    "Adaptive Schriftgröße: 4.651" \
+    "automatisch verkleinerte Schrift"
 
 two_box_stl="${validation_directory}/sodimm-final-two-box-stack.stl"
 two_box_log="${validation_directory}/sodimm-final-two-box-stack.log"
@@ -134,6 +176,26 @@ expect_assertion \
     "invalid-render-mode" \
     'render_mode="ungueltig"' \
     "render_mode muss"
+expect_assertion \
+    "invalid-label-mode" \
+    'label_mode="disabled"' \
+    "label_mode muss \"engraved\" oder \"raised\" sein."
+expect_assertion \
+    "empty-label-text" \
+    'label_text=""' \
+    "label_text muss eine nichtleere Zeichenkette sein."
+expect_assertion \
+    "invalid-label-bevel" \
+    "label_panel_bevel=0.6" \
+    "Die Feldfase muss positiv sein und darf die Feldtiefe nicht überschreiten."
+expect_assertion \
+    "label-backing-too-thin" \
+    "label_depth=0.6" \
+    "Hinter dem Beschriftungsfeld bleibt zu wenig Material bis zur Stapelfeder."
+expect_assertion \
+    "label-text-too-long" \
+    'label_text="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"' \
+    "label_text ist für Beschriftungsfeld und minimale Schriftgröße zu lang."
 expect_assertion \
     "negative-stacking-clearance" \
     "stacking_clearance=-0.1" \
