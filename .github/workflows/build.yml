@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    name: Kalibrier-STLs exportieren
+    name: Projekt-STLs prüfen und exportieren
     runs-on: ubuntu-24.04
 
     steps:
@@ -32,6 +32,9 @@ jobs:
 
       - name: Stapelkalibrierung prüfen
         run: scripts/validate_stacking_test.sh
+
+      - name: Finale Stapelbox prüfen
+        run: scripts/validate_final_box.sh
 
       - name: Alle STL-Dateien exportieren
         run: scripts/export_all.sh

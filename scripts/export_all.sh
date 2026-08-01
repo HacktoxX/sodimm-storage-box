@@ -8,6 +8,7 @@ entry_file="${repository_root}/src/RAM_Box.scad"
 openscad_helper="${script_directory}/lib/openscad.sh"
 calibration_directory="${repository_root}/exports/calibration"
 prototype_directory="${repository_root}/exports/prototypes"
+final_directory="${repository_root}/exports/final"
 export_directory="$(mktemp -d)"
 
 cleanup() {
@@ -55,6 +56,7 @@ full_box_temporary="${export_directory}/sodimm-box-v3-body.stl"
 short_box_temporary="${export_directory}/sodimm-box-v3-short.stl"
 stacking_test_temporary="${export_directory}/stacking-test.stl"
 stacking_variants_temporary="${export_directory}/stacking-test-variants.stl"
+final_box_temporary="${export_directory}/sodimm-storage-box-final.stl"
 
 render_stl \
     "den Vier-Slot-Kalibrierkörper" \
@@ -94,7 +96,16 @@ render_stl \
     -D 'render_mode="stacking_test_variants"' \
     -D 'debug_mode=false'
 
-mkdir -p "${calibration_directory}" "${prototype_directory}"
+render_stl \
+    "die finale stapelbare 20-Slot-Box" \
+    "${final_box_temporary}" \
+    -D 'render_mode="final_box"' \
+    -D 'debug_mode=false'
+
+mkdir -p \
+    "${calibration_directory}" \
+    "${prototype_directory}" \
+    "${final_directory}"
 mv -f \
     "${slot_test_temporary}" \
     "${calibration_directory}/sodimm-slot-test.stl"
@@ -113,6 +124,9 @@ mv -f \
 mv -f \
     "${stacking_variants_temporary}" \
     "${calibration_directory}/stacking-test-variants.stl"
+mv -f \
+    "${final_box_temporary}" \
+    "${final_directory}/sodimm-storage-box-final.stl"
 
 printf '%s\n' "STL-Export abgeschlossen:"
 printf '  %s\n' \
@@ -121,4 +135,5 @@ printf '  %s\n' \
     "${calibration_directory}/stacking-test.stl" \
     "${calibration_directory}/stacking-test-variants.stl" \
     "${prototype_directory}/sodimm-box-v3-body.stl" \
-    "${prototype_directory}/sodimm-box-v3-short.stl"
+    "${prototype_directory}/sodimm-box-v3-short.stl" \
+    "${final_directory}/sodimm-storage-box-final.stl"
