@@ -175,6 +175,17 @@ module stacking_test_configuration(clearance, variant_index = 0) {
     }
     echo(str("Gesamtspiel: ", clearance, " mm"));
     echo(str("Spiel je Seite: ", clearance / 2, " mm"));
+    echo(str(
+        "Berechnetes Gesamtspiel: ",
+        local_female_opening -
+            (
+                2 *
+                stacking_engagement_depth *
+                stacking_slope_run_per_height
+            ) -
+            stacking_feature_top_width,
+        " mm"
+    ));
     echo(str("Flankenwinkel: ", stacking_chamfer_angle, " Grad"));
     echo(str("Federhöhe: ", stacking_feature_height, " mm"));
     echo(str("Federbasis: ", stacking_male_base_width, " mm"));
@@ -226,6 +237,24 @@ module stacking_test() {
 }
 
 module stacking_test_variants() {
+    if (debug_mode) {
+        echo(str(
+            "Varianten-Bounding-Box: ",
+            stacking_test_variants_length,
+            " x ",
+            stacking_test_variants_width,
+            " x ",
+            stacking_test_variants_height,
+            " mm"
+        ));
+        echo(str(
+            "Varianten im P1S / konfigurierten Bauraum: ",
+            stacking_test_variants_build_volume_ok
+                ? "OK"
+                : "ÜBERSCHRITTEN"
+        ));
+    }
+
     for (variant_index = [0 : stacking_test_variant_count - 1]) {
         variant_clearance = stacking_clearance_variants[variant_index];
         variant_column =

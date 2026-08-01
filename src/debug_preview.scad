@@ -2,8 +2,9 @@
  * Meilensteinbezogene Diagnoseausgabe und Bauraumvorschau.
  *
  * Dies ist bewusst keine finale Geometrie. Der massive Quader prüft den
- * vollständigen Druckbauraum; transparente Hintergrundobjekte zeigen die
- * Positionen der späteren Slots, ohne Bestandteil einer STL zu werden.
+ * konservativ reservierten Druckbauraum; transparente Hintergrundobjekte
+ * zeigen die Positionen der späteren Slots, ohne Bestandteil einer STL zu
+ * werden.
  */
 
 debug_body_color = [0.20, 0.55, 0.85, 0.30];
@@ -49,7 +50,7 @@ module debug_configuration() {
         bottom_layer_count,
         " Schichten"
     ));
-    echo(str("Stapelspiel: ", stacking_clearance, " mm"));
+    echo(str("Stapel-Gesamtspiel: ", stacking_clearance, " mm"));
     echo(str(
         "Konfigurierter Bauraum: ",
         printer_build_x,

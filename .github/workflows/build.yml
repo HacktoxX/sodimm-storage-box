@@ -30,6 +30,9 @@ jobs:
       - name: Vollständigen Grundkörper prüfen
         run: scripts/validate_full_box.sh
 
+      - name: Stapelkalibrierung prüfen
+        run: scripts/validate_stacking_test.sh
+
       - name: Alle STL-Dateien exportieren
         run: scripts/export_all.sh
 

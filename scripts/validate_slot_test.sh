@@ -94,7 +94,7 @@ test -s "${debug_stl}"
 python3 "${mesh_checker}" \
     "${debug_stl}" \
     --components 1 \
-    --size 170.8 99.2 33
+    --size 170.8 99.2 33.6
 
 variant_stl="${validation_directory}/slot-variants.stl"
 variant_log="${validation_directory}/slot-variants.log"
