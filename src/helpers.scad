@@ -112,3 +112,112 @@ module support_free_grip_clearance(
                     ]
                 ]);
 }
+
+/*
+ * Schriftunabhängige Ziffern für einfache Kalibrierkennzeichnungen.
+ *
+ * Dieses bewusst kleine Siebensegment-System gehört nicht zum späteren
+ * adaptiven Labelsystem. Slot- und Stapeltests können damit reproduzierbare
+ * Zahlen gravieren, ohne von lokal installierten Schriftarten abzuhängen.
+ */
+function seven_segment_digit_segments(digit) =
+    digit == "0" ? [true, true, true, true, true, true, false] :
+    digit == "1" ? [false, true, true, false, false, false, false] :
+    digit == "2" ? [true, true, false, true, true, false, true] :
+    digit == "3" ? [true, true, true, true, false, false, true] :
+    digit == "4" ? [false, true, true, false, false, true, true] :
+    digit == "5" ? [true, false, true, true, false, true, true] :
+    digit == "6" ? [true, false, true, true, true, true, true] :
+    digit == "7" ? [true, true, true, false, false, false, false] :
+    digit == "8" ? [true, true, true, true, true, true, true] :
+    digit == "9" ? [true, true, true, true, false, true, true] :
+    [false, false, false, false, false, false, false];
+
+module seven_segment_digit_2d(
+    digit,
+    digit_height,
+    stroke_width
+) {
+    digit_width = digit_height / 2;
+    horizontal_length = digit_width - stroke_width;
+    vertical_length = (digit_height - (3 * stroke_width)) / 2;
+    middle_y = (digit_height - stroke_width) / 2;
+    upper_vertical_y = middle_y + stroke_width;
+    lower_vertical_y = stroke_width;
+    right_x = digit_width - stroke_width;
+    segments = seven_segment_digit_segments(digit);
+
+    assert(
+        horizontal_length > 0 && vertical_length > 0,
+        "Die numerische Kennzeichnung ist für die konfigurierte Düse zu klein."
+    );
+
+    // Segmentreihenfolge: oben, rechts oben, rechts unten, unten,
+    // links unten, links oben, Mitte.
+    if (segments[0]) {
+        translate([stroke_width / 2, digit_height - stroke_width])
+            square([horizontal_length, stroke_width]);
+    }
+    if (segments[1]) {
+        translate([right_x, upper_vertical_y])
+            square([stroke_width, vertical_length]);
+    }
+    if (segments[2]) {
+        translate([right_x, lower_vertical_y])
+            square([stroke_width, vertical_length]);
+    }
+    if (segments[3]) {
+        translate([stroke_width / 2, 0])
+            square([horizontal_length, stroke_width]);
+    }
+    if (segments[4]) {
+        translate([0, lower_vertical_y])
+            square([stroke_width, vertical_length]);
+    }
+    if (segments[5]) {
+        translate([0, upper_vertical_y])
+            square([stroke_width, vertical_length]);
+    }
+    if (segments[6]) {
+        translate([stroke_width / 2, middle_y])
+            square([horizontal_length, stroke_width]);
+    }
+}
+
+module seven_segment_numeric_mark_2d(
+    mark_text,
+    character_height,
+    stroke_width
+) {
+    character_width = character_height / 2;
+    character_pitch = character_width + stroke_width;
+    mark_width =
+        (len(mark_text) * character_pitch) - stroke_width;
+
+    assert(
+        len(mark_text) >= 1,
+        "Die numerische Kennzeichnung darf nicht leer sein."
+    );
+
+    translate([-mark_width / 2, -character_height / 2]) {
+        for (character_index = [0 : len(mark_text) - 1]) {
+            character = mark_text[character_index];
+
+            translate([character_index * character_pitch, 0]) {
+                if (character == ".") {
+                    translate([
+                        (character_width - stroke_width) / 2,
+                        0
+                    ])
+                        square([stroke_width, stroke_width]);
+                } else {
+                    seven_segment_digit_2d(
+                        digit = character,
+                        digit_height = character_height,
+                        stroke_width = stroke_width
+                    );
+                }
+            }
+        }
+    }
+}
