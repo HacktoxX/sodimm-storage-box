@@ -128,6 +128,31 @@ def dimensions(mesh_bounds: Bounds) -> Vertex:
     return tuple(maximum[axis] - minimum[axis] for axis in range(3))
 
 
+def volume(triangles: list[Triangle]) -> float:
+    signed_volume = 0.0
+
+    for vertex_a, vertex_b, vertex_c in triangles:
+        signed_volume += (
+            vertex_a[0]
+            * (
+                vertex_b[1] * vertex_c[2]
+                - vertex_b[2] * vertex_c[1]
+            )
+            - vertex_a[1]
+            * (
+                vertex_b[0] * vertex_c[2]
+                - vertex_b[2] * vertex_c[0]
+            )
+            + vertex_a[2]
+            * (
+                vertex_b[0] * vertex_c[1]
+                - vertex_b[1] * vertex_c[0]
+            )
+        ) / 6.0
+
+    return abs(signed_volume)
+
+
 def close(actual: float, expected: float, tolerance: float) -> bool:
     return abs(actual - expected) <= tolerance
 
@@ -162,6 +187,13 @@ def main() -> int:
         default=0.001,
         help="Zulässige Maßabweichung; Standard: 0.001",
     )
+    parser.add_argument(
+        "--volume-range",
+        type=float,
+        nargs=2,
+        metavar=("MIN", "MAX"),
+        help="Zulässiger Bereich des geschlossenen Netzvolumens in mm³",
+    )
     args = parser.parse_args()
 
     try:
@@ -177,6 +209,7 @@ def main() -> int:
         return 1
 
     actual_size = dimensions(overall_bounds)
+    mesh_volume = volume(triangles)
     if nonmanifold_edges:
         print(
             f"Die STL besitzt {nonmanifold_edges} Kanten ohne genau zwei Flächen.",
@@ -200,6 +233,18 @@ def main() -> int:
             file=sys.stderr,
         )
         return 1
+    if mesh_volume <= 0:
+        print("Das geschlossene Netzvolumen ist nicht positiv.", file=sys.stderr)
+        return 1
+    if args.volume_range is not None:
+        minimum_volume, maximum_volume = args.volume_range
+        if not minimum_volume <= mesh_volume <= maximum_volume:
+            print(
+                f"Erwarteter Volumenbereich: {tuple(args.volume_range)} mm³; "
+                f"gefunden: {mesh_volume:.3f} mm³.",
+                file=sys.stderr,
+            )
+            return 1
 
     y_gaps: list[float] = []
     if args.min_y_gap is not None and len(component_bounds) > 1:
@@ -222,7 +267,8 @@ def main() -> int:
         f"{args.stl.name}: Dreiecke={triangle_count}, "
         f"Komponenten={len(component_bounds)}, "
         f"Nicht-Manifold-Kanten={nonmanifold_edges}, "
-        f"Abmessungen={actual_size}, Y-Abstände={y_gaps}"
+        f"Abmessungen={actual_size}, Volumen={mesh_volume:.3f} mm³, "
+        f"Y-Abstände={y_gaps}"
     )
     return 0
 

@@ -7,6 +7,7 @@ repository_root="$(cd "${script_directory}/.." && pwd)"
 entry_file="${repository_root}/src/RAM_Box.scad"
 openscad_helper="${script_directory}/lib/openscad.sh"
 calibration_directory="${repository_root}/exports/calibration"
+prototype_directory="${repository_root}/exports/prototypes"
 export_directory="$(mktemp -d)"
 
 cleanup() {
@@ -50,6 +51,8 @@ render_stl() {
 
 slot_test_temporary="${export_directory}/sodimm-slot-test.stl"
 slot_variants_temporary="${export_directory}/sodimm-slot-variants.stl"
+full_box_temporary="${export_directory}/sodimm-box-v3-body.stl"
+short_box_temporary="${export_directory}/sodimm-box-v3-short.stl"
 
 render_stl \
     "den Vier-Slot-Kalibrierkörper" \
@@ -65,15 +68,35 @@ render_stl \
     -D 'slot_test_variant_mode=true' \
     -D 'debug_mode=false'
 
-mkdir -p "${calibration_directory}"
+render_stl \
+    "den vollständigen 20-Slot-Grundkörper" \
+    "${full_box_temporary}" \
+    -D 'render_mode="full_box"' \
+    -D 'debug_mode=false'
+
+render_stl \
+    "den verkürzten 2×3-Grundkörper" \
+    "${short_box_temporary}" \
+    -D 'render_mode="full_box_short"' \
+    -D 'debug_mode=false'
+
+mkdir -p "${calibration_directory}" "${prototype_directory}"
 mv -f \
     "${slot_test_temporary}" \
     "${calibration_directory}/sodimm-slot-test.stl"
 mv -f \
     "${slot_variants_temporary}" \
     "${calibration_directory}/sodimm-slot-variants.stl"
+mv -f \
+    "${full_box_temporary}" \
+    "${prototype_directory}/sodimm-box-v3-body.stl"
+mv -f \
+    "${short_box_temporary}" \
+    "${prototype_directory}/sodimm-box-v3-short.stl"
 
 printf '%s\n' "STL-Export abgeschlossen:"
 printf '  %s\n' \
     "${calibration_directory}/sodimm-slot-test.stl" \
-    "${calibration_directory}/sodimm-slot-variants.stl"
+    "${calibration_directory}/sodimm-slot-variants.stl" \
+    "${prototype_directory}/sodimm-box-v3-body.stl" \
+    "${prototype_directory}/sodimm-box-v3-short.stl"

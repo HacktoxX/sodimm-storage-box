@@ -24,6 +24,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes openscad
 
+      - name: Kalibrierkörper prüfen
+        run: scripts/validate_slot_test.sh
+
+      - name: Vollständigen Grundkörper prüfen
+        run: scripts/validate_full_box.sh
+
       - name: Alle STL-Dateien exportieren
         run: scripts/export_all.sh
 

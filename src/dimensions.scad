@@ -339,12 +339,46 @@ assert(
     "Die Materialreliefs unterschreiten die minimale Außenwandstärke."
 );
 assert(
-    full_box_build_volume_ok,
-    "Der vollständige Grundkörper überschreitet den konfigurierten Druckerbauraum."
+    body_length <= printer_build_x,
+    str(
+        "Die Grundkörperlänge von ",
+        body_length,
+        " mm überschreitet printer_build_x von ",
+        printer_build_x,
+        " mm."
+    )
 );
 assert(
-    full_box_short_build_volume_ok,
-    "Der kurze Grundkörper überschreitet den konfigurierten Druckerbauraum."
+    body_width <= printer_build_y,
+    str(
+        "Die Grundkörperbreite von ",
+        body_width,
+        " mm überschreitet printer_build_y von ",
+        printer_build_y,
+        " mm."
+    )
+);
+assert(
+    body_height <= printer_build_z,
+    str(
+        "Die Grundkörperhöhe von ",
+        body_height,
+        " mm überschreitet printer_build_z von ",
+        printer_build_z,
+        " mm."
+    )
+);
+assert(
+    full_box_short_body_length <= printer_build_x,
+    "Der kurze Grundkörper überschreitet printer_build_x."
+);
+assert(
+    full_box_short_body_width <= printer_build_y,
+    "Der kurze Grundkörper überschreitet printer_build_y."
+);
+assert(
+    full_box_short_body_height <= printer_build_z,
+    "Der kurze Grundkörper überschreitet printer_build_z."
 );
 
 // Auf genau der Druckerachse fehlschlagen, die die Box nicht aufnehmen kann.
