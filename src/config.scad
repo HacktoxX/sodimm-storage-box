@@ -47,10 +47,35 @@ insertion_depth = 29.0;
 access_grip_depth = 8.0;
 
 // Selbstzentrierende Stapelschnittstelle.
+// stacking_clearance ist das horizontale Gesamtspiel, nicht das Spiel je Seite.
 stacking_clearance = 0.25;
-stacking_feature_height = 1.6;
-stacking_feature_width = 2.4;
+stacking_feature_height = 2.2;
+stacking_feature_top_width = 2.4;
 stacking_chamfer_angle = 45;
+stacking_standoff = 1.2;
+stacking_module_vertical_clearance = 0.2;
+stacking_min_feature_thickness = 2.4;
+stacking_min_edge_distance = 3.2;
+stacking_min_backing_thickness = 2.4;
+
+// Kompaktes Kalibrierpaar der Stapelschnittstelle.
+stacking_test_body_length = 70.0;
+stacking_test_body_width = 26.0;
+stacking_test_bottom_thickness = 2.4;
+stacking_test_top_thickness = 4.8;
+stacking_test_corner_radius = 3.2;
+stacking_test_frame_length = 52.0;
+stacking_test_frame_width = 12.0;
+stacking_test_part_spacing = 6.0;
+stacking_test_variant_spacing = 10.0;
+stacking_test_variant_columns = 2;
+stacking_clearance_variants = [0.20, 0.25, 0.30, 0.35];
+stacking_support_land_length = 8.0;
+stacking_support_land_width = 2.4;
+stacking_support_land_offset_x = 12.0;
+stacking_support_land_offset_y = 1.4;
+stacking_test_mark_height = 4.0;
+stacking_test_mark_depth = 0.4;
 
 // Adaptive Beschriftung.
 label_text = "PC4-3200";
@@ -80,6 +105,7 @@ slot_test_variant_spacing = 12.0;
 full_box_short_rows = 3;
 
 // Auswahl des Rendermodus und Diagnoseausgabe.
-// Erlaubt: "debug", "slot_test", "full_box", "full_box_short".
+// Erlaubt: "debug", "slot_test", "full_box", "full_box_short",
+// "stacking_test", "stacking_test_variants".
 render_mode = "slot_test";
 debug_mode = true;

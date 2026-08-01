@@ -83,12 +83,33 @@ assert(
     "stacking_clearance darf nicht negativ sein."
 );
 assert(
-    stacking_feature_height > 0 && stacking_feature_width > 0,
+    stacking_feature_height > 0 && stacking_feature_top_width > 0,
     "Die Maße der Stapelfunktion müssen positiv sein."
 );
 assert(
     stacking_chamfer_angle > 0 && stacking_chamfer_angle <= 45,
     "Stapelfasen über 45 Grad sind nicht garantiert supportfrei druckbar."
+);
+assert(
+    stacking_standoff > 0 &&
+    stacking_standoff < stacking_feature_height,
+    "stacking_standoff muss positiv und kleiner als stacking_feature_height sein."
+);
+assert(
+    stacking_module_vertical_clearance >= 0,
+    "stacking_module_vertical_clearance darf nicht negativ sein."
+);
+assert(
+    stacking_min_feature_thickness >= (2 * nozzle_diameter),
+    "stacking_min_feature_thickness muss mindestens zwei Düsendurchmessern entsprechen."
+);
+assert(
+    stacking_min_edge_distance >= (2 * nozzle_diameter),
+    "stacking_min_edge_distance muss mindestens zwei Düsendurchmessern entsprechen."
+);
+assert(
+    stacking_min_backing_thickness >= (3 * layer_height),
+    "stacking_min_backing_thickness muss mindestens drei Schichten entsprechen."
 );
 assert(
     corner_radius >= wall_thickness,
@@ -155,20 +176,12 @@ body_width = storage_body_width_for(row_count, slot_thickness_clearance);
 body_height = bottom_thickness + insertion_depth;
 
 /*
- * Der spätere äußere Stapelsteg bleibt innerhalb der Körpergrundfläche und ist
- * um sein Passungsspiel eingerückt. Seine vollständige Projektion nach unten
- * gehört dennoch zum gesamten Z-Bauraum der Druckerprüfung.
+ * Die Stapelschnittstelle ist noch nicht in den Grundkörper integriert. Für
+ * die langfristige P1S-Prüfung wird ihre volle Höhe dennoch als konservative
+ * zusätzliche Kontur oberhalb des unveränderten Körpers reserviert.
  */
-stacking_outer_length = body_length - (2 * stacking_clearance);
-stacking_outer_width = body_width - (2 * stacking_clearance);
-stacking_inner_length =
-    stacking_outer_length - (2 * stacking_feature_width);
-stacking_inner_width =
-    stacking_outer_width - (2 * stacking_feature_width);
-
-// Gesamter Druckbauraum einschließlich der nach unten ragenden Stapelfunktion.
-box_length = max(body_length, stacking_outer_length);
-box_width = max(body_width, stacking_outer_width);
+box_length = body_length;
+box_width = body_width;
 box_height = body_height + stacking_feature_height;
 
 // Die Kapazität wird einmal abgeleitet, damit jedes Teilsystem denselben Wert meldet.
@@ -241,8 +254,8 @@ full_box_short_build_volume_ok =
 slot_start_x = wall_thickness + outer_margin_x;
 slot_start_y = wall_thickness + outer_margin_y;
 
-// Z-Positionen berücksichtigen das spätere Merkmal unter dem Hauptkörper.
-body_start_z = stacking_feature_height;
+// Voll- und Kurzgrundkörper beginnen unverändert auf dem Druckbett.
+body_start_z = 0;
 slot_start_z = body_start_z + bottom_thickness;
 
 // Diagnosewerte werden hier abgeleitet, um Rechnungen in echo() nicht zu wiederholen.
@@ -252,8 +265,8 @@ bottom_layer_count = bottom_thickness / layer_height;
 
 /*
  * Die Bauraumprüfung verwendet die vollständige druckbare Hülle. box_height
- * enthält bereits das spätere Merkmal unter dem Hauptkörper; X und Y verwenden
- * jeweils die größere Grundfläche von Körper und Stapelfunktion.
+ * enthält bereits die reservierte spätere Konturhöhe. X und Y bleiben bis zur
+ * physischen Freigabe der Schnittstelle identisch mit dem Grundkörper.
  */
 build_volume_ok =
     box_length <= printer_build_x &&
@@ -275,14 +288,6 @@ assert(
 assert(
     body_length > 0 && body_width > 0 && body_height > 0,
     "Die abgeleiteten Körpermaße müssen positiv sein."
-);
-assert(
-    stacking_outer_length > 0 && stacking_outer_width > 0,
-    "Die abgeleiteten Außenmaße der Stapelfunktion müssen positiv sein."
-);
-assert(
-    stacking_inner_length > 0 && stacking_inner_width > 0,
-    "stacking_feature_width ist für die Stapelschnittstelle zu groß."
 );
 assert(
     box_length > 0 && box_width > 0 && box_height > 0,
@@ -437,8 +442,10 @@ assert(
     render_mode == "debug" ||
     render_mode == "slot_test" ||
     render_mode == "full_box" ||
-    render_mode == "full_box_short",
-    "render_mode muss \"debug\", \"slot_test\", \"full_box\" oder \"full_box_short\" sein."
+    render_mode == "full_box_short" ||
+    render_mode == "stacking_test" ||
+    render_mode == "stacking_test_variants",
+    "render_mode muss \"debug\", \"slot_test\", \"full_box\", \"full_box_short\", \"stacking_test\" oder \"stacking_test_variants\" sein."
 );
 assert(
     slot_test_rows >= 1 && slot_test_rows == floor(slot_test_rows),
@@ -634,4 +641,316 @@ assert(
 assert(
     slot_test_render_height <= printer_build_z,
     "Der Slot-Test überschreitet printer_build_z."
+);
+
+/*
+ * Kalibriergeometrie der selbstzentrierenden Stapelschnittstelle.
+ *
+ * Der Winkel wird gegenüber der Druckebene gemessen. Bei 45 Grad entspricht
+ * der horizontale Lauf exakt der vertikalen Höhe. Männliche und weibliche
+ * Kontur greifen ausschließlich auf diese Funktionen zurück.
+ */
+function stacking_slope_run_per_height_for(chamfer_angle) =
+    1 / tan(chamfer_angle);
+
+function stacking_male_base_width_for(
+    feature_height,
+    feature_top_width,
+    chamfer_angle
+) =
+    feature_top_width +
+    (
+        2 *
+        feature_height *
+        stacking_slope_run_per_height_for(chamfer_angle)
+    );
+
+function stacking_engagement_depth_for(feature_height, standoff) =
+    feature_height - standoff;
+
+function stacking_male_width_at_height_for(
+    height,
+    feature_height,
+    feature_top_width,
+    chamfer_angle
+) =
+    feature_top_width +
+    (
+        2 *
+        (feature_height - height) *
+        stacking_slope_run_per_height_for(chamfer_angle)
+    );
+
+function stacking_female_opening_width_for(
+    clearance,
+    feature_height,
+    feature_top_width,
+    chamfer_angle,
+    standoff
+) =
+    stacking_male_width_at_height_for(
+        standoff,
+        feature_height,
+        feature_top_width,
+        chamfer_angle
+    ) + clearance;
+
+function stacking_female_depth_for(
+    clearance,
+    feature_height,
+    feature_top_width,
+    chamfer_angle,
+    standoff
+) =
+    stacking_female_opening_width_for(
+        clearance,
+        feature_height,
+        feature_top_width,
+        chamfer_angle,
+        standoff
+    ) /
+    (
+        2 *
+        stacking_slope_run_per_height_for(chamfer_angle)
+    );
+
+stacking_slope_run_per_height =
+    stacking_slope_run_per_height_for(stacking_chamfer_angle);
+stacking_slope_run =
+    stacking_feature_height * stacking_slope_run_per_height;
+stacking_male_base_width =
+    stacking_male_base_width_for(
+        stacking_feature_height,
+        stacking_feature_top_width,
+        stacking_chamfer_angle
+    );
+stacking_engagement_depth =
+    stacking_engagement_depth_for(
+        stacking_feature_height,
+        stacking_standoff
+    );
+stacking_female_opening_width =
+    stacking_female_opening_width_for(
+        stacking_clearance,
+        stacking_feature_height,
+        stacking_feature_top_width,
+        stacking_chamfer_angle,
+        stacking_standoff
+    );
+stacking_female_depth =
+    stacking_female_depth_for(
+        stacking_clearance,
+        stacking_feature_height,
+        stacking_feature_top_width,
+        stacking_chamfer_angle,
+        stacking_standoff
+    );
+
+// Das Gesamtspiel wird symmetrisch auf die beiden gegenüberliegenden Flanken verteilt.
+stacking_clearance_per_side = stacking_clearance / 2;
+stacking_female_width_at_male_top =
+    stacking_female_opening_width -
+    (
+        2 *
+        stacking_engagement_depth *
+        stacking_slope_run_per_height
+    );
+stacking_calculated_total_clearance =
+    stacking_female_width_at_male_top -
+    stacking_feature_top_width;
+stacking_roof_clearance =
+    stacking_female_depth - stacking_engagement_depth;
+stacking_lateral_capture =
+    (
+        stacking_female_opening_width -
+        stacking_feature_top_width
+    ) / 2;
+
+// Zwei parallele Auflagenpaare tragen die obere Hälfte, bevor die Flanken klemmen können.
+stacking_support_land_count = 4;
+stacking_support_land_area =
+    stacking_support_land_count *
+    stacking_support_land_length *
+    stacking_support_land_width;
+
+stacking_test_male_outer_length =
+    stacking_test_frame_length + stacking_male_base_width;
+stacking_test_male_outer_width =
+    stacking_test_frame_width + stacking_male_base_width;
+stacking_test_male_inner_length =
+    stacking_test_frame_length - stacking_male_base_width;
+stacking_test_male_inner_width =
+    stacking_test_frame_width - stacking_male_base_width;
+stacking_test_female_outer_length =
+    stacking_test_frame_length + stacking_female_opening_width;
+stacking_test_female_outer_width =
+    stacking_test_frame_width + stacking_female_opening_width;
+stacking_test_edge_distance_x =
+    (stacking_test_body_length - stacking_test_male_outer_length) / 2;
+stacking_test_edge_distance_y =
+    (stacking_test_body_width - stacking_test_male_outer_width) / 2;
+stacking_test_female_backing =
+    stacking_test_top_thickness - stacking_female_depth;
+stacking_test_bottom_height =
+    stacking_test_bottom_thickness + stacking_feature_height;
+stacking_test_top_height = stacking_test_top_thickness;
+stacking_test_pair_length = stacking_test_body_length;
+stacking_test_pair_width =
+    (2 * stacking_test_body_width) + stacking_test_part_spacing;
+stacking_test_pair_height =
+    max(stacking_test_bottom_height, stacking_test_top_height);
+
+stacking_test_variant_count = len(stacking_clearance_variants);
+stacking_test_variant_rows =
+    ceil(stacking_test_variant_count / stacking_test_variant_columns);
+stacking_test_variants_length =
+    (
+        stacking_test_variant_columns *
+        stacking_test_pair_length
+    ) +
+    (
+        (stacking_test_variant_columns - 1) *
+        stacking_test_variant_spacing
+    );
+stacking_test_variants_width =
+    (stacking_test_variant_rows * stacking_test_pair_width) +
+    (
+        (stacking_test_variant_rows - 1) *
+        stacking_test_variant_spacing
+    );
+stacking_test_variants_height = stacking_test_pair_height;
+
+stacking_test_build_volume_ok =
+    stacking_test_pair_length <= printer_build_x &&
+    stacking_test_pair_width <= printer_build_y &&
+    stacking_test_pair_height <= printer_build_z;
+stacking_test_variants_build_volume_ok =
+    stacking_test_variants_length <= printer_build_x &&
+    stacking_test_variants_width <= printer_build_y &&
+    stacking_test_variants_height <= printer_build_z;
+
+assert(
+    stacking_feature_top_width >= stacking_min_feature_thickness,
+    "Die freie Krone der Stapelfeder unterschreitet stacking_min_feature_thickness."
+);
+assert(
+    stacking_male_base_width > stacking_feature_top_width,
+    "Die Stapelfeder benötigt eine breitere Basis als Krone."
+);
+assert(
+    stacking_standoff >=
+        (exposed_sodimm_height + stacking_module_vertical_clearance),
+    "Die Stapelhöhe lässt nicht genügend Abstand über den eingesetzten SO-DIMMs."
+);
+assert(
+    stacking_engagement_depth > 0,
+    "Die Stapelschnittstelle benötigt eine positive Führungstiefe."
+);
+assert(
+    stacking_female_opening_width > stacking_feature_top_width,
+    "Die Stapelnut muss die Krone der Stapelfeder aufnehmen können."
+);
+assert(
+    abs(stacking_calculated_total_clearance - stacking_clearance) <=
+        body_calculation_epsilon,
+    "Das abgeleitete Gesamtspiel der Stapelschnittstelle ist inkonsistent."
+);
+assert(
+    stacking_roof_clearance > 0,
+    "Das 45-Grad-Dach der Stapelnut kollidiert mit der Federkrone."
+);
+assert(
+    stacking_test_body_length > 0 &&
+    stacking_test_body_width > 0 &&
+    stacking_test_bottom_thickness > 0 &&
+    stacking_test_top_thickness > 0,
+    "Alle Grundmaße des Stapeltests müssen positiv sein."
+);
+assert(
+    stacking_test_corner_radius >= nozzle_diameter &&
+    stacking_test_corner_radius <=
+        (min(stacking_test_body_length, stacking_test_body_width) / 2),
+    "stacking_test_corner_radius ist für den Testkörper ungültig."
+);
+assert(
+    stacking_test_frame_length > stacking_male_base_width &&
+    stacking_test_frame_width > stacking_male_base_width,
+    "Der Stapelrahmen benötigt eine positive innere Öffnung."
+);
+assert(
+    stacking_test_edge_distance_x >= stacking_min_edge_distance &&
+    stacking_test_edge_distance_y >= stacking_min_edge_distance,
+    "Die Stapelfeder unterschreitet den Mindestabstand zur Außenkante des Testkörpers."
+);
+assert(
+    stacking_test_female_backing >= stacking_min_backing_thickness,
+    "Über dem Dach der Stapelnut bleibt zu wenig tragendes Material."
+);
+assert(
+    stacking_support_land_length >= stacking_min_feature_thickness &&
+    stacking_support_land_width >= stacking_min_feature_thickness,
+    "Die Stapelauflagen unterschreiten stacking_min_feature_thickness."
+);
+assert(
+    (
+        stacking_support_land_offset_x +
+        (stacking_support_land_length / 2)
+    ) < (stacking_test_male_inner_length / 2) &&
+    (
+        stacking_support_land_offset_y +
+        (stacking_support_land_width / 2)
+    ) <=
+        (
+            (stacking_test_male_inner_width / 2) +
+            modeling_overlap
+        ),
+    "Die Stapelauflagen kollidieren mit der Führung oder verlassen deren Innenbereich."
+);
+assert(
+    stacking_test_mark_height > (3 * nozzle_diameter) &&
+    stacking_test_mark_depth > 0 &&
+    stacking_test_mark_depth < stacking_test_bottom_thickness,
+    "Die Kennzeichnung des Stapeltests ist nicht druckbar dimensioniert."
+);
+assert(
+    stacking_test_part_spacing >= stacking_min_feature_thickness,
+    "Der Abstand zwischen Unter- und Oberteil ist zu klein."
+);
+assert(
+    stacking_test_variant_spacing >= stacking_min_feature_thickness,
+    "Der Abstand zwischen Stapelvarianten ist zu klein."
+);
+assert(
+    stacking_test_variant_count >= 4,
+    "stacking_clearance_variants muss mindestens vier Werte enthalten."
+);
+assert(
+    stacking_test_variant_columns >= 1 &&
+    stacking_test_variant_columns == floor(stacking_test_variant_columns),
+    "stacking_test_variant_columns muss eine ganze Zahl von mindestens 1 sein."
+);
+for (variant_clearance = stacking_clearance_variants) {
+    assert(
+        variant_clearance >= 0,
+        "Jedes Gesamtspiel des Stapeltests muss nichtnegativ sein."
+    );
+    assert(
+        stacking_test_top_thickness -
+        stacking_female_depth_for(
+            variant_clearance,
+            stacking_feature_height,
+            stacking_feature_top_width,
+            stacking_chamfer_angle,
+            stacking_standoff
+        ) >= stacking_min_backing_thickness,
+        "Eine Stapelvariante lässt zu wenig Material über dem Nutdach stehen."
+    );
+}
+assert(
+    stacking_test_build_volume_ok,
+    "Das Stapeltestpaar überschreitet den konfigurierten Druckerbauraum."
+);
+assert(
+    stacking_test_variants_build_volume_ok,
+    "Die Stapeltestvarianten überschreiten den konfigurierten Druckerbauraum."
 );
