@@ -5,6 +5,7 @@ set -euo pipefail
 script_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repository_root="$(cd "${script_directory}/.." && pwd)"
 entry_file="${repository_root}/src/RAM_Box.scad"
+collision_entry_file="${repository_root}/tests/stacking_collision_check.scad"
 mesh_checker="${script_directory}/check_ascii_stl.py"
 openscad_helper="${script_directory}/lib/openscad.sh"
 validation_directory="$(mktemp -d)"
@@ -84,7 +85,7 @@ expect_log_message "${standard_log}" "Nutöffnung: 4.65 mm" "weibliche Nutöffnu
 expect_log_message "${standard_log}" "Nuttiefe: 2.325 mm" "supportfreie Nuttiefe"
 expect_log_message "${standard_log}" "Verbleibende Nut-Rückwand: 2.475 mm" "tragende Rückwand"
 expect_log_message "${standard_log}" "Horizontale Auflagefläche: 76.8 mm^2" "definierte Auflage"
-expect_log_message "${standard_log}" "Außenkantenabstand: 5.6 x 3.6 mm" "Außenkantenabstand"
+expect_log_message "${standard_log}" "Außenkantenabstand: 5.425 x 3.425 mm" "kleinster Außenkantenabstand"
 expect_log_message "${standard_log}" "Testpaar-Bounding-Box: 70 x 58 x 4.8 mm" "Testpaarabmessungen"
 expect_log_message "${standard_log}" "P1S / konfigurierter Bauraum: OK" "P1S-Bauraum"
 
@@ -124,6 +125,23 @@ python3 "${mesh_checker}" \
     --components 8 \
     --size 150 126 4.8 \
     --volume-range 52000 58000
+
+for clearance in 0.20 0.25 0.30 0.35; do
+    collision_stl="${validation_directory}/collision-${clearance}.stl"
+    collision_log="${validation_directory}/collision-${clearance}.log"
+
+    "${openscad_bin}" \
+        -D "stacking_collision_check_clearance=${clearance}" \
+        -o "${collision_stl}" \
+        "${collision_entry_file}" >"${collision_log}" 2>&1
+    fail_on_render_diagnostics "${collision_log}"
+
+    python3 "${mesh_checker}" \
+        "${collision_stl}" \
+        --components 1 \
+        --size 1 1 1 \
+        --volume-range 0.99 1.01
+done
 
 expect_assertion \
     "negative-clearance" \

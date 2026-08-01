@@ -175,6 +175,14 @@ module stacking_female_feature(
         nominal_opening_width +
         (2 * boolean_overlap * slope_run_per_height);
     cutout_roof_depth = nominal_roof_depth + boolean_overlap;
+    male_base_width =
+        stacking_male_base_width_for(
+            feature_height,
+            feature_top_width,
+            chamfer_angle
+        );
+    cutout_rail_length_allowance =
+        male_base_width + clearance + (2 * boolean_overlap);
 
     assert(clearance >= 0, "Das Gesamtspiel der Stapelnut darf nicht negativ sein.");
     assert(
@@ -195,7 +203,9 @@ module stacking_female_feature(
             for (side_y = [-1, 1]) {
                 translate([0, side_y * frame_width / 2, 0])
                     stacking_roof_rail_cutout(
-                        length = frame_length + cutout_opening_width,
+                        length =
+                            frame_length +
+                            cutout_rail_length_allowance,
                         opening_width = cutout_opening_width,
                         roof_depth = cutout_roof_depth
                     );
@@ -205,7 +215,9 @@ module stacking_female_feature(
                 translate([side_x * frame_length / 2, 0, 0])
                     rotate([0, 0, 90])
                         stacking_roof_rail_cutout(
-                            length = frame_width + cutout_opening_width,
+                            length =
+                                frame_width +
+                                cutout_rail_length_allowance,
                             opening_width = cutout_opening_width,
                             roof_depth = cutout_roof_depth
                         );

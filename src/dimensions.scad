@@ -782,13 +782,40 @@ stacking_test_male_inner_length =
 stacking_test_male_inner_width =
     stacking_test_frame_width - stacking_male_base_width;
 stacking_test_female_outer_length =
-    stacking_test_frame_length + stacking_female_opening_width;
+    stacking_test_frame_length +
+    stacking_male_base_width +
+    stacking_clearance;
 stacking_test_female_outer_width =
-    stacking_test_frame_width + stacking_female_opening_width;
+    stacking_test_frame_width +
+    stacking_male_base_width +
+    stacking_clearance;
+stacking_test_max_clearance = max(stacking_clearance_variants);
+stacking_test_max_female_outer_length =
+    stacking_test_frame_length +
+    stacking_male_base_width +
+    stacking_test_max_clearance;
+stacking_test_max_female_outer_width =
+    stacking_test_frame_width +
+    stacking_male_base_width +
+    stacking_test_max_clearance;
+stacking_test_interface_outer_length = max(
+    stacking_test_male_outer_length,
+    stacking_test_max_female_outer_length
+);
+stacking_test_interface_outer_width = max(
+    stacking_test_male_outer_width,
+    stacking_test_max_female_outer_width
+);
 stacking_test_edge_distance_x =
-    (stacking_test_body_length - stacking_test_male_outer_length) / 2;
+    (
+        stacking_test_body_length -
+        stacking_test_interface_outer_length
+    ) / 2;
 stacking_test_edge_distance_y =
-    (stacking_test_body_width - stacking_test_male_outer_width) / 2;
+    (
+        stacking_test_body_width -
+        stacking_test_interface_outer_width
+    ) / 2;
 stacking_test_female_backing =
     stacking_test_top_thickness - stacking_female_depth;
 stacking_test_bottom_height =
