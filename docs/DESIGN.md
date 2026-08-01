@@ -16,7 +16,8 @@ führender Wert bestätigt. Die finale Box integriert exakt diese
 Merkmalsmodule. Sie ist rechnerisch, in OpenSCAD, als Einzelmesh, als
 Zweierstapel und mit einer volumetrischen Kollisionssonde geprüft. Ein
 vollständiger Produktionsdruck der integrierten Box wurde in diesem
-Entwicklungslauf nicht durchgeführt.
+Entwicklungslauf nicht durchgeführt. Das variable Beschriftungsfeld ist in
+beiden Darstellungsarten als manifold Mesh geprüft.
 
 ## Konstruktionsvorgaben
 
@@ -28,6 +29,7 @@ Entwicklungslauf nicht durchgeführt.
 | Kapazität | 20 Module | Geforderte Kapazität der Box |
 | Anordnung | 2 Spalten × 10 Reihen | Geforderte Organisation |
 | Gesamtspiel der Stapelschnittstelle | 0,25 mm | Physisch validierter P1S-/PETG-Wert |
+| Beschriftungsfeld | 58,0 × 11,0 mm | Variable frontseitige Kennzeichnung |
 | Maximaler beabsichtigter Überhang | 45° | Vorgabe für supportfreien Druck |
 | Druckerbauraum | 256 × 256 × 256 mm | Bauraum des Bambu Lab P1S |
 
@@ -61,7 +63,8 @@ dieselben Matrixfunktionen und dieselben Slot-Negativmodule. Analog verwenden
 Standard- und Variantenkörper der Stapelkalibrierung direkt dieselben
 männlichen und weiblichen Merkmalsmodule aus `stacking.scad`. `final_box.scad`
 kombiniert diese Module mit der gemeinsamen Slotmatrix, ohne eine zweite
-Slot- oder Stapelimplementierung einzuführen.
+Slot- oder Stapelimplementierung einzuführen. `label.scad` kapselt Feldfase,
+Textskalierung sowie gravierte und erhabene Ausgabe.
 
 ## Parameterhoheit und abgeleitete Maße
 
@@ -81,6 +84,7 @@ Maßkette. Die Standardkonfiguration ergibt:
 | Finaler Grundkörper | 176,8 × 105,2 × 31,4 mm |
 | Finale Druckhülle einschließlich Feder | 176,8 × 105,2 × 33,6 mm |
 | Zwei Boxen in Stapellage | 176,8 × 105,2 × 66,2 mm |
+| Beschriftungsfeld | 58,0 × 11,0 mm |
 | Freiliegende SO-DIMM-Höhe | 1,0 mm |
 
 Der finale Funktionsrand von 8,0 mm wird nicht unabhängig eingestellt. Er
@@ -377,6 +381,41 @@ kürzeste Körperabmessung sein. Abweichende merkmalsspezifische Radien könnten
 aus Parametern abgeleitet werden, ohne Konstanten in Geometriemodulen zu
 verstecken; für die finale Version ist dies nicht erforderlich.
 
+## Variables Beschriftungsfeld
+
+Das Beschriftungsfeld liegt horizontal mittig auf der Vorderseite und vertikal
+mittig innerhalb des tragenden Körperbereichs. Seine Außenöffnung misst
+58,0 × 11,0 mm und besitzt einen Radius von 1,6 mm. Eine 0,4 mm tiefe und
+0,4 mm breite Fase führt mit 45 Grad zur inneren Feldfläche. Hinter der
+maximal 0,8 mm tiefen Kombination aus Feld und Text bleiben bis zur
+Stapelfeder mindestens 2,525 mm Material.
+
+Der vordere Materialrelief-Ausschnitt wird ausschließlich in der finalen Box
+deaktiviert. Dadurch entsteht eine kontinuierliche Frontfläche für das Feld;
+Seiten- und Rückreliefs bleiben erhalten. Diese lokale Entscheidung fügt nur
+im Funktionsbereich Material hinzu und verhindert eine durchbrochene oder
+unterschiedlich tiefe Gravur.
+
+`label_text` ist die einzige notwendige Inhaltsänderung. Der Standard lautet:
+
+```scad
+label_text = "PC4-3200";
+```
+
+Die nutzbare Feldfläche wird aus Feldfase und Innenabstand berechnet. Die
+Schriftgröße ist das Minimum aus maximaler Schriftgröße, verfügbarer Höhe und
+einer konservativen Breitenabschätzung aus Zeichenanzahl. `PC4-3200` nutzt
+6,0 mm; `SERVER-RAM-PC4-3200` wird automatisch auf rund 4,652 mm reduziert.
+Kann ein Text selbst mit der konfigurierten Mindestschriftgröße nicht sicher
+passen, bricht eine Assertion mit verständlicher Meldung ab.
+
+Im Modus `engraved` liegt die Schrift weitere 0,4 mm hinter der gefasten
+Feldfläche. Im Modus `raised` wird das Feld insgesamt 0,8 mm vertieft und der
+Text von dessen Grund bis zur geschützten inneren Fasenebene aufgebaut. Der
+Relieftext ragt damit nicht über die Außenkontur hinaus. Beide Modi bleiben
+horizontal und vertikal zentriert, verändern die Bounding Box nicht und
+werden separat als manifold Netz geprüft.
+
 ## Grenzen des Druckerbauraums
 
 Die Standardgrenzen des Bambu Lab P1S betragen 256 × 256 × 256 mm. Die
@@ -389,10 +428,8 @@ Bauraums. Assertions melden die konkret überschrittene Achse und Abmessung.
 ## Bewusst ausgeschlossene Merkmale
 
 Die finale Produktionsbox ist eine offene, einteilige Aufbewahrung. Sie
-enthält keine Beschriftungsgeometrie, keinen Deckel, keine Abdeckung, keine
-Clips oder Snap-Fits, keine Magnete und kein weiteres Zubehör. Die vorhandene
-Dateitrennung für mögliche Experimente verändert den Renderpfad `final_box`
-nicht.
+enthält das variable Beschriftungsfeld, aber keinen Deckel, keine Abdeckung,
+keine Clips oder Snap-Fits, keine Magnete und kein weiteres Zubehör.
 
 ## Validierungsstufen
 
@@ -409,14 +446,18 @@ Ein Merkmal gilt erst dann als abgeschlossen, wenn:
 Die realen Passungstests bestätigen 73,2 mm freie Slotlänge, 1,2 mm gesamtes
 Dickenspiel und 0,25 mm horizontales Stapelgesamtspiel für PETG auf dem Bambu
 Lab P1S. Die finale Einzelbox rendert ohne Warnungen, besitzt genau eine
-zusammenhängende Komponente, 0 Nicht-Manifold-Kanten, 6.756 Dreiecke und ein
-geschlossenes Netzvolumen von 333.491 mm³.
+zusammenhängende Komponente und 0 Nicht-Manifold-Kanten. Mit der gravierten
+Standardbeschriftung besitzt sie 9.716 Dreiecke und ein geschlossenes
+Netzvolumen von 336.597 mm³. Die geschützte erhabene Variante besitzt
+9.820 Dreiecke und 336.434 mm³ Volumen; ihre Bounding Box bleibt identisch.
 
 Der separat gerenderte Zweierstapel besitzt zwei manifold Komponenten,
-13.512 Dreiecke, 0 Nicht-Manifold-Kanten und die erwartete Hülle von
+19.432 Dreiecke, 0 Nicht-Manifold-Kanten und die erwartete Hülle von
 176,8 × 105,2 × 66,2 mm. Eine Referenz-Schnittsonde bestätigt ein leeres
 Kollisionsvolumen. Negative Tests decken ungültigen Rendermodus, negatives
-Stapelspiel, Flankenwinkel über 45°, zu kleine Materialreliefs und eine
-Überschreitung des P1S-Bauraums ab. Die vollständige integrierte Box wurde in
-diesem Entwicklungslauf nicht physisch gedruckt; ihre beiden kritischen
-Passungssysteme wurden jedoch vor der Integration real kalibriert.
+Stapelspiel, Flankenwinkel über 45°, ungültige Labelmodi, leeren oder zu langen
+Text, unzulässige Feldfasen, zu geringe Label-Rückwand, zu kleine
+Materialreliefs und eine Überschreitung des P1S-Bauraums ab. Die vollständige
+integrierte Box wurde in diesem Entwicklungslauf nicht physisch gedruckt; ihre
+beiden kritischen Passungssysteme wurden jedoch vor der Integration real
+kalibriert.

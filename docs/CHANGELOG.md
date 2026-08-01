@@ -11,6 +11,15 @@ zu folgen.
 
 ### Hinzugefügt
 
+- Variables frontseitiges Beschriftungsfeld mit dem Standardtext `PC4-3200`.
+- Automatische horizontale und vertikale Textzentrierung sowie Skalierung aus
+  verfügbarer Feldgröße und Zeichenanzahl.
+- Umschaltbare gravierte und geschützt erhabene Beschriftung ohne Änderung der
+  finalen Bounding Box.
+- 45-Grad-Feldfase, gerundete Ecken und konkrete Keep-out-Assertions gegen
+  Boden, Entnahmezone und Stapelfeder.
+- Mesh- und Negativtests für beide Labelmodi, überschriebenen Langtext, leeren
+  Text, Überlänge, Feldfase und verbleibende Rückwand.
 - Finaler Rendermodus `final_box` für die offene, einteilige und stapelbare
   20-Slot-Produktionsbox.
 - Aus der Stapelkontur abgeleiteter 8,0-mm-Funktionsrand mit konkreten
@@ -77,9 +86,12 @@ zu folgen.
 - Die finalen topoffenen Materialreliefs werden aus dem verbleibenden
   Querschnitt unter der Stapelfeder berechnet; mindestens 2,4 mm tragendes
   Material bleibt erhalten.
-- Der Projektumfang ist als abgeschlossen dokumentiert. Deckel,
-  Beschriftungsgeometrie, Clips, Magnete und Zubehör gehören bewusst nicht zur
-  finalen Box.
+- Der vordere Materialrelief-Ausschnitt ist im finalen Modell zugunsten einer
+  kontinuierlichen und mechanisch geschützten Beschriftungsfläche deaktiviert;
+  Seiten- und Rückreliefs bleiben erhalten.
+- Der Projektumfang ist mit variablem Beschriftungsfeld als abgeschlossen
+  dokumentiert. Deckel, Clips, Magnete und Zubehör gehören weiterhin bewusst
+  nicht zur finalen Box.
 - Das standardmäßige gesamte Dickenspiel wurde nach der realen
   Passungsprüfung von 1,0 auf 1,2 mm erhöht. Die freie Standard-Slotbreite
   beträgt damit 5,4 mm; die Vergleichsvarianten 0,8 / 1,0 / 1,2 mm bleiben

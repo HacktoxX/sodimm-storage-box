@@ -7,8 +7,9 @@ Speichermodule, konstruiert in OpenSCAD für zuverlässigen FDM-3D-Druck.
 > Produktionsmodell abgeschlossen. Slotlänge, Dickenspiel und das horizontale
 > Stapelspiel wurden mit PETG auf einem Bambu Lab P1S physisch kalibriert. Die
 > finale STL wird reproduzierbar erzeugt und automatisiert als Einzelbox sowie
-> im Zweierstapel geometrisch geprüft. Deckel, Beschriftung, Clips, Magnete und
-> weiteres Zubehör sind bewusst nicht Bestandteil dieser Ausführung.
+> im Zweierstapel geometrisch geprüft. Ein variables frontseitiges
+> Beschriftungsfeld ist integriert. Deckel, Clips, Magnete und weiteres Zubehör
+> sind bewusst nicht Bestandteil dieser Ausführung.
 
 
 ## Projektziele
@@ -20,6 +21,8 @@ Speichermodule, konstruiert in OpenSCAD für zuverlässigen FDM-3D-Druck.
   Schichthöhe von 0,20 mm drucken.
 - Eine selbstzentrierende, spielarme und leicht lösbare Stapelmechanik mit
   druckbaren 45-Grad-Flächen bereitstellen.
+- Ein automatisch skaliertes Beschriftungsfeld mit gravierter oder geschützt
+  erhabener Ausgabe bereitstellen.
 - Gleichmäßige Wandstärken, großzügige Radien, saubere Übergänge und
   topoffene Materialreliefs anstelle unnötiger Materialansammlungen verwenden.
 - Alle funktionsrelevanten Maße konfigurierbar und frei von unerklärten
@@ -146,8 +149,18 @@ beträgt deshalb standardmäßig 1,2 mm und ergibt zusammen mit der nominellen
 Moduldicke von 4,2 mm eine freie Slotbreite von 5,4 mm beziehungsweise 0,6 mm
 Spiel je Breitseite.
 
-Der finale Renderpfad enthält bewusst keine Beschriftungsgeometrie. Vorhandene
-Beschriftungsparameter gehören nicht zur Produktionsbox.
+Für die normale Anpassung genügt eine einzige Zeile:
+
+```scad
+label_text = "PC4-3200";
+```
+
+Das 58 × 11 mm große Feld sitzt mittig auf der Vorderseite. Die Schrift wird
+horizontal und vertikal zentriert und bei längeren Texten automatisch auf die
+verfügbare Fläche verkleinert. `label_mode = "engraved"` erzeugt die
+Standardgravur; `label_mode = "raised"` erzeugt einen geschützten erhabenen
+Text innerhalb desselben vertieften Felds. Beide Modi behalten die gleichen
+Außenmaße und benötigen kein AMS.
 
 ## Kalibrierungstest
 
@@ -320,7 +333,8 @@ bestätigten Stapelspiel von 0,25 mm. Ein eigener, aus den Merkmalabmessungen
 berechneter Funktionsrand trennt Stapelrahmen, Slotfasen, Entnahmezone und
 Materialreliefs. Die Entnahmefreistellung bleibt über das gesamte Slotfeld
 zugänglich, endet aber vor den tragenden vorderen und hinteren
-Stapelrahmensegmenten.
+Stapelrahmensegmenten. Ein gefastes Beschriftungsfeld hält die Frontfläche im
+Labelbereich geschlossen und schützt Gravur oder Relief vor Beschädigung.
 
 | Merkmal | Ergebnis |
 | --- | ---: |
@@ -328,13 +342,17 @@ Stapelrahmensegmenten.
 | Grundkörper | 176,8 × 105,2 × 31,4 mm |
 | Zweierstapel | 176,8 × 105,2 × 66,2 mm |
 | Stapelrahmen-Mittellinie | 163,35 × 91,75 mm |
-| Netzvolumen | 333.491 mm³ |
-| Mesh | 6.756 Dreiecke, 1 Komponente, 0 Nicht-Manifold-Kanten |
+| Beschriftungsfeld | 58,0 × 11,0 mm |
+| Standardtext / Schriftgröße | PC4-3200 / 6,0 mm |
+| Netzvolumen mit Gravur | 336.597 mm³ |
+| Mesh mit Gravur | 9.716 Dreiecke, 1 Komponente, 0 Nicht-Manifold-Kanten |
 
-Die finale Prüfung rendert außerdem zwei vollständige Boxen in Sollposition.
-Der Zweierstapel besitzt zwei getrennte manifold Komponenten; eine separate
-Schnittsonde bestätigt, dass zwischen ihnen kein überschneidendes Volumen
-existiert. Die Prüfung wird reproduzierbar gestartet mit:
+Die finale Prüfung rendert Gravur und Relief jeweils als vollständige
+manifold Einzelbox. Zusätzlich werden ein längerer Beispieltext zur Prüfung
+der automatischen Skalierung sowie zwei vollständige Boxen in Sollposition
+erzeugt. Der Zweierstapel besitzt zwei getrennte manifold Komponenten; eine
+separate Schnittsonde bestätigt, dass zwischen ihnen kein überschneidendes
+Volumen existiert. Die Prüfung wird reproduzierbar gestartet mit:
 
 ```bash
 scripts/validate_final_box.sh

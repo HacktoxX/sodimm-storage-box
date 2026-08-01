@@ -23,6 +23,8 @@ nicht vorgesehen.
 - [x] Selbstzentrierende 45-Grad-Nut-/Feder-Schnittstelle ohne Clips oder
   Snap-Fits.
 - [x] Integration der validierten Stapelmodule in die finale 20-Slot-Box.
+- [x] Variables, automatisch skaliertes Beschriftungsfeld mit gravierter und
+  geschützt erhabener Darstellung.
 - [x] Kollisionsfreie Einzelbox und Zweierstapel geometrisch validiert.
 - [x] Finale STL unter `exports/final/sodimm-storage-box-final.stl`
   reproduzierbar erzeugt.
@@ -39,7 +41,6 @@ nicht vorgesehen.
 ## Bewusst nicht Bestandteil dieses Projekts
 
 - Deckel oder Abdeckung
-- Beschriftung am finalen Modell
 - Clips oder Snap-Fits
 - Magnetaufnahmen
 - Gridfinity-Adapter
