@@ -19,6 +19,10 @@ zu folgen.
 
 ### Geändert
 
+- Das standardmäßige gesamte Dickenspiel wurde nach der realen
+  Passungsprüfung von 1,0 auf 1,2 mm erhöht. Die freie Standard-Slotbreite
+  beträgt damit 5,4 mm; die Vergleichsvarianten 0,8 / 1,0 / 1,2 mm bleiben
+  erhalten.
 - Projektdokumentation, Entwicklerkommentare, Diagnoseausgaben und
   CI-Bezeichnungen wurden auf Deutsch vereinheitlicht.
 - Deutsch wurde als verbindliche Projektsprache für künftige Änderungen

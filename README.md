@@ -122,6 +122,12 @@ ursprüngliche freie Slotlänge von 68,8 mm nicht ausreichte. Der zentrale Wert
 parametrisch als 73,2 mm berechnet. Testkörper und spätere Box verwenden
 dieselbe abgeleitete Maßkette.
 
+Die reale Passungsprüfung hat außerdem die Variante mit 1,2 mm gesamtem
+Dickenspiel als zuverlässig passend bestätigt. `slot_thickness_clearance`
+beträgt deshalb standardmäßig 1,2 mm und ergibt zusammen mit der nominellen
+Moduldicke von 4,2 mm eine freie Slotbreite von 5,4 mm beziehungsweise 0,6 mm
+Spiel je Breitseite.
+
 Für eine reguläre Änderung der Beschriftung muss später nur dieser Wert
 angepasst werden:
 
@@ -158,9 +164,12 @@ Spiel pro Seite.
 
 Die Slotlänge wurde nach dem ersten realen Testdruck von 68,8 auf 73,2 mm
 korrigiert. Vor der vollständigen Box muss auch diese aktualisierte Länge mit
-den vorhandenen Modulen erneut praktisch bestätigt werden. Das Längenspiel
-wird zentral über `sodimm_length` und `slot_length_clearance` bestimmt; es darf
-nicht durch lokale Änderungen am Kalibrierkörper angepasst werden.
+den vorhandenen Modulen erneut praktisch bestätigt werden. Diese Prüfung ist
+inzwischen erfolgt: Die Länge passt, und aus den Breitenvarianten wurde 1,2 mm
+gesamtes Dickenspiel als neuer Standard ausgewählt. Das Längenspiel wird zentral
+über `sodimm_length` und `slot_length_clearance`, das Dickenspiel über
+`slot_thickness_clearance` bestimmt; lokale Anpassungen am Kalibrierkörper sind
+nicht zulässig.
 
 Für einen direkten Vergleich werden folgende Werte verwendet:
 
