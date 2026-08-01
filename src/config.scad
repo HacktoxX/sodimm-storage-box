@@ -107,6 +107,6 @@ full_box_short_rows = 3;
 
 // Auswahl des Rendermodus und Diagnoseausgabe.
 // Erlaubt: "debug", "slot_test", "full_box", "full_box_short",
-// "stacking_test", "stacking_test_variants".
+// "stacking_test", "stacking_test_variants", "final_box".
 render_mode = "slot_test";
 debug_mode = true;

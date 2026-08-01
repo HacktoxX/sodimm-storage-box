@@ -458,8 +458,9 @@ assert(
     render_mode == "full_box" ||
     render_mode == "full_box_short" ||
     render_mode == "stacking_test" ||
-    render_mode == "stacking_test_variants",
-    "render_mode muss \"debug\", \"slot_test\", \"full_box\", \"full_box_short\", \"stacking_test\" oder \"stacking_test_variants\" sein."
+    render_mode == "stacking_test_variants" ||
+    render_mode == "final_box",
+    "render_mode muss \"debug\", \"slot_test\", \"full_box\", \"full_box_short\", \"stacking_test\", \"stacking_test_variants\" oder \"final_box\" sein."
 );
 assert(
     slot_test_rows >= 1 && slot_test_rows == floor(slot_test_rows),
@@ -1016,4 +1017,203 @@ assert(
 assert(
     stacking_test_variants_build_volume_ok,
     "Die Stapeltestvarianten überschreiten den konfigurierten Druckerbauraum."
+);
+
+/*
+ * Produktionsreife 20-Slot-Box mit integrierter Stapelschnittstelle.
+ *
+ * Der zusätzliche Funktionsrand wird aus der validierten Feder-/Nutkontur
+ * berechnet und auf ein ganzzahliges Düsenraster aufgerundet. Dadurch bleiben
+ * Außenform, Slotmatrix und Stapelmechanik aus einer einzigen Maßkette
+ * abgeleitet, ohne die Geometrie der kalibrierten Slots zu duplizieren.
+ */
+function round_up_to_increment(value, increment) =
+    ceil(value / increment) * increment;
+
+function round_down_to_increment(value, increment) =
+    floor(value / increment) * increment;
+
+final_stack_frame_center_inset =
+    stacking_min_edge_distance +
+    ((stacking_male_base_width + stacking_clearance) / 2);
+final_required_outer_margin =
+    final_stack_frame_center_inset +
+    (stacking_male_base_width / 2) +
+    stacking_clearance -
+    wall_thickness +
+    slot_chamfer_expansion;
+final_outer_margin_x = round_up_to_increment(
+    final_required_outer_margin,
+    nozzle_diameter
+);
+final_outer_margin_y = round_up_to_increment(
+    final_required_outer_margin,
+    nozzle_diameter
+);
+
+final_body_length = storage_body_length_with_margin_for(
+    slots_per_row,
+    final_outer_margin_x
+);
+final_body_width = storage_body_width_with_margin_for(
+    row_count,
+    slot_thickness_clearance,
+    final_outer_margin_y
+);
+final_body_height = body_height;
+final_slot_start_x = wall_thickness + final_outer_margin_x;
+final_slot_start_y = wall_thickness + final_outer_margin_y;
+final_slot_chamfer_edge_x =
+    final_slot_start_x - slot_chamfer_expansion;
+final_slot_chamfer_edge_y =
+    final_slot_start_y - slot_chamfer_expansion;
+
+final_stack_frame_length =
+    final_body_length - (2 * final_stack_frame_center_inset);
+final_stack_frame_width =
+    final_body_width - (2 * final_stack_frame_center_inset);
+final_stack_male_outer_edge_distance =
+    final_stack_frame_center_inset -
+    (stacking_male_base_width / 2);
+final_stack_male_inner_edge_distance =
+    final_stack_frame_center_inset +
+    (stacking_male_base_width / 2);
+final_stack_female_straight_edge_distance =
+    final_stack_frame_center_inset -
+    (stacking_female_opening_width / 2);
+final_stack_female_tangential_edge_distance =
+    final_stack_frame_center_inset -
+    ((stacking_male_base_width + stacking_clearance) / 2);
+final_stack_female_inner_edge_distance =
+    final_stack_frame_center_inset +
+    (stacking_female_opening_width / 2);
+
+final_male_to_slot_clearance_x =
+    final_slot_chamfer_edge_x -
+    final_stack_male_inner_edge_distance;
+final_male_to_slot_clearance_y =
+    final_slot_chamfer_edge_y -
+    final_stack_male_inner_edge_distance;
+final_female_to_slot_clearance_x =
+    final_slot_chamfer_edge_x -
+    final_stack_female_inner_edge_distance;
+final_female_to_slot_clearance_y =
+    final_slot_chamfer_edge_y -
+    final_stack_female_inner_edge_distance;
+
+// Die Reliefs bleiben topoffen und lassen unter der Feder mindestens deren
+// validierte Mindestfeaturestärke stehen.
+final_body_relief_depth = round_down_to_increment(
+    final_stack_male_outer_edge_distance -
+        stacking_min_feature_thickness,
+    nozzle_diameter
+);
+final_relief_to_male_distance =
+    final_stack_male_outer_edge_distance -
+    final_body_relief_depth;
+final_relief_to_female_distance =
+    final_stack_female_straight_edge_distance -
+    final_body_relief_depth;
+
+// Die funktionale Entnahmezone endet vor dem tragenden Stapelperimeter.
+final_grip_start_y = final_slot_chamfer_edge_y;
+final_grip_width =
+    slot_area_width + (2 * slot_chamfer_expansion);
+final_grip_to_male_distance =
+    final_grip_start_y - final_stack_male_inner_edge_distance;
+
+// Vier robuste Auflagen definieren dieselbe Stapelhöhe wie im Testpaar.
+final_support_land_outer_margin = 2 * nozzle_diameter;
+final_support_land_offset_x =
+    (final_body_length / 2) -
+    stacking_min_edge_distance -
+    (stacking_support_land_length / 2);
+final_support_land_offset_y =
+    (final_body_width / 2) -
+    final_support_land_outer_margin -
+    (stacking_support_land_width / 2);
+final_support_land_inner_x_distance =
+    stacking_min_edge_distance + stacking_support_land_length;
+final_support_land_inner_y_distance =
+    final_support_land_outer_margin + stacking_support_land_width;
+
+final_stack_pitch = final_body_height + stacking_standoff;
+final_box_length = final_body_length;
+final_box_width = final_body_width;
+final_box_height = final_body_height + stacking_feature_height;
+final_two_box_stack_height = final_stack_pitch + final_box_height;
+final_box_build_volume_ok =
+    final_box_length <= printer_build_x &&
+    final_box_width <= printer_build_y &&
+    final_box_height <= printer_build_z;
+final_two_box_stack_build_volume_ok =
+    final_box_length <= printer_build_x &&
+    final_box_width <= printer_build_y &&
+    final_two_box_stack_height <= printer_build_z;
+
+assert(
+    final_outer_margin_x + body_calculation_epsilon >=
+        final_required_outer_margin &&
+    final_outer_margin_y + body_calculation_epsilon >=
+        final_required_outer_margin,
+    "Der finale Funktionsrand ist für Stapelrahmen und Slotfase zu klein."
+);
+assert(
+    final_stack_frame_length > stacking_male_base_width &&
+    final_stack_frame_width > stacking_male_base_width,
+    "Der finale Stapelrahmen benötigt eine positive innere Öffnung."
+);
+assert(
+    final_stack_female_tangential_edge_distance +
+        body_calculation_epsilon >= stacking_min_edge_distance,
+    "Die Stapelnut unterschreitet den Mindestabstand zur Außenkante."
+);
+assert(
+    final_male_to_slot_clearance_x + body_calculation_epsilon >=
+        stacking_clearance &&
+    final_male_to_slot_clearance_y + body_calculation_epsilon >=
+        stacking_clearance,
+    "Die Stapelfeder liegt zu dicht an den erweiterten Slotöffnungen."
+);
+assert(
+    final_female_to_slot_clearance_x >= stacking_clearance &&
+    final_female_to_slot_clearance_y >= stacking_clearance,
+    "Die Stapelnut kollidiert mit Slot- oder Kontaktbereichen."
+);
+assert(
+    final_body_relief_depth >= (2 * nozzle_diameter),
+    "Die finalen Materialreliefs sind schmaler als zwei Düsenbahnen."
+);
+assert(
+    final_relief_to_male_distance + body_calculation_epsilon >=
+        stacking_min_feature_thickness &&
+    final_relief_to_female_distance >= stacking_min_feature_thickness,
+    "Zwischen Materialrelief und Stapelschnittstelle bleibt zu wenig Material."
+);
+assert(
+    final_grip_to_male_distance + body_calculation_epsilon >=
+        stacking_clearance,
+    "Die Entnahmezone unterbricht den tragenden Stapelperimeter."
+);
+assert(
+    final_grip_start_y + final_grip_width <=
+        final_body_width - final_grip_start_y + body_calculation_epsilon,
+    "Die finale Entnahmezone ist nicht symmetrisch im Körper angeordnet."
+);
+assert(
+    final_support_land_outer_margin >= (2 * nozzle_diameter) &&
+    final_support_land_inner_x_distance <=
+        final_slot_start_x + body_calculation_epsilon &&
+    final_support_land_inner_y_distance <=
+        final_stack_female_tangential_edge_distance +
+            body_calculation_epsilon,
+    "Die finalen Stapelauflagen kollidieren mit Nut, Relief oder Slotfeld."
+);
+assert(
+    final_box_build_volume_ok,
+    "Die finale Box überschreitet den konfigurierten Druckerbauraum."
+);
+assert(
+    final_two_box_stack_build_volume_ok,
+    "Zwei final gestapelte Boxen überschreiten den konfigurierten Druckerbauraum."
 );

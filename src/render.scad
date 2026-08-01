@@ -20,4 +20,6 @@ if (render_mode == "debug") {
     stacking_test();
 } else if (render_mode == "stacking_test_variants") {
     stacking_test_variants();
+} else if (render_mode == "final_box") {
+    final_box();
 }
