@@ -13,7 +13,9 @@ module sodimm_slot_matrix_cutouts(
     rows,
     columns,
     thickness_clearance,
-    boolean_overlap
+    boolean_overlap,
+    local_slot_start_x = slot_start_x,
+    local_slot_start_y = slot_start_y
 ) {
     matrix_slot_width =
         slot_width_with_clearance(thickness_clearance);
@@ -30,14 +32,14 @@ module sodimm_slot_matrix_cutouts(
     for (row_index = [0 : rows - 1]) {
         for (column_index = [0 : columns - 1]) {
             slot_center_x =
-                slot_start_x +
+                local_slot_start_x +
                 (slot_length / 2) +
                 (
                     column_index *
                     (slot_length + center_gap)
                 );
             slot_center_y =
-                slot_start_y +
+                local_slot_start_y +
                 (matrix_slot_width / 2) +
                 (
                     row_index *
@@ -83,21 +85,25 @@ module storage_body_perimeter_reliefs(
     thickness_clearance,
     local_body_length,
     local_body_width,
-    boolean_overlap
+    boolean_overlap,
+    local_slot_start_x = slot_start_x,
+    local_slot_start_y = slot_start_y,
+    relief_depth_x = body_relief_depth_x,
+    relief_depth_y = body_relief_depth_y
 ) {
     matrix_slot_width =
         slot_width_with_clearance(thickness_clearance);
     relief_radius = min(
         body_relief_corner_radius,
-        body_relief_depth_x / 2,
-        body_relief_depth_y / 2,
+        relief_depth_x / 2,
+        relief_depth_y / 2,
         matrix_slot_width / 2
     );
     relief_height = body_relief_height + boolean_overlap;
 
     for (row_index = [0 : rows - 1]) {
         relief_start_y =
-            slot_start_y +
+            local_slot_start_y +
             (
                 row_index *
                 (matrix_slot_width + row_spacing)
@@ -109,7 +115,7 @@ module storage_body_perimeter_reliefs(
             bottom_thickness
         ])
             rounded_prism(
-                length = body_relief_depth_x + boolean_overlap,
+                length = relief_depth_x + boolean_overlap,
                 width = matrix_slot_width,
                 height = relief_height,
                 radius = relief_radius,
@@ -117,12 +123,12 @@ module storage_body_perimeter_reliefs(
             );
 
         translate([
-            local_body_length - body_relief_depth_x,
+            local_body_length - relief_depth_x,
             relief_start_y,
             bottom_thickness
         ])
             rounded_prism(
-                length = body_relief_depth_x + boolean_overlap,
+                length = relief_depth_x + boolean_overlap,
                 width = matrix_slot_width,
                 height = relief_height,
                 radius = relief_radius,
@@ -132,7 +138,7 @@ module storage_body_perimeter_reliefs(
 
     for (column_index = [0 : columns - 1]) {
         relief_start_x =
-            slot_start_x +
+            local_slot_start_x +
             (
                 column_index *
                 (slot_length + center_gap)
@@ -145,7 +151,7 @@ module storage_body_perimeter_reliefs(
         ])
             rounded_prism(
                 length = slot_length,
-                width = body_relief_depth_y + boolean_overlap,
+                width = relief_depth_y + boolean_overlap,
                 height = relief_height,
                 radius = relief_radius,
                 resolution = curve_resolution
@@ -153,12 +159,12 @@ module storage_body_perimeter_reliefs(
 
         translate([
             relief_start_x,
-            local_body_width - body_relief_depth_y,
+            local_body_width - relief_depth_y,
             bottom_thickness
         ])
             rounded_prism(
                 length = slot_length,
-                width = body_relief_depth_y + boolean_overlap,
+                width = relief_depth_y + boolean_overlap,
                 height = relief_height,
                 radius = relief_radius,
                 resolution = curve_resolution

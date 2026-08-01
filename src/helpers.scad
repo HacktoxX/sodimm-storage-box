@@ -69,9 +69,13 @@ module support_free_grip_clearance(
     grip_depth,
     bottom_width,
     top_width,
-    boolean_overlap
+    boolean_overlap,
+    clearance_start_y = 0,
+    clearance_width = undef
 ) {
     grip_expansion_per_side = (top_width - bottom_width) / 2;
+    local_clearance_width =
+        is_undef(clearance_width) ? body_width : clearance_width;
 
     assert(
         grip_depth > 0 && grip_depth < body_height,
@@ -89,15 +93,23 @@ module support_free_grip_clearance(
         boolean_overlap >= 0,
         "Die Boolean-Überlappung darf nicht negativ sein."
     );
+    assert(
+        clearance_start_y >= 0 && local_clearance_width > 0,
+        "Position und Breite der Entnahmefreistellung müssen positiv sein."
+    );
+    assert(
+        clearance_start_y + local_clearance_width <= body_width,
+        "Die Entnahmefreistellung darf die Körperbreite nicht überschreiten."
+    );
 
     translate([
         body_length / 2,
-        -boolean_overlap,
+        clearance_start_y - boolean_overlap,
         body_height + boolean_overlap
     ])
         rotate([-90, 0, 0])
             linear_extrude(
-                height = body_width + (2 * boolean_overlap)
+                height = local_clearance_width + (2 * boolean_overlap)
             )
                 polygon(points = [
                     [-top_width / 2, 0],

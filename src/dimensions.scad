@@ -157,13 +157,27 @@ function slot_matrix_width_for(rows, thickness_clearance) =
     (rows * slot_width_with_clearance(thickness_clearance)) +
     ((rows - 1) * row_spacing);
 
-function storage_body_length_for(columns) =
+function storage_body_length_with_margin_for(columns, outer_margin) =
     slot_matrix_length_for(columns) +
-    (2 * (outer_margin_x + wall_thickness));
+    (2 * (outer_margin + wall_thickness));
+
+function storage_body_width_with_margin_for(
+    rows,
+    thickness_clearance,
+    outer_margin
+) =
+    slot_matrix_width_for(rows, thickness_clearance) +
+    (2 * (outer_margin + wall_thickness));
+
+function storage_body_length_for(columns) =
+    storage_body_length_with_margin_for(columns, outer_margin_x);
 
 function storage_body_width_for(rows, thickness_clearance) =
-    slot_matrix_width_for(rows, thickness_clearance) +
-    (2 * (outer_margin_y + wall_thickness));
+    storage_body_width_with_margin_for(
+        rows,
+        thickness_clearance,
+        outer_margin_y
+    );
 
 // Das Slotfeld enthält alle Slots und nur die Abstände zwischen Nachbarn.
 slot_area_length = slot_matrix_length_for(slots_per_row);
