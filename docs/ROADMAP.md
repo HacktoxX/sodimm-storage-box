@@ -9,12 +9,16 @@ Validierung im selben Entwicklungsschritt enthalten sind.
 - [x] Repository und modulare Quellarchitektur anlegen.
 - [x] Abgeleitete Maße, Parameterprüfung und Assertions für den P1S-Bauraum
   definieren.
-- [ ] Wiederverwendbare Hilfsmodule für gerundete Hüllen und Übergänge
+- [x] Wiederverwendbare Hilfsmodule für gerundete Hüllen und Übergänge
   entwickeln.
 - [x] Vier-Slot-Passungstest für SO-DIMMs entwickeln.
-- [ ] Testkörper mit den dicksten verfügbaren SO-DIMMs drucken und prüfen.
-- [ ] Den validierten Slot auf die 2×10-Matrix erweitern.
-- [ ] Leichten Körper, Unterseitentaschen und tragende Rippen entwickeln.
+- [x] Testkörper mit den dicksten verfügbaren SO-DIMMs drucken und prüfen.
+- [x] Den validierten Slot auf die 2×10-Matrix erweitern.
+- [x] Tragenden Grundkörper mit gerundeter Kontur, Randreliefs und Rippen
+  entwickeln.
+- [x] 2×3-Kurztest aus derselben vollständigen Körpergeometrie bereitstellen.
+- [ ] Grundkörper und Kurztest physisch mit PETG drucken und prüfen.
+- [ ] Unterseite nach realer Steifigkeitsprüfung weiter optimieren.
 - [ ] Mittige Griffmulde entwickeln und ergonomisch prüfen.
 - [ ] Toleranzkörper für die Stapelmechanik entwickeln.
 - [ ] Selbstzentrierende Stapelmechanik mit 45-Grad-Flächen integrieren.

@@ -8,7 +8,10 @@ Assertions sind implementiert und über die Kommandozeile geprüft. Passungswert
 bleiben Prüfziele, bis repräsentative PETG-Testkörper mit realen SO-DIMMs
 gedruckt wurden. Ein erster realer Testdruck hat die bisherige Slotlänge als zu
 kurz identifiziert. Der folgende Passungstest bestätigt die korrigierte Länge
-von 73,2 mm und wählt 1,2 mm gesamtes Dickenspiel als neuen Standard.
+von 73,2 mm und wählt 1,2 mm gesamtes Dickenspiel als neuen Standard. Diese
+beiden Werte gelten für den vorhandenen Modulbestand als physisch validiert.
+Der vollständige Grundkörper ist rechnerisch, in OpenSCAD und als Mesh geprüft,
+aber noch nicht vollständig mit PETG gedruckt.
 
 ## Konstruktionsvorgaben
 
@@ -48,6 +51,8 @@ Das Modell ist nach Zuständigkeiten getrennt. `config.scad` bildet die
 und Assertions, und jede Geometriedatei besitzt genau eine Merkmalsfamilie.
 `RAM_Box.scad` enthält ausschließlich Includes. Änderungen bleiben dadurch gut
 prüfbar und künftige Varianten können dieselben validierten Module verwenden.
+Der 2×2-Kalibrierkörper, der 2×10-Grundkörper und der 2×3-Kurztest verwenden
+dieselben Matrixfunktionen und dieselben Slot-Negativmodule.
 
 ## Parameterhoheit und abgeleitete Maße
 
@@ -122,8 +127,8 @@ nicht in den Slot, sodass weder Komponenten noch Kontakte seitlich geklemmt
 werden. Unter der Freistellung verbleiben 1,6 mm beziehungsweise acht
 Zielschichten.
 
-SO-DIMM-Kontaktanordnungen unterscheiden sich. Vor Übernahme dieser Lösung in
-die vollständige Box muss visuell geprüft werden, ob die Endauflagen auf
+SO-DIMM-Kontaktanordnungen unterscheiden sich. Vor der physischen Freigabe des
+vollständigen Grundkörpers muss visuell geprüft werden, ob die Endauflagen auf
 unbedenklichen Platinenbereichen der realen Module liegen. Ein Modul, dessen
 Kontakte oder Komponenten eine Auflage berühren, darf nicht mit Kraft
 eingesetzt werden.
@@ -139,10 +144,75 @@ hält mindestens den eingestellten Abstand von 12,0 mm ein und verhindert eine
 unbeabsichtigte Berührung der Netze.
 
 Berechnete Spiele können PETG-Fluss, Abkühlung, Elefantenfuß,
-Oberflächenstruktur oder das dickste bestückte Modul nicht vorhersagen. Vor der
-Konstruktion der vollständigen Slotmatrix ist deshalb ein realer Testkörper
-mit dem Zieldrucker, dem vorgesehenen Material, der Schichthöhe und echten
-Modulen erforderlich.
+Oberflächenstruktur oder das dickste bestückte Modul nicht vorhersagen. Der
+Testkörper wurde deshalb auf einem Bambu Lab P1S mit PETG und realen Modulen
+geprüft. Die freie Slotlänge von 73,2 mm passt; das gesamte Dickenspiel von
+1,2 mm wurde bewusst gewählt, weil es Einsetzen und Entnehmen erleichtert.
+
+## Vollständige 20-Slot-Matrix
+
+Der Grundkörper ordnet exakt 20 Slots als zwei Spalten und zehn Reihen an. Zwei
+verschachtelte Schleifen berechnen jeden Mittelpunkt aus `slot_length`,
+`slot_width`, `center_gap`, `row_spacing` und den zentralen Randmaßen. Es gibt
+keine einzeln positionierten Slots und keine alternative Vollkörpergeometrie.
+
+Jede Position subtrahiert direkt `sodimm_slot_cutout()` und
+`sodimm_contact_relief_cutout()` aus `slots.scad`. Einführfase, gerade Führung,
+29,0 mm Einstecktiefe, 5,0-mm-Endauflagen und Kontaktentlastung entsprechen
+damit konstruktiv exakt dem physisch geprüften Kalibrierkörper.
+
+Der Modus `full_box_short` ruft dasselbe Körpermodul mit drei statt zehn Reihen
+auf. Er erzeugt sechs Slots und dient als schneller Drucktest. Es existiert
+keine separate Kurztestgeometrie, die vom vollständigen Körper abweichen könnte.
+
+## Grundkörper und Außenkontur
+
+Die äußere Grundfläche ist ein über vier Kreise aufgebautes gerundetes Rechteck
+mit 4,0 mm Eckenradius und 48 Segmenten je Vollkreis. Die lineare Extrusion in
+Z erzeugt ausschließlich vertikale Außenflächen und damit keine Überhänge. Der
+vollständige Grundkörper misst 170,8 × 99,2 × 31,4 mm, das Slotfeld
+154,4 × 82,8 mm.
+
+Nach Abzug der Slots verbleiben ein geschlossener Boden, umlaufende Außenwände,
+neun tragende Reihenstege und der 8,0 mm breite Mittelsteg. Der tragende Anteil
+jedes Reihenstegs bleibt über die gerade Führung 3,2 mm breit. Nur innerhalb
+der 1,2 mm hohen Einführfase verjüngt sich seine obere, nicht primär tragende
+Einführlippe auf 1,6 mm. Diese lokale Ausnahme entspricht vier
+0,4-mm-Düsenbreiten; darunter übernimmt der vollständige 3,2-mm-Steg die Last.
+
+## Funktionale Entnahmezone
+
+Die im Kalibrierkörper getestete trapezförmige Entnahmefreistellung läuft
+durchgehend zwischen den beiden Spalten. Sie beginnt am 8,0-mm-Mittelsteg,
+erweitert sich über 8,0 mm Tiefe auf jeder Seite mit höchstens 45 Grad und ist
+nach oben vollständig offen. Dadurch entstehen weder Brücken noch schwebende
+Innenkonturen.
+
+Unter der Freistellung bleiben 23,4 mm tragende Höhe des 8,0 mm breiten
+Mittelstegs erhalten. Die Öffnung ist bewusst funktional und noch keine finale
+dekorative oder ergonomisch verrundete Griffmulde.
+
+## Erste Materialoptimierung
+
+Die äußeren Funktionsränder wären ohne weitere Bearbeitung deutlich dicker als
+die erforderliche Wand. Deshalb werden entlang aller vier Außenseiten
+topoffene, in der Draufsicht gerundete Reliefs abgezogen. Ihre Tiefe wird als
+`outer_margin - slot_chamfer_expansion` berechnet. Hinter der am weitesten
+erweiterten Slotfase bleiben dadurch rechnerisch mindestens 3,2 mm Außenwand.
+
+Die Reliefs beginnen oberhalb des geschlossenen Bodens, reichen bis über die
+Oberkante und sind zur jeweiligen Außenseite geöffnet. Sie besitzen keine
+horizontalen Decken, langen Brücken oder versteckten Hohlräume. Reihenstege,
+Mittelsteg und Eckbereiche bleiben als zusammenhängendes Rippensystem erhalten.
+
+| Ausführung | Netzvolumen |
+| --- | ---: |
+| Körper ohne Randreliefs | 286.328 mm³ |
+| Körper mit Randreliefs | 239.519 mm³ |
+
+Die erste Optimierung spart damit rund 16,3 % Volumen. Sie ist bewusst moderat:
+Stabilität und supportfreie Druckbarkeit haben Vorrang vor maximaler
+Materialreduktion.
 
 ## Wand- und Bodenstärke
 
@@ -153,16 +223,18 @@ tatsächliche Extrusionsbreite des Slicers vom Düsendurchmesser abweichen kann,
 muss die Erzeugung der Wandlinien trotzdem geprüft werden.
 
 Der 2,4-mm-Boden entspricht zwölf Schichten mit 0,20 mm Höhe. Er bildet eine
-durchgehende tragende Haut und lässt zugleich ausreichend Tiefe für spätere
-Unterseitentaschen und Rippen. Lokale Verstärkungen werden mit Rippen und
-weichen Übergängen statt mit verborgenen massiven Blöcken ausgeführt.
+durchgehende, durch Außenwände und Matrixstege eng abgestützte Haut. Unter der
+0,8 mm tiefen Kontaktentlastung verbleiben lokal 1,6 mm beziehungsweise acht
+Schichten. Diese begründete Ausnahme von der 3,2-mm-Regel ist keine hohe,
+freistehende Tragwand, sondern eine kurze horizontale Schutzmembran über einem
+kleinen Feld. Sie schützt die Kontaktkante und bleibt durch die angrenzenden
+Auflagen und Stege abgestützt.
 
 ## Slotgeometrie
 
-Jeder Slot wird als wiederverwendbarer Generator mit Einführfase, gerundeten
-Innenübergängen, kontrolliertem Passungsspiel und ergonomischem Zugriff für
-Finger oder Daumen entwickelt. Vor der Freigabe des vollständigen Feldes wird
-ein Vier-Slot-Testkörper mit beiden Spalten und zwei Reihen gedruckt.
+Jeder Slot ist als wiederverwendbarer Generator mit Einführfase, kontrolliertem
+Passungsspiel, Endauflagen und Kontaktentlastung implementiert. Die vollständige
+Matrix verwendet direkt den Generator des physisch geprüften Vier-Slot-Körpers.
 
 ## Stapelmechanik
 
@@ -188,9 +260,11 @@ abgeleitet werden, ohne Konstanten in Geometriemodulen zu verstecken.
 
 Die Standardgrenzen des Bambu Lab P1S betragen 256 × 256 × 256 mm. Die
 Assertions verwenden jedoch die konfigurierbaren Druckerwerte statt eines
-fest codierten Druckerprofils. Die Standardhülle von 170,8 × 99,2 × 33,0 mm
-lässt 85,2 mm in X, 156,8 mm in Y und 223,0 mm in Z frei. Assertions melden
-die konkret überschrittene Achse und Abmessung.
+fest codierten Druckerprofils. Der tatsächliche Grundkörper mit
+170,8 × 99,2 × 31,4 mm lässt 85,2 mm in X, 156,8 mm in Y und 224,6 mm in Z
+frei. Der vorsorglich einschließlich späterer Stapelhöhe berechnete Bauraum von
+170,8 × 99,2 × 33,0 mm lässt noch 223,0 mm in Z. Assertions melden die konkret
+überschrittene Achse und Abmessung.
 
 ## Beschriftungssystem
 
@@ -216,6 +290,9 @@ Der Vier-Slot-Testkörper erfüllt die Stufen für Berechnung, Rendering,
 Manifold-Netz und supportfreie Geometrie. Slotpassung und Position der
 Kontaktauflagen benötigen weiterhin die Prüfung mit repräsentativen Modulen.
 Die bisherigen realen Passungstests bestätigen 73,2 mm freie Slotlänge und
-1,2 mm gesamtes Dickenspiel für den vorhandenen Modulbestand. Stapelgefühl,
-finale Ergonomie und Geometrie der vollständigen Box bleiben bewusst
-unvalidiert.
+1,2 mm gesamtes Dickenspiel für den vorhandenen Modulbestand. Der vollständige
+Grundkörper rendert ohne Warnungen, besitzt genau eine zusammenhängende
+Komponente, 0 nicht-manifold Kanten, 5.900 Dreiecke und ein geschlossenes
+Netzvolumen von 239.519 mm³. Supportfreiheit ist geometrisch geprüft; der
+vollständige PETG-Druck bleibt als physische Validierungsstufe offen.
+Stapelgefühl, finale Ergonomie und finale Box bleiben bewusst unvalidiert.

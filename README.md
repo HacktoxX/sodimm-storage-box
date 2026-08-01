@@ -3,9 +3,10 @@
 Professionelle, parametrische und stapelbare Aufbewahrung für SO-DIMM-
 Speichermodule, konstruiert in OpenSCAD für zuverlässigen FDM-3D-Druck.
 
-> **Projektstatus:** Die Vier-Slot-Kalibriergeometrie ist für die reale
-> Passungsprüfung bereit. Die Geometrie der finalen Box ist noch nicht
-> veröffentlicht.
+> **Projektstatus:** Die Slotmaße sind physisch validiert. Ein vollständiger
+> Grundkörper für 20 Module sowie ein verkürzter 2×3-Testkörper sind als
+> Prototypen verfügbar. Stapelmechanik und finales Labelsystem sind noch nicht
+> implementiert.
 
 
 ## Projektziele
@@ -53,8 +54,10 @@ dokumentiert.
 
 Der Einstiegspunkt enthält absichtlich ausschließlich Include-Anweisungen.
 `render_mode = "slot_test"` erzeugt den druckbaren Kalibrierkörper,
-`render_mode = "debug"` die Vorschau des Maß- und Bauraums. Keiner dieser
-Modi entspricht bereits der finalen Aufbewahrungsbox mit 20 Slots.
+`render_mode = "full_box"` den vollständigen 2×10-Grundkörper,
+`render_mode = "full_box_short"` denselben Körper mit drei Reihen und
+`render_mode = "debug"` die Vorschau des Maß- und Bauraums. Der Grundkörper
+ist noch keine finale stapelbare Veröffentlichung.
 
 ## STL-Dateien erzeugen
 
@@ -89,11 +92,13 @@ SODIMM_OPENSCAD_BIN=/absoluter/pfad/zu/openscad scripts/export_all.sh
 | --- | --- |
 | `exports/calibration/sodimm-slot-test.stl` | Standard-Kalibrierkörper mit 2 × 2 Slots |
 | `exports/calibration/sodimm-slot-variants.stl` | Gravierte Varianten mit 0,8, 1,0 und 1,2 mm Spiel |
+| `exports/prototypes/sodimm-box-v3-body.stl` | Vollständiger Grundkörper mit 2 × 10 Slots |
+| `exports/prototypes/sodimm-box-v3-short.stl` | Kurzer Grundkörper mit 2 × 3 Slots |
 
 Eine manuelle Änderung an `config.scad` ist nicht erforderlich. Die
 Rendermodi werden als OpenSCAD-Kommandozeilenparameter übergeben. Das Skript
-erzeugt beide Dateien zunächst in einem temporären Verzeichnis und ersetzt
-die Ausgabedateien erst, wenn beide Renderdurchläufe erfolgreich waren.
+erzeugt alle Dateien zunächst in einem temporären Verzeichnis und ersetzt die
+Ausgabedateien erst, wenn sämtliche Renderdurchläufe erfolgreich waren.
 
 Ein fehlendes Programm, eine OpenSCAD-Warnung oder ein OpenSCAD-Fehler, eine
 fehlgeschlagene Assertion oder eine leere Ausgabe führt zu einer verständlichen
@@ -119,7 +124,7 @@ Ein realer Testdruck mit ungefähr 72,0 mm langen Modulen hat gezeigt, dass die
 ursprüngliche freie Slotlänge von 68,8 mm nicht ausreichte. Der zentrale Wert
 `sodimm_length` beträgt deshalb jetzt 72,0 mm. Zusammen mit dem unveränderten
 `slot_length_clearance` von 1,2 mm wird die freie Standard-Slotlänge
-parametrisch als 73,2 mm berechnet. Testkörper und spätere Box verwenden
+parametrisch als 73,2 mm berechnet. Kalibrier- und Grundkörper verwenden
 dieselbe abgeleitete Maßkette.
 
 Die reale Passungsprüfung hat außerdem die Variante mit 1,2 mm gesamtem
@@ -163,13 +168,11 @@ Wert beschreibt den gesamten Zuschlag zur nominellen Moduldicke, nicht das
 Spiel pro Seite.
 
 Die Slotlänge wurde nach dem ersten realen Testdruck von 68,8 auf 73,2 mm
-korrigiert. Vor der vollständigen Box muss auch diese aktualisierte Länge mit
-den vorhandenen Modulen erneut praktisch bestätigt werden. Diese Prüfung ist
-inzwischen erfolgt: Die Länge passt, und aus den Breitenvarianten wurde 1,2 mm
-gesamtes Dickenspiel als neuer Standard ausgewählt. Das Längenspiel wird zentral
-über `sodimm_length` und `slot_length_clearance`, das Dickenspiel über
-`slot_thickness_clearance` bestimmt; lokale Anpassungen am Kalibrierkörper sind
-nicht zulässig.
+korrigiert und anschließend mit den vorhandenen Modulen praktisch bestätigt.
+Die Länge passt; aus den Breitenvarianten wurde 1,2 mm gesamtes Dickenspiel als
+neuer Standard ausgewählt. Das Längenspiel wird zentral über `sodimm_length`
+und `slot_length_clearance`, das Dickenspiel über `slot_thickness_clearance`
+bestimmt; lokale Anpassungen am Kalibrierkörper sind nicht zulässig.
 
 Für einen direkten Vergleich werden folgende Werte verwendet:
 
@@ -179,21 +182,69 @@ slot_test_clearance_variants = [0.8, 1.0, 1.2];
 ```
 
 Die erzeugten Körper sind voneinander getrennt und mit `0.8`, `1.0` und `1.2`
-graviert. Zu verwenden ist der kleinste Wert, mit dem sich ein Modul zuverlässig
-einsetzen und entnehmen lässt, ohne es zu belasten. Standard- und Varianten-STL
-werden gemeinsam mit `scripts/export_all.sh` erzeugt. Die reproduzierbare
-Geometrieprüfung wird so gestartet:
+graviert. Für die vorhandenen Module wurde bewusst `1.2` gewählt, da sich die
+SO-DIMMs damit leichter einsetzen und entnehmen lassen. Standard- und
+Varianten-STL werden gemeinsam mit `scripts/export_all.sh` erzeugt. Die
+reproduzierbare Geometrieprüfung wird so gestartet:
 
 ```bash
 scripts/validate_slot_test.sh
 ```
 
+## Vollständiger Grundkörper
+
+Meilenstein 3 erzeugt exakt 20 Slots in zwei Spalten und zehn Reihen. Jeder
+Slot verwendet direkt dieselben Module für Einführfase, gerade Führung,
+Endauflagen und Kontaktentlastung wie der physisch geprüfte Kalibrierkörper.
+Die Positionen entstehen aus zwei parametrischen Schleifen; es existiert keine
+zweite oder vereinfachte Slotimplementierung.
+
+### Physisch validierte Standardwerte
+
+| Prüfung | Ergebnis |
+| --- | --- |
+| Validiert auf | Bambu Lab P1S |
+| Material | PETG |
+| Freie Slotlänge | 73,2 mm |
+| Gesamtes Dickenspiel | 1,2 mm |
+| Freie Slotbreite | 5,4 mm |
+
+Die größere Breitentoleranz wurde bewusst gewählt, weil sich die SO-DIMMs
+damit komfortabler einsetzen und entnehmen lassen.
+
+Der Grundkörper besitzt eine gerundete Außenkontur, einen geschlossenen Boden,
+3,2-mm-Außenwände, 3,2-mm-Reihenstege, einen 8,0-mm-Mittelsteg und eine
+durchgehende funktionale 45-Grad-Entnahmezone. Topoffene Randreliefs entfernen
+Material nur außerhalb der tragenden Slotwände und reduzieren das Netzvolumen
+gegenüber dem Körper ohne Reliefs um rund 16,3 %.
+
+| Prototyp | Bounding Box | Netzvolumen |
+| --- | ---: | ---: |
+| 2×10-Grundkörper | 170,8 × 99,2 × 31,4 mm | 239.519 mm³ |
+| 2×3-Kurztest | 170,8 × 39,0 × 31,4 mm | 95.488 mm³ |
+
+Beide Prototypen sind supportfrei in der modellierten Ausrichtung vorgesehen.
+Der Kurztest verwendet exakt dasselbe Körpermodul und reduziert ausschließlich
+die Reihenzahl. Vor einem vollständigen Druck wird deshalb zunächst der kurze
+Prototyp empfohlen.
+
+Die reproduzierbare Vollkörperprüfung wird so gestartet:
+
+```bash
+scripts/validate_full_box.sh
+```
+
+Sie prüft Slotanzahl, Anordnung, Assertions, Außenmaße, Netzvolumen, genau eine
+zusammenhängende Komponente, null nicht-manifold Kanten und den P1S-Bauraum.
+Der komplette Grundkörper wurde noch nicht physisch gedruckt; seine Geometrie
+ist rechnerisch sowie per OpenSCAD- und Meshprüfung validiert.
+
 ## Zusammenbau und Stapeln
 
 Jede Box soll später als ein Bauteil gedruckt werden und keinen Zusammenbau
-erfordern. Mehrere Boxen werden durch die integrierte selbstzentrierende
-Schnittstelle ausgerichtet. Ausführliche Hinweise zum Stapeln und Trennen
-folgen nach der Prüfung der Toleranzkörper und vollständiger Testdrucke.
+erfordern. Die selbstzentrierende Stapelschnittstelle wird erst in Meilenstein
+4 mit eigenen Toleranzkörpern entwickelt. Der aktuelle Prototyp enthält noch
+keine Stapelgeometrie.
 
 ## Anpassungen
 
@@ -212,7 +263,7 @@ geplanten Meilensteine in [ROADMAP.md](docs/ROADMAP.md).
 | `config.scad` | Nutzerparameter und Fertigungsvorgaben |
 | `helpers.scad` | Wiederverwendbare Geometrie- und Prüfungshilfen |
 | `dimensions.scad` | Abgeleitete Maße und Maß-Assertions |
-| `body.scad` | Hülle, Unterseitentaschen, Rippen und Griffmulde |
+| `body.scad` | Vollständige Slotmatrix, gerundeter Grundkörper, Rippen und Materialreliefs |
 | `slots.scad` | Parametrische Erzeugung der SO-DIMM-Slots |
 | `stacking.scad` | Selbstzentrierende Stapelmechanik |
 | `label.scad` | Adaptive gravierte oder erhabene Beschriftung |

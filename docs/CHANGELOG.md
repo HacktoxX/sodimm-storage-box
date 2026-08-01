@@ -9,6 +9,23 @@ zu folgen.
 
 ## [Unveröffentlicht]
 
+### Hinzugefügt
+
+- Vollständige parametrische 2×10-Matrix für exakt 20 SO-DIMM-Module.
+- Gerundeter tragender Grundkörper mit geschlossenem Boden, Außenwänden,
+  Reihenstegen und 8,0-mm-Mittelsteg.
+- Durchgehende supportfreie funktionale Entnahmezone auf Basis des
+  Kalibrierkörpers.
+- Topoffene gerundete Randreliefs, die das Netzvolumen moderat um rund 16,3 %
+  reduzieren und mindestens 3,2 mm Außenwand erhalten.
+- Optionaler `full_box_short`-Modus mit derselben Körpergeometrie und einer
+  2×3-Slotmatrix für einen kürzeren Testdruck.
+- Prototyp-Exporte `sodimm-box-v3-body.stl` und
+  `sodimm-box-v3-short.stl`.
+- Automatisierte Vollkörperprüfung für Slotanzahl, Diagnosewerte, Assertions,
+  P1S-Bauraum, Bounding Box, Netzvolumen, Komponenten und Manifold-Topologie.
+- Netzvolumenberechnung im ASCII-STL-Prüfwerkzeug.
+
 ### Behoben
 
 - Die freie Standard-Slotlänge wurde nach einem realen Testdruck von 68,8 auf
@@ -23,6 +40,8 @@ zu folgen.
   Passungsprüfung von 1,0 auf 1,2 mm erhöht. Die freie Standard-Slotbreite
   beträgt damit 5,4 mm; die Vergleichsvarianten 0,8 / 1,0 / 1,2 mm bleiben
   erhalten.
+- Der Kalibrierkörper und beide Grundkörper verwenden jetzt gemeinsame
+  Matrixmaßfunktionen sowie dieselbe supportfreie Entnahmegeometrie.
 - Projektdokumentation, Entwicklerkommentare, Diagnoseausgaben und
   CI-Bezeichnungen wurden auf Deutsch vereinheitlicht.
 - Deutsch wurde als verbindliche Projektsprache für künftige Änderungen

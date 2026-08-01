@@ -12,7 +12,7 @@ Aktuelle und reservierte Kategorien:
 
 - `calibration/` — Passungstestkörper und Toleranzvarianten
 - `final/` — zukünftige validierte Produktionsmodelle
-- `prototypes/` — zukünftige Geometrie nur für die Entwicklung
+- `prototypes/` — vollständiger 2×10-Grundkörper und 2×3-Kurztest für die Entwicklung
 - `examples/` — zukünftige Beispielkonfigurationen
 
 Die repositoryweite Regel `*.stl` hält erzeugte Modelle aus regulären Commits
