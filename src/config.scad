@@ -15,7 +15,7 @@ sodimm_thickness = 4.2;
 
 // Passungsspiele des Slots.
 slot_length_clearance = 1.2;
-slot_thickness_clearance = 1.0;
+slot_thickness_clearance = 1.2;
 
 // Supportfreie Sloteinführung und Schutz der Kontaktkante.
 slot_chamfer_height = 1.2;

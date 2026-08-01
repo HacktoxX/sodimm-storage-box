@@ -73,7 +73,7 @@ test -s "${normal_stl}"
 python3 "${mesh_checker}" \
     "${normal_stl}" \
     --components 1 \
-    --size 160.8 20 31.4
+    --size 160.8 20.4 31.4
 
 debug_stl="${validation_directory}/debug-preview.stl"
 debug_log="${validation_directory}/debug-preview.log"
@@ -84,7 +84,7 @@ debug_log="${validation_directory}/debug-preview.log"
 fail_on_render_diagnostics "${debug_log}"
 expect_log_message \
     "${debug_log}" \
-    "Slotabmessungen: 73.2 x 5.2 mm" \
+    "Slotabmessungen: 73.2 x 5.4 mm" \
     "aktualisierte Slotabmessungen"
 expect_log_message \
     "${debug_log}" \
@@ -94,7 +94,7 @@ test -s "${debug_stl}"
 python3 "${mesh_checker}" \
     "${debug_stl}" \
     --components 1 \
-    --size 170.8 97.2 33
+    --size 170.8 99.2 33
 
 variant_stl="${validation_directory}/slot-variants.stl"
 variant_log="${validation_directory}/slot-variants.log"
