@@ -12,4 +12,8 @@ if (render_mode == "debug") {
     debug_preview();
 } else if (render_mode == "slot_test") {
     slot_test();
+} else if (render_mode == "full_box") {
+    full_box();
+} else if (render_mode == "full_box_short") {
+    full_box_short();
 }

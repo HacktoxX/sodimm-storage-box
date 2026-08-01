@@ -3,6 +3,59 @@
  */
 
 /*
+ * Erzeugt ein Rechteck mit konstantem Radius an allen vier Außenecken.
+ */
+module rounded_rectangle_2d(
+    length,
+    width,
+    radius,
+    resolution
+) {
+    assert(
+        length > 0 && width > 0,
+        "Die Abmessungen des gerundeten Rechtecks müssen positiv sein."
+    );
+    assert(
+        radius > 0 && radius <= (min(length, width) / 2),
+        "Der Radius des gerundeten Rechtecks ist ungültig."
+    );
+    assert(
+        resolution >= 12 && resolution == floor(resolution),
+        "Die Kurvenauflösung muss eine ganze Zahl von mindestens 12 sein."
+    );
+
+    hull() {
+        for (x = [radius, length - radius]) {
+            for (y = [radius, width - radius]) {
+                translate([x, y])
+                    circle(r = radius, $fn = resolution);
+            }
+        }
+    }
+}
+
+/*
+ * Extrudiert die gerundete Grundfläche ohne Überhänge in Z-Richtung.
+ */
+module rounded_prism(
+    length,
+    width,
+    height,
+    radius,
+    resolution
+) {
+    assert(height > 0, "Die Höhe des gerundeten Prismas muss positiv sein.");
+
+    linear_extrude(height = height)
+        rounded_rectangle_2d(
+            length = length,
+            width = width,
+            radius = radius,
+            resolution = resolution
+        );
+}
+
+/*
  * Erzeugt eine über die gesamte Körperbreite laufende Entnahmefreistellung.
  *
  * Der trapezförmige Querschnitt erweitert sich nach oben. Wenn die seitliche

@@ -80,5 +80,6 @@ slot_test_variant_spacing = 12.0;
 full_box_short_rows = 3;
 
 // Auswahl des Rendermodus und Diagnoseausgabe.
-render_mode = "slot_test"; // "debug" oder "slot_test".
+// Erlaubt: "debug", "slot_test", "full_box", "full_box_short".
+render_mode = "slot_test";
 debug_mode = true;

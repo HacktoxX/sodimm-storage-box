@@ -191,6 +191,52 @@ full_box_short_body_width =
     );
 full_box_short_body_height = body_height;
 
+/*
+ * Funktionale Entnahmezone und materialoptimierte Randbereiche.
+ *
+ * Die Randreliefs enden so weit vor den erweiterten Slotöffnungen, dass die
+ * minimale Außenwand exakt wall_thickness erhält. Sie sind nach oben offen
+ * und erzeugen daher weder Decken noch Brücken.
+ */
+access_grip_bottom_width = center_gap;
+access_grip_top_width =
+    access_grip_bottom_width + (2 * access_grip_depth);
+access_grip_remaining_web_height = body_height - access_grip_depth;
+
+body_relief_depth_x = outer_margin_x - slot_chamfer_expansion;
+body_relief_depth_y = outer_margin_y - slot_chamfer_expansion;
+body_relief_corner_radius = wall_thickness / 2;
+body_relief_height = body_height - bottom_thickness;
+body_calculation_epsilon = layer_height / 100;
+
+body_min_outer_wall_x =
+    (wall_thickness + outer_margin_x - slot_chamfer_expansion) -
+    body_relief_depth_x;
+body_min_outer_wall_y =
+    (wall_thickness + outer_margin_y - slot_chamfer_expansion) -
+    body_relief_depth_y;
+body_load_bearing_row_web_width = row_spacing;
+body_entry_row_web_width =
+    row_spacing - (2 * slot_chamfer_expansion);
+body_center_web_width = center_gap;
+body_entry_center_web_width =
+    center_gap - (2 * slot_chamfer_expansion);
+body_contact_floor_thickness =
+    bottom_thickness - slot_contact_relief_depth;
+
+full_box_build_volume_ok =
+    body_length <= printer_build_x &&
+    body_width <= printer_build_y &&
+    body_height <= printer_build_z;
+full_box_build_volume_remaining_x = printer_build_x - body_length;
+full_box_build_volume_remaining_y = printer_build_y - body_width;
+full_box_build_volume_remaining_z = printer_build_z - body_height;
+
+full_box_short_build_volume_ok =
+    full_box_short_body_length <= printer_build_x &&
+    full_box_short_body_width <= printer_build_y &&
+    full_box_short_body_height <= printer_build_z;
+
 // Ursprung des Slotfelds, gemessen von der unteren Außenecke des Körpers.
 slot_start_x = wall_thickness + outer_margin_x;
 slot_start_y = wall_thickness + outer_margin_y;
@@ -250,6 +296,56 @@ assert(
     exposed_sodimm_height >= 0,
     "Die abgeleitete freiliegende SO-DIMM-Höhe darf nicht negativ sein."
 );
+assert(
+    row_spacing >= wall_thickness,
+    "row_spacing muss für einen tragenden Reihensteg mindestens wall_thickness entsprechen."
+);
+assert(
+    center_gap >= wall_thickness,
+    "center_gap muss für einen tragenden Mittelsteg mindestens wall_thickness entsprechen."
+);
+assert(
+    access_grip_remaining_web_height >=
+        (bottom_thickness + wall_thickness),
+    "Die Entnahmezone lässt zu wenig tragende Höhe im Mittelsteg stehen."
+);
+assert(
+    body_entry_row_web_width > 0,
+    "Die Einführfasen benachbarter Reihen kollidieren."
+);
+assert(
+    body_entry_center_web_width >= wall_thickness,
+    "Die Einführfasen lassen am Mittelsteg weniger als wall_thickness stehen."
+);
+assert(
+    body_contact_floor_thickness >= (3 * layer_height),
+    "Der Boden unter der Kontaktentlastung muss mindestens drei Schichten stark bleiben."
+);
+assert(
+    !body_material_reliefs ||
+    (
+        body_relief_depth_x > 0 &&
+        body_relief_depth_y > 0 &&
+        body_relief_height > 0
+    ),
+    "Die aktivierten Materialreliefs benötigen positive Abmessungen."
+);
+assert(
+    !body_material_reliefs ||
+    (
+        body_min_outer_wall_x + body_calculation_epsilon >= wall_thickness &&
+        body_min_outer_wall_y + body_calculation_epsilon >= wall_thickness
+    ),
+    "Die Materialreliefs unterschreiten die minimale Außenwandstärke."
+);
+assert(
+    full_box_build_volume_ok,
+    "Der vollständige Grundkörper überschreitet den konfigurierten Druckerbauraum."
+);
+assert(
+    full_box_short_build_volume_ok,
+    "Der kurze Grundkörper überschreitet den konfigurierten Druckerbauraum."
+);
 
 // Auf genau der Druckerachse fehlschlagen, die die Box nicht aufnehmen kann.
 assert(
@@ -304,8 +400,11 @@ function slot_test_body_width_for(thickness_clearance, rows) =
     (2 * slot_test_edge_width);
 
 assert(
-    render_mode == "debug" || render_mode == "slot_test",
-    "render_mode muss \"debug\" oder \"slot_test\" sein."
+    render_mode == "debug" ||
+    render_mode == "slot_test" ||
+    render_mode == "full_box" ||
+    render_mode == "full_box_short",
+    "render_mode muss \"debug\", \"slot_test\", \"full_box\" oder \"full_box_short\" sein."
 );
 assert(
     slot_test_rows >= 1 && slot_test_rows == floor(slot_test_rows),
@@ -412,10 +511,9 @@ slot_contact_floor_thickness =
  * 45-Grad-Flächen sind supportfrei.
  */
 slot_test_grip_bottom_width = center_gap;
-slot_test_grip_top_width =
-    slot_test_grip_bottom_width + (2 * access_grip_depth);
+slot_test_grip_top_width = access_grip_top_width;
 slot_test_remaining_center_web_height =
-    slot_test_body_height - access_grip_depth;
+    access_grip_remaining_web_height;
 
 // Explizite Stegberechnungen belegen, dass benachbarte Fasen nicht kollidieren.
 slot_test_column_web_width = center_gap;
@@ -428,7 +526,8 @@ slot_test_chamfer_outer_wall =
     slot_test_edge_width - slot_chamfer_expansion;
 
 // Eine aus der Schichthöhe abgeleitete Überlappung vermeidet koplanare Booleans.
-slot_test_boolean_overlap = layer_height / 10;
+modeling_overlap = layer_height / 10;
+slot_test_boolean_overlap = modeling_overlap;
 
 // Der Variantenabstand verwendet unabhängig von der Reihenfolge den breitesten Körper.
 slot_test_variant_count = len(slot_test_clearance_variants);
