@@ -114,47 +114,6 @@ module slot_test_numeric_mark(
     }
 }
 
-module slot_test_grip_clearance(
-    body_length,
-    body_width,
-    body_height,
-    grip_depth,
-    bottom_width,
-    top_width,
-    boolean_overlap
-) {
-    assert(
-        grip_depth > 0 && grip_depth < body_height,
-        "Die Tiefe der Entnahmefreistellung muss positiv und kleiner als die Körperhöhe sein."
-    );
-    assert(
-        top_width >= bottom_width && bottom_width > 0,
-        "Die Breiten der Entnahmefreistellung müssen positiv sein und sich nach oben erweitern."
-    );
-
-    translate([
-        body_length / 2,
-        -boolean_overlap,
-        body_height + boolean_overlap
-    ])
-        rotate([-90, 0, 0])
-            linear_extrude(
-                height = body_width + (2 * boolean_overlap)
-            )
-                polygon(points = [
-                    [-top_width / 2, 0],
-                    [top_width / 2, 0],
-                    [
-                        bottom_width / 2,
-                        grip_depth + boolean_overlap
-                    ],
-                    [
-                        -bottom_width / 2,
-                        grip_depth + boolean_overlap
-                    ]
-                ]);
-}
-
 module slot_test_identification_mark(
     body_height,
     mark_text
@@ -261,7 +220,7 @@ module slot_test_body(
             }
         }
 
-        slot_test_grip_clearance(
+        support_free_grip_clearance(
             body_length = test_body_length,
             body_width = test_body_width,
             body_height = slot_test_body_height,
