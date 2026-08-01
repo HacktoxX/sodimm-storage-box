@@ -3,12 +3,12 @@
 Professionelle, parametrische und stapelbare Aufbewahrung für SO-DIMM-
 Speichermodule, konstruiert in OpenSCAD für zuverlässigen FDM-3D-Druck.
 
-> **Projektstatus:** Die Slotmaße sind physisch validiert. Ein vollständiger
-> Grundkörper für 20 Module sowie ein verkürzter 2×3-Testkörper sind als
-> Prototypen verfügbar. Die Stapelschnittstelle liegt als separates
-> Kalibrierpaar mit vier Spielvarianten vor, ist aber noch nicht physisch
-> validiert oder in den Grundkörper integriert. Das finale Labelsystem ist noch
-> nicht implementiert.
+> **Projektstatus:** Die offene, stapelbare 20-Slot-Box ist als finales
+> Produktionsmodell abgeschlossen. Slotlänge, Dickenspiel und das horizontale
+> Stapelspiel wurden mit PETG auf einem Bambu Lab P1S physisch kalibriert. Die
+> finale STL wird reproduzierbar erzeugt und automatisiert als Einzelbox sowie
+> im Zweierstapel geometrisch geprüft. Deckel, Beschriftung, Clips, Magnete und
+> weiteres Zubehör sind bewusst nicht Bestandteil dieser Ausführung.
 
 
 ## Projektziele
@@ -20,9 +20,8 @@ Speichermodule, konstruiert in OpenSCAD für zuverlässigen FDM-3D-Druck.
   Schichthöhe von 0,20 mm drucken.
 - Eine selbstzentrierende, spielarme und leicht lösbare Stapelmechanik mit
   druckbaren 45-Grad-Flächen bereitstellen.
-- Gleichmäßige Wandstärken, großzügige Radien, saubere Übergänge und eine
-  verrippte Unterseite mit Taschen anstelle unnötiger Materialansammlungen
-  verwenden.
+- Gleichmäßige Wandstärken, großzügige Radien, saubere Übergänge und
+  topoffene Materialreliefs anstelle unnötiger Materialansammlungen verwenden.
 - Alle funktionsrelevanten Maße konfigurierbar und frei von unerklärten
   Konstanten halten.
 
@@ -33,7 +32,7 @@ für Geometrie und Druckprüfung unter `images/` ergänzt. Platzhalterbilder
 werden nicht verwendet, da veröffentlichte Bilder ausschließlich geprüfte
 Geometrie zeigen sollen.
 
-## Vorgesehene Druckeinstellungen
+## Druckeinstellungen
 
 | Einstellung | Vorgabe |
 | --- | --- |
@@ -43,9 +42,15 @@ Geometrie zeigen sollen.
 | Schichthöhe | 0,20 mm |
 | Stützstrukturen | Keine |
 | AMS | Unterstützt, aber nicht erforderlich |
+| Druckausrichtung | Unverändert, Nutseite plan auf dem Druckbett |
 
-Die endgültigen Slicer-Einstellungen werden nach der realen Prüfung
-dokumentiert.
+Ein kalibriertes PETG-Profil für den eigenen Drucker ist wichtiger als ein
+pauschaler Flusswert. Besonders erste Schicht, Elefantenfußkorrektur und
+Bauteilkühlung beeinflussen die nach unten offene Stapelnut. Für die große
+Grundfläche kann bei bekannter Warping-Neigung ein Brim verwendet werden; an
+der Modellgeometrie sind keine Stützstrukturen erforderlich. Eine Druckzeit
+wird nicht angegeben, da die finale STL in diesem Projekt nicht mit einem
+verbindlichen Bambu-Studio-Profil gesliced wurde.
 
 ## Manueller STL-Export
 
@@ -61,8 +66,8 @@ Der Einstiegspunkt enthält absichtlich ausschließlich Include-Anweisungen.
 `render_mode = "stacking_test"` das Stapeltestpaar mit dem Standardspiel.
 `render_mode = "stacking_test_variants"` ordnet vier gravierte
 Spielvarianten druckfertig an. `render_mode = "debug"` erzeugt die Vorschau
-des Maß- und Bauraums. Der Grundkörper ist noch keine finale stapelbare
-Veröffentlichung.
+des Maß- und Bauraums. `render_mode = "final_box"` erzeugt die offene,
+vollständig stapelbare Produktionsbox.
 
 ## STL-Dateien erzeugen
 
@@ -101,6 +106,7 @@ SODIMM_OPENSCAD_BIN=/absoluter/pfad/zu/openscad scripts/export_all.sh
 | `exports/calibration/stacking-test-variants.stl` | Vier gravierte Stapelpaare mit 0,20 / 0,25 / 0,30 / 0,35 mm Gesamtspiel |
 | `exports/prototypes/sodimm-box-v3-body.stl` | Vollständiger Grundkörper mit 2 × 10 Slots |
 | `exports/prototypes/sodimm-box-v3-short.stl` | Kurzer Grundkörper mit 2 × 3 Slots |
+| `exports/final/sodimm-storage-box-final.stl` | Finale offene 20-Slot-Box mit integrierter Stapelmechanik |
 
 Eine manuelle Änderung an `config.scad` ist nicht erforderlich. Die
 Rendermodi werden als OpenSCAD-Kommandozeilenparameter übergeben. Das Skript
@@ -115,8 +121,8 @@ hochgeladen werden.
 
 Der vorbereitete GitHub-Actions-Workflow führt denselben Export unter Ubuntu
 24.04 aus und speichert die erzeugten Dateien als herunterladbares
-Workflow-Artefakt. Das automatische Anhängen an GitHub-Releases ist für einen
-späteren Meilenstein vorgesehen.
+Workflow-Artefakt. Ein automatisches Veröffentlichen als GitHub-Release ist
+bewusst nicht Teil des abgeschlossenen Projektumfangs.
 
 ## Parameter
 
@@ -140,12 +146,8 @@ beträgt deshalb standardmäßig 1,2 mm und ergibt zusammen mit der nominellen
 Moduldicke von 4,2 mm eine freie Slotbreite von 5,4 mm beziehungsweise 0,6 mm
 Spiel je Breitseite.
 
-Für eine reguläre Änderung der Beschriftung muss später nur dieser Wert
-angepasst werden:
-
-```scad
-label_text = "PC4-3200";
-```
+Der finale Renderpfad enthält bewusst keine Beschriftungsgeometrie. Vorhandene
+Beschriftungsparameter gehören nicht zur Produktionsbox.
 
 ## Kalibrierungstest
 
@@ -248,12 +250,11 @@ ist rechnerisch sowie per OpenSCAD- und Meshprüfung validiert.
 
 ## Stapelkalibrierung
 
-Die Stapelschnittstelle wird vor jeder Änderung am 20-Slot-Grundkörper mit
-zwei kleinen Platten geprüft. Das Unterteil trägt den männlichen
+Die Stapelschnittstelle wurde vor der Integration in den 20-Slot-Grundkörper
+mit zwei kleinen Platten geprüft. Das Unterteil trägt den männlichen
 Führungsrahmen und vier definierte Auflagen; das Oberteil enthält die passende
 dachförmige Nut. Beide Teile verwenden direkt dieselben wiederverwendbaren
-Module, die nach einem erfolgreichen Drucktest in den Vollkörper übernommen
-werden können.
+Module, die unverändert auch die finale Box erzeugen.
 
 Die vier Rahmenseiten zentrieren in X und Y. Ihre 45-Grad-Flanken führen eine
 seitlich versetzte Platte beim Absenken zur Mitte. Die weibliche Kontur endet
@@ -262,8 +263,10 @@ Clips, Snap-Fits und dünne Rastnasen werden nicht verwendet.
 
 `stacking_clearance` bezeichnet das horizontale **Gesamtspiel** zwischen zwei
 gegenüberliegenden Flanken. Der Standardwert 0,25 mm entspricht 0,125 mm je
-Seite. Er ist noch kein physisch freigegebener Produktionswert. Für PETG wird
-zuerst der Variantenkörper empfohlen:
+Seite. Dieser Wert wurde mit PETG auf dem Bambu Lab P1S physisch ausgewählt und
+ist der freigegebene Produktionsstandard. Bei einem anderen Drucker, Material
+oder stark abweichender erster Schicht wird weiterhin zuerst der
+Variantenkörper empfohlen:
 
 ```scad
 render_mode = "stacking_test_variants";
@@ -288,13 +291,12 @@ das Variantenfeld 150,0 × 126,0 × 4,8 mm.
    Achsen zentrieren, die vier Auflagen gleichmäßig anliegen, kein fühlbares
    Kippeln entsteht und sich das Oberteil ohne Verkeilen wieder abheben lässt.
 5. Das kleinste Spiel wählen, das nach mehreren Stapel- und Trennzyklen sowie
-   vollständig abgekühltem PETG zuverlässig funktioniert.
+   vollständig abgekühltem PETG zuverlässig funktioniert. Für die validierte
+   P1S-/PETG-Kombination ist dies 0,25 mm Gesamtspiel.
 
 Die erste Schicht beeinflusst die nach unten offene Nut unmittelbar.
 Elefantenfußkorrektur, Fluss und Betthaftung müssen deshalb dem späteren
-Produktionsprofil entsprechen. Das Ergebnis des physischen Tests ist zu
-dokumentieren, bevor eine Variante als Standard festgelegt oder die
-Schnittstelle in den 20-Slot-Körper integriert wird.
+Produktionsprofil entsprechen.
 
 Die reproduzierbare Geometrie- und Negativprüfung wird so gestartet:
 
@@ -304,11 +306,44 @@ scripts/validate_stacking_test.sh
 
 ## Zusammenbau und Stapeln
 
-Jede Box soll später als ein Bauteil gedruckt werden und keinen Zusammenbau
-erfordern. Die selbstzentrierende Stapelschnittstelle ist als separates
-Kalibrierpaar konstruiert. Der aktuelle 20-Slot-Prototyp enthält absichtlich
-noch keine Stapelgeometrie; die Integration folgt erst nach dem realen
-PETG-Passungstest.
+Jede Box wird als ein einziges Bauteil gedruckt und benötigt keinen
+Zusammenbau. Die SO-DIMMs senkrecht und ohne Kraft in die Slots einsetzen. Zum
+Stapeln zwei identische Boxen grob übereinander ausrichten und die obere Box
+senkrecht absenken. Die vier 45-Grad-Flanken zentrieren in X und Y; vier
+Auflagen begrenzen die Eingriffstiefe. Zum Trennen gleichmäßig senkrecht
+anheben und nicht verkanten.
+
+## Finale Produktionsbox
+
+Die finale Box kombiniert exakt 20 kalibrierte Slots mit dem physisch
+bestätigten Stapelspiel von 0,25 mm. Ein eigener, aus den Merkmalabmessungen
+berechneter Funktionsrand trennt Stapelrahmen, Slotfasen, Entnahmezone und
+Materialreliefs. Die Entnahmefreistellung bleibt über das gesamte Slotfeld
+zugänglich, endet aber vor den tragenden vorderen und hinteren
+Stapelrahmensegmenten.
+
+| Merkmal | Ergebnis |
+| --- | ---: |
+| Außenmaß einschließlich Feder | 176,8 × 105,2 × 33,6 mm |
+| Grundkörper | 176,8 × 105,2 × 31,4 mm |
+| Zweierstapel | 176,8 × 105,2 × 66,2 mm |
+| Stapelrahmen-Mittellinie | 163,35 × 91,75 mm |
+| Netzvolumen | 333.491 mm³ |
+| Mesh | 6.756 Dreiecke, 1 Komponente, 0 Nicht-Manifold-Kanten |
+
+Die finale Prüfung rendert außerdem zwei vollständige Boxen in Sollposition.
+Der Zweierstapel besitzt zwei getrennte manifold Komponenten; eine separate
+Schnittsonde bestätigt, dass zwischen ihnen kein überschneidendes Volumen
+existiert. Die Prüfung wird reproduzierbar gestartet mit:
+
+```bash
+scripts/validate_final_box.sh
+```
+
+Die integrierte Gesamtgeometrie wurde rechnerisch, mit OpenSCAD und als Mesh
+geprüft. Die Slot- und Stapelpassungen beruhen auf realen P1S-/PETG-
+Kalibrierungen. Ein vollständiger Produktionsdruck der final integrierten Box
+wurde in diesem Entwicklungslauf nicht gesliced oder zeitlich bewertet.
 
 ## Anpassungen
 
@@ -331,12 +366,15 @@ geplanten Meilensteine in [ROADMAP.md](docs/ROADMAP.md).
 | `slots.scad` | Parametrische Erzeugung der SO-DIMM-Slots |
 | `stacking.scad` | Selbstzentrierende Stapelmechanik |
 | `stacking_test.scad` | Separate Stapelkalibrierkörper und Spielvarianten |
+| `final_box.scad` | Finale 20-Slot-Box mit integrierter Nut, Feder und Auflagen |
 | `label.scad` | Adaptive gravierte oder erhabene Beschriftung |
 | `debug_preview.scad` | Meilensteinbezogene Maßausgabe und Bauraumvorschau |
 | `slot_test.scad` | Vier-Slot-Passungstest und Toleranzvarianten |
 | `render.scad` | Zentrale Auswahl des Rendermodus |
 | `RAM_Box.scad` | Projekteinstiegspunkt, der nur Includes enthält |
 | `tests/stacking_collision_check.scad` | 3D-Schnittsonde für kollisionsfreie Stapel-Sollpositionen |
+| `tests/final_stack_collision_check.scad` | Kollisionssonde zweier vollständiger Boxen |
+| `tests/final_two_box_stack.scad` | Zwei vollständige Boxen in realer Stapellage |
 
 ## Lizenz
 

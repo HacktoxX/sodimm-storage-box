@@ -12,9 +12,15 @@ Aktuelle und reservierte Kategorien:
 
 - `calibration/` — Slot-Passungskörper sowie Stapeltestpaare und ihre
   Toleranzvarianten
-- `final/` — zukünftige validierte Produktionsmodelle
+- `final/` — finale, geometrisch validierte Produktionsbox
 - `prototypes/` — vollständiger 2×10-Grundkörper und 2×3-Kurztest für die Entwicklung
-- `examples/` — zukünftige Beispielkonfigurationen
+- `examples/` — reservierte Beispielkonfigurationen
+
+Die finale Datei lautet:
+
+```text
+exports/final/sodimm-storage-box-final.stl
+```
 
 Die repositoryweite Regel `*.stl` hält erzeugte Modelle aus regulären Commits
 heraus. Verantwortliche können eine Datei bei Bedarf bewusst mit `git add -f`

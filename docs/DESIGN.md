@@ -10,10 +10,13 @@ gedruckt wurden. Ein erster realer Testdruck hat die bisherige Slotlänge als zu
 kurz identifiziert. Der folgende Passungstest bestätigt die korrigierte Länge
 von 73,2 mm und wählt 1,2 mm gesamtes Dickenspiel als neuen Standard. Diese
 beiden Werte gelten für den vorhandenen Modulbestand als physisch validiert.
-Der vollständige Grundkörper ist rechnerisch, in OpenSCAD und als Mesh geprüft,
-aber noch nicht vollständig mit PETG gedruckt. Die Stapelschnittstelle ist als
-separates Kalibrierpaar rechnerisch und als Mesh validiert. Ihr reales
-Passungs- und Löseverhalten ist noch nicht physisch freigegeben.
+Auch das Stapelspiel wurde anschließend real mit PETG auf dem Bambu Lab P1S
+geprüft; 0,25 mm Gesamtspiel wurde als leicht lösbarer und zugleich sauber
+führender Wert bestätigt. Die finale Box integriert exakt diese
+Merkmalsmodule. Sie ist rechnerisch, in OpenSCAD, als Einzelmesh, als
+Zweierstapel und mit einer volumetrischen Kollisionssonde geprüft. Ein
+vollständiger Produktionsdruck der integrierten Box wurde in diesem
+Entwicklungslauf nicht durchgeführt.
 
 ## Konstruktionsvorgaben
 
@@ -24,7 +27,7 @@ Passungs- und Löseverhalten ist noch nicht physisch freigegeben.
 | SO-DIMM-Gesamtdicke | 4,2 mm | Konservative Standardhülle der Komponenten |
 | Kapazität | 20 Module | Geforderte Kapazität der Box |
 | Anordnung | 2 Spalten × 10 Reihen | Geforderte Organisation |
-| Gesamtspiel der Stapelschnittstelle | 0,25 mm | Startwert für den PETG-Prüfbereich |
+| Gesamtspiel der Stapelschnittstelle | 0,25 mm | Physisch validierter P1S-/PETG-Wert |
 | Maximaler beabsichtigter Überhang | 45° | Vorgabe für supportfreien Druck |
 | Druckerbauraum | 256 × 256 × 256 mm | Bauraum des Bambu Lab P1S |
 
@@ -56,7 +59,9 @@ prüfbar und künftige Varianten können dieselben validierten Module verwenden.
 Der 2×2-Kalibrierkörper, der 2×10-Grundkörper und der 2×3-Kurztest verwenden
 dieselben Matrixfunktionen und dieselben Slot-Negativmodule. Analog verwenden
 Standard- und Variantenkörper der Stapelkalibrierung direkt dieselben
-männlichen und weiblichen Merkmalsmodule aus `stacking.scad`.
+männlichen und weiblichen Merkmalsmodule aus `stacking.scad`. `final_box.scad`
+kombiniert diese Module mit der gemeinsamen Slotmatrix, ohne eine zweite
+Slot- oder Stapelimplementierung einzuführen.
 
 ## Parameterhoheit und abgeleitete Maße
 
@@ -73,14 +78,15 @@ Maßkette. Die Standardkonfiguration ergibt:
 | Slotabmessung | 73,2 × 5,4 mm |
 | Slotfeld | 154,4 × 82,8 mm |
 | Hauptkörper | 170,8 × 99,2 × 31,4 mm |
-| Konservativ reservierter Druckbauraum | 170,8 × 99,2 × 33,6 mm |
+| Finaler Grundkörper | 176,8 × 105,2 × 31,4 mm |
+| Finale Druckhülle einschließlich Feder | 176,8 × 105,2 × 33,6 mm |
+| Zwei Boxen in Stapellage | 176,8 × 105,2 × 66,2 mm |
 | Freiliegende SO-DIMM-Höhe | 1,0 mm |
 
-Die reservierte Gesamthöhe addiert die 2,2 mm hohe Kalibrierkontur
-konservativ zum unveränderten Grundkörper. Sie ist noch keine Behauptung über
-die spätere Einbauposition. Jedes integrierte Merkmal muss seine tatsächliche
-X-/Y-/Z-Hülle in die zentrale Bauraumberechnung übernehmen, statt die
-Bauraum-Assertions zu umgehen.
+Der finale Funktionsrand von 8,0 mm wird nicht unabhängig eingestellt. Er
+entsteht aus Mindestkantenabstand, Nutöffnung, Federbasis, Sicherheitsabstand
+zur Slotfase und Wandstärke und wird auf das 0,4-mm-Düsenraster aufgerundet.
+Damit folgt auch die tatsächliche X-/Y-/Z-Hülle der zentralen Maßkette.
 
 ## Passungsspiele
 
@@ -93,11 +99,12 @@ Unterschiede zwischen SO-DIMM-Bauformen. Einführfasen und gerundete Auflagen
 bestimmen das tatsächliche Gefühl. Vor Freigabe des 20-Slot-Feldes müssen die
 Werte dennoch mit weiteren repräsentativen Modulen gegengeprüft werden.
 
-Das Stapelspiel beginnt mit 0,25 mm. Dieser Wert ist als horizontales
+Das Stapelspiel beträgt 0,25 mm. Dieser Wert ist als horizontales
 **Gesamtspiel** zwischen zwei gegenüberliegenden Flanken definiert und ergibt
 bei zentrierter Kontur 0,125 mm je Seite. Die Kalibrierreihe prüft zusätzlich
-0,20, 0,30 und 0,35 mm. Ein Wert gilt erst als validiert, wenn wiederholte
-Stapel- und Trennversuche sowohl geringes Spiel als auch leichtes Lösen zeigen.
+0,20, 0,30 und 0,35 mm. Der ausgewählte Wert wurde mit PETG auf dem Bambu Lab
+P1S physisch bestätigt, weil er zugleich sauber führt und leicht lösbar
+bleibt.
 
 ## Vier-Slot-Kalibriergeometrie
 
@@ -117,9 +124,9 @@ vertikale Höhe ist, bleiben alle Fasen innerhalb der supportfrei druckbaren
 den Spalten, 1,6 mm zwischen den Reihen und 2,4 mm am Außenrand. Alle Werte
 bleiben positiv und werden vor der Geometrieauswertung geprüft.
 
-Die funktionale Entnahmeöffnung ist absichtlich noch nicht die finale
-ergonomische Griffmulde. Sie beginnt am 8,0 mm breiten Mittelabstand und weitet
-sich über dem Testkörper mit 45 Grad nach oben. Ihre Tiefe von 8,0 mm lässt vom
+Die funktionale Entnahmeöffnung verzichtet bewusst auf eine dekorative tiefe
+Griffmulde. Sie beginnt am 8,0 mm breiten Mittelabstand und weitet sich über
+dem Testkörper mit 45 Grad nach oben. Ihre Tiefe von 8,0 mm lässt vom
 Druckbett aus einen 23,4 mm hohen Mittelsteg stehen und liegt damit deutlich
 über dem geforderten tragenden Bereich von 3,2 mm.
 
@@ -176,8 +183,10 @@ keine separate Kurztestgeometrie, die vom vollständigen Körper abweichen könn
 Die äußere Grundfläche ist ein über vier Kreise aufgebautes gerundetes Rechteck
 mit 4,0 mm Eckenradius und 48 Segmenten je Vollkreis. Die lineare Extrusion in
 Z erzeugt ausschließlich vertikale Außenflächen und damit keine Überhänge. Der
-vollständige Grundkörper misst 170,8 × 99,2 × 31,4 mm, das Slotfeld
-154,4 × 82,8 mm.
+Meilenstein-3-Grundkörper misst 170,8 × 99,2 × 31,4 mm. Der für die
+integrierte Stapelschnittstelle abgeleitete Funktionsrand vergrößert den
+finalen Grundkörper auf 176,8 × 105,2 × 31,4 mm; das unveränderte Slotfeld
+misst 154,4 × 82,8 mm.
 
 Nach Abzug der Slots verbleiben ein geschlossener Boden, umlaufende Außenwände,
 neun tragende Reihenstege und der 8,0 mm breite Mittelsteg. Der tragende Anteil
@@ -189,14 +198,16 @@ Einführlippe auf 1,6 mm. Diese lokale Ausnahme entspricht vier
 ## Funktionale Entnahmezone
 
 Die im Kalibrierkörper getestete trapezförmige Entnahmefreistellung läuft
-durchgehend zwischen den beiden Spalten. Sie beginnt am 8,0-mm-Mittelsteg,
+zwischen den beiden Spalten. Sie beginnt am 8,0-mm-Mittelsteg,
 erweitert sich über 8,0 mm Tiefe auf jeder Seite mit höchstens 45 Grad und ist
 nach oben vollständig offen. Dadurch entstehen weder Brücken noch schwebende
 Innenkonturen.
 
 Unter der Freistellung bleiben 23,4 mm tragende Höhe des 8,0 mm breiten
-Mittelstegs erhalten. Die Öffnung ist bewusst funktional und noch keine finale
-dekorative oder ergonomisch verrundete Griffmulde.
+Mittelstegs erhalten. In der finalen Box erstreckt sie sich in Y nur über das
+Slotfeld einschließlich der Einführfasen, von 10,4 bis 94,8 mm. So bleibt die
+Entnahme vollständig funktional, während die vorderen und hinteren
+Stapelrahmensegmente einen ununterbrochenen tragenden Untergrund behalten.
 
 ## Erste Materialoptimierung
 
@@ -220,11 +231,19 @@ Die erste Optimierung spart damit rund 16,3 % Volumen. Sie ist bewusst moderat:
 Stabilität und supportfreie Druckbarkeit haben Vorrang vor maximaler
 Materialreduktion.
 
+Im finalen Körper konkurrieren diese Taschen mit der voll umlaufenden
+Stapelkontur. Ihre Tiefe wird deshalb lokal aus dem Abstand der Federbasis zur
+Außenkante und der validierten Mindestfeaturestärke berechnet und auf zwei
+Düsenbahnen beziehungsweise 0,8 mm abgerundet. Die Reliefs bleiben topoffen;
+zwischen Relief und Feder verbleiben nominal mindestens 2,4 mm und zwischen
+Relief und Nut mindestens 3,6 mm Material. Diese bewusst konservative
+Reduktion vermeidet eine unterhöhlte Stapelfeder.
+
 ## Wand- und Bodenstärke
 
 Die 3,2-mm-Wand entspricht acht nominellen Düsendurchmessern von 0,4 mm. Sie
 bildet eine steife Ausgangsbasis für das hohe Slotfeld und bietet genügend
-Querschnitt für gerundete Übergänge und die spätere Stapelaufnahme. Da die
+Querschnitt für gerundete Übergänge und die integrierte Stapelaufnahme. Da die
 tatsächliche Extrusionsbreite des Slicers vom Düsendurchmesser abweichen kann,
 muss die Erzeugung der Wandlinien trotzdem geprüft werden.
 
@@ -236,19 +255,13 @@ freistehende Tragwand, sondern eine kurze horizontale Schutzmembran über einem
 kleinen Feld. Sie schützt die Kontaktkante und bleibt durch die angrenzenden
 Auflagen und Stege abgestützt.
 
-## Slotgeometrie
-
-Jeder Slot ist als wiederverwendbarer Generator mit Einführfase, kontrolliertem
-Passungsspiel, Endauflagen und Kontaktentlastung implementiert. Die vollständige
-Matrix verwendet direkt den Generator des physisch geprüften Vier-Slot-Körpers.
-
 ## Stapelmechanik
 
-Das Stapelsystem wird als eigenständiges funktionales Teilsystem behandelt.
-Meilenstein 4 integriert es ausdrücklich noch nicht in den 20-Slot-Körper. Der
-Test besteht aus zwei 70,0 × 26,0 mm großen Platten, die zusammen druckfertig
-70,0 × 58,0 × 4,8 mm belegen. Unter- und Oberteil bleiben getrennte
-Netzkomponenten und lassen sich nach dem Druck unmittelbar zusammenführen.
+Das Stapelsystem wurde zuerst als eigenständiges funktionales Teilsystem
+entwickelt. Der Test besteht aus zwei 70,0 × 26,0 mm großen Platten, die
+zusammen druckfertig 70,0 × 58,0 × 4,8 mm belegen. Nach der realen Auswahl von
+0,25 mm Gesamtspiel verwendet die finale Box direkt dieselben männlichen und
+weiblichen Module.
 
 ### Gewähltes Prinzip
 
@@ -321,23 +334,37 @@ Sollposition zusammen. Für alle vier Spiele muss ihr Schnittvolumen leer
 bleiben. Diese Prüfung erfasst insbesondere die Schienenkreuzungen an den
 Rahmenecken, die eine reine Querschnittsrechnung nicht vollständig abbildet.
 
-Die endgültige Position am Vollkörper ist absichtlich noch nicht festgelegt.
-Slotfasen, Kontaktentlastungen, Randreliefs und die durchgehende Entnahmezone
-schränken mögliche Auflagebereiche gemeinsam ein. Bei der späteren Integration
-müssen deshalb konkrete Intervall- und Keep-out-Assertions für die gewählte
-Position ergänzt werden. Eine nicht integrierte Testkontur kann eine solche
-Kollisionsfreiheit nicht seriös behaupten. Der Grundkörper bleibt in diesem
-Meilenstein geometrisch unverändert.
+### Integration in den Vollkörper
+
+Die Mittellinie des finalen Rahmens misst 163,35 × 91,75 mm und liegt
+6,725 mm von jeder Außenkante entfernt. Die Nut hält auch an ihren verlängerten
+Ecksegmenten mindestens 3,2 mm Außenkantenabstand. Zwischen sichtbarer
+Federbasis und erweiterter Slotfase bleiben 0,275 mm; zwischen Nut und
+Slotfase 1,35 mm. Assertions prüfen diese Keep-outs unabhängig in X und Y.
+
+Der Grundkörper wird nicht pauschal skaliert. Nur sein aus der validierten
+Kontur berechneter Funktionsrand wächst auf 8,0 mm. Vier gerundete
+Auflageländer liegen außerhalb der Nut in den tragenden Eckbereichen und
+definieren weiterhin exakt 1,2 mm Stapelabstand. Die weibliche Nut wird von
+der Druckbettseite abgezogen, die Feder mit einer kleinen Boolean-Überlappung
+oben angebunden. Dadurch besitzt die exportierte Einzelbox genau eine
+zusammenhängende Komponente ohne Nullstärkenflächen.
+
+Eine vollständige zweite Box wird um 32,6 mm nach oben versetzt. Die
+volumetrische Schnittmenge beider Körper ist leer; nur die vier vorgesehenen
+Auflagen berühren die Unterseite. Der resultierende Zweierstapel misst
+176,8 × 105,2 × 66,2 mm und bleibt mit großem Abstand innerhalb des
+P1S-Bauraums.
 
 ### Warum der reale PETG-Test erforderlich ist
 
 Die nach unten offene Nut beginnt in der ersten Schicht. Elefantenfuß,
 Betthaftung, Fluss, Abkühlung und die Textur der Druckplatte beeinflussen daher
 das reale Spiel stärker als die nominelle CAD-Differenz vermuten lässt. Die
-Varianten 0,20 / 0,25 / 0,30 / 0,35 mm werden mit demselben P1S-PETG-Profil wie
-die spätere Box gedruckt. Freigegeben wird das kleinste Spiel, das vollständig
-abgekühlt selbstzentriert, nicht kippelt und sich nach mehreren Zyklen ohne
-Verkeilen lösen lässt.
+Varianten 0,20 / 0,25 / 0,30 / 0,35 mm wurden für dasselbe P1S-PETG-Profil wie
+die finale Box vorgesehen. 0,25 mm Gesamtspiel wurde real als
+Produktionswert bestätigt. Bei Material-, Druckplatten- oder Profilwechseln
+bleibt ein erneuter Variantenvergleich erforderlich.
 
 ## Radien und Übergänge
 
@@ -346,26 +373,26 @@ vermeiden und stoßempfindliche Ecken zu reduzieren. Innenradien vermeiden
 Spannungsspitzen und abrupte Änderungen der Extrusionsbahn. Der Standardradius
 von 4,0 mm muss mindestens der Wandstärke von 3,2 mm entsprechen, damit der
 Innenradius nicht negativ wird, und darf höchstens halb so groß wie die
-kürzeste Körperabmessung sein. Größere merkmalsspezifische Radien können später
-abgeleitet werden, ohne Konstanten in Geometriemodulen zu verstecken.
+kürzeste Körperabmessung sein. Abweichende merkmalsspezifische Radien könnten
+aus Parametern abgeleitet werden, ohne Konstanten in Geometriemodulen zu
+verstecken; für die finale Version ist dies nicht erforderlich.
 
 ## Grenzen des Druckerbauraums
 
 Die Standardgrenzen des Bambu Lab P1S betragen 256 × 256 × 256 mm. Die
 Assertions verwenden jedoch die konfigurierbaren Druckerwerte statt eines
-fest codierten Druckerprofils. Der tatsächliche Grundkörper mit
-170,8 × 99,2 × 31,4 mm lässt 85,2 mm in X, 156,8 mm in Y und 224,6 mm in Z
-frei. Der vorsorglich einschließlich späterer Stapelhöhe berechnete Bauraum von
-170,8 × 99,2 × 33,6 mm lässt noch 222,4 mm in Z. Assertions melden die konkret
-überschrittene Achse und Abmessung.
+fest codierten Druckerprofils. Die finale Druckhülle mit
+176,8 × 105,2 × 33,6 mm lässt 79,2 mm in X, 150,8 mm in Y und 222,4 mm in Z
+frei. Auch zwei gestapelte Boxen mit 66,2 mm Gesamthöhe bleiben innerhalb des
+Bauraums. Assertions melden die konkret überschrittene Achse und Abmessung.
 
-## Beschriftungssystem
+## Bewusst ausgeschlossene Merkmale
 
-Das Beschriftungssystem wird seine Skalierung aus der verfügbaren Breite und
-Höhe der Fläche berechnen, den Text in beiden Achsen zentrieren und gravierte
-sowie erhabene Ausgabe unterstützen. Der Textinhalt bleibt ein einzelner
-Nutzerparameter. Mehrfarbdruck bleibt optional, damit das Grundmodell auch
-ohne AMS funktioniert.
+Die finale Produktionsbox ist eine offene, einteilige Aufbewahrung. Sie
+enthält keine Beschriftungsgeometrie, keinen Deckel, keine Abdeckung, keine
+Clips oder Snap-Fits, keine Magnete und kein weiteres Zubehör. Die vorhandene
+Dateitrennung für mögliche Experimente verändert den Renderpfad `final_box`
+nicht.
 
 ## Validierungsstufen
 
@@ -379,18 +406,17 @@ Ein Merkmal gilt erst dann als abgeschlossen, wenn:
    bestätigt und
 6. Begründung und beobachtetes Ergebnis hier dokumentiert sind.
 
-Der Vier-Slot-Testkörper erfüllt die Stufen für Berechnung, Rendering,
-Manifold-Netz und supportfreie Geometrie. Slotpassung und Position der
-Kontaktauflagen benötigen weiterhin die Prüfung mit repräsentativen Modulen.
-Die bisherigen realen Passungstests bestätigen 73,2 mm freie Slotlänge und
-1,2 mm gesamtes Dickenspiel für den vorhandenen Modulbestand. Der vollständige
-Grundkörper rendert ohne Warnungen, besitzt genau eine zusammenhängende
-Komponente, 0 nicht-manifold Kanten, 5.900 Dreiecke und ein geschlossenes
-Netzvolumen von 239.519 mm³. Supportfreiheit ist geometrisch geprüft; der
-vollständige PETG-Druck bleibt als physische Validierungsstufe offen.
-Das Standard-Stapeltestpaar besitzt 2.016 Dreiecke, zwei Komponenten,
-0 nicht-manifold Kanten und ein geschlossenes Netzvolumen von 13.719 mm³. Das
-Variantenfeld besitzt acht Komponenten, 8.128 Dreiecke und 0 nicht-manifold
-Kanten. Sein P1S-Bauraum beträgt 150,0 × 126,0 × 4,8 mm. Das reale
-Stapelgefühl, die endgültige Vollkörperposition, finale Ergonomie und finale
-Box bleiben bewusst unvalidiert.
+Die realen Passungstests bestätigen 73,2 mm freie Slotlänge, 1,2 mm gesamtes
+Dickenspiel und 0,25 mm horizontales Stapelgesamtspiel für PETG auf dem Bambu
+Lab P1S. Die finale Einzelbox rendert ohne Warnungen, besitzt genau eine
+zusammenhängende Komponente, 0 Nicht-Manifold-Kanten, 6.756 Dreiecke und ein
+geschlossenes Netzvolumen von 333.491 mm³.
+
+Der separat gerenderte Zweierstapel besitzt zwei manifold Komponenten,
+13.512 Dreiecke, 0 Nicht-Manifold-Kanten und die erwartete Hülle von
+176,8 × 105,2 × 66,2 mm. Eine Referenz-Schnittsonde bestätigt ein leeres
+Kollisionsvolumen. Negative Tests decken ungültigen Rendermodus, negatives
+Stapelspiel, Flankenwinkel über 45°, zu kleine Materialreliefs und eine
+Überschreitung des P1S-Bauraums ab. Die vollständige integrierte Box wurde in
+diesem Entwicklungslauf nicht physisch gedruckt; ihre beiden kritischen
+Passungssysteme wurden jedoch vor der Integration real kalibriert.

@@ -11,6 +11,20 @@ zu folgen.
 
 ### Hinzugefügt
 
+- Finaler Rendermodus `final_box` für die offene, einteilige und stapelbare
+  20-Slot-Produktionsbox.
+- Aus der Stapelkontur abgeleiteter 8,0-mm-Funktionsrand mit konkreten
+  Keep-out-Assertions gegen Slotfasen, Entnahmezone und Materialreliefs.
+- Vollständig integrierter männlicher 45-Grad-Führungsrahmen, supportfreie
+  dachförmige Nut und vier definierte Stapelauflagen.
+- Reproduzierbarer Export
+  `exports/final/sodimm-storage-box-final.stl`.
+- Automatisierte Prüfung der finalen Einzelbox auf 20 Slots, Maßkette,
+  P1S-Bauraum, Bounding Box, Netzvolumen, genau eine Komponente und null
+  Nicht-Manifold-Kanten.
+- Reales Zwei-Boxen-Prüfmodell sowie volumetrische Kollisionssonde für die
+  Soll-Stapellage.
+- CI-Prüfung und Workflow-Artefakt für die finale STL.
 - Vollständige parametrische 2×10-Matrix für exakt 20 SO-DIMM-Module.
 - Gerundeter tragender Grundkörper mit geschlossenem Boden, Außenwänden,
   Reihenstegen und 8,0-mm-Mittelsteg.
@@ -55,6 +69,17 @@ zu folgen.
 
 ### Geändert
 
+- Das mit PETG auf dem Bambu Lab P1S geprüfte Stapelgesamtspiel von 0,25 mm
+  ist jetzt als physisch validierter Produktionsstandard dokumentiert und in
+  die finale Box übernommen.
+- Die Entnahmezone endet im finalen Modell vor dem vorderen und hinteren
+  Stapelrahmen, bleibt über dem vollständigen Slotfeld jedoch zugänglich.
+- Die finalen topoffenen Materialreliefs werden aus dem verbleibenden
+  Querschnitt unter der Stapelfeder berechnet; mindestens 2,4 mm tragendes
+  Material bleibt erhalten.
+- Der Projektumfang ist als abgeschlossen dokumentiert. Deckel,
+  Beschriftungsgeometrie, Clips, Magnete und Zubehör gehören bewusst nicht zur
+  finalen Box.
 - Das standardmäßige gesamte Dickenspiel wurde nach der realen
   Passungsprüfung von 1,0 auf 1,2 mm erhöht. Die freie Standard-Slotbreite
   beträgt damit 5,4 mm; die Vergleichsvarianten 0,8 / 1,0 / 1,2 mm bleiben
