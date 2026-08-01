@@ -16,4 +16,8 @@ if (render_mode == "debug") {
     full_box();
 } else if (render_mode == "full_box_short") {
     full_box_short();
+} else if (render_mode == "stacking_test") {
+    stacking_test();
+} else if (render_mode == "stacking_test_variants") {
+    stacking_test_variants();
 }

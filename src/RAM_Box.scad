@@ -4,6 +4,7 @@ include <dimensions.scad>
 include <slots.scad>
 include <body.scad>
 include <stacking.scad>
+include <stacking_test.scad>
 include <label.scad>
 include <debug_preview.scad>
 include <slot_test.scad>
