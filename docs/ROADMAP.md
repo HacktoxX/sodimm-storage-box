@@ -20,8 +20,15 @@ Validierung im selben Entwicklungsschritt enthalten sind.
 - [ ] Grundkörper und Kurztest physisch mit PETG drucken und prüfen.
 - [ ] Unterseite nach realer Steifigkeitsprüfung weiter optimieren.
 - [ ] Mittige Griffmulde entwickeln und ergonomisch prüfen.
-- [ ] Toleranzkörper für die Stapelmechanik entwickeln.
+- [x] Toleranzkörper für die Stapelmechanik entwickeln.
+- [x] Vier gravierte Gesamtspielvarianten von 0,20 bis 0,35 mm bereitstellen
+  und rechnerisch sowie als Mesh validieren.
+- [ ] Stapelkalibrierkörper mit dem vorgesehenen P1S-PETG-Profil drucken.
+- [ ] Selbstzentrierung, Kippfreiheit und Lösbarkeit über mehrere Zyklen
+  physisch prüfen und das ausgewählte Gesamtspiel dokumentieren.
 - [ ] Selbstzentrierende Stapelmechanik mit 45-Grad-Flächen integrieren.
+- [ ] Konkrete Vollkörperposition gegen Slots, Kontaktentlastungen,
+  Randreliefs und Entnahmezone mit Keep-out-Assertions absichern.
 - [ ] Adaptive gravierte und erhabene Beschriftung ergänzen.
 - [ ] Vollständige Box auf einem Bambu Lab P1S mit PETG drucken und prüfen.
 - [ ] Geprüfte Renderbilder, Druckfotos, STL-Dateien und MakerWorld-
@@ -31,6 +38,8 @@ Validierung im selben Entwicklungsschritt enthalten sind.
 
 - [x] Reproduzierbaren Ein-Befehl-Export der STL-Dateien bereitstellen.
 - [x] GitHub-Actions-Workflow für den STL-Build ergänzen.
+- [x] Stapelkalibrierung im lokalen und CI-basierten STL-Build prüfen und
+  exportieren.
 - [ ] Erzeugte STL-Artefakte automatisch an getaggte Releases anhängen.
 - [ ] Prüfsummen und Herkunftsmetadaten für Releases ergänzen.
 

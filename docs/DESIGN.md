@@ -11,7 +11,9 @@ kurz identifiziert. Der folgende Passungstest bestätigt die korrigierte Länge
 von 73,2 mm und wählt 1,2 mm gesamtes Dickenspiel als neuen Standard. Diese
 beiden Werte gelten für den vorhandenen Modulbestand als physisch validiert.
 Der vollständige Grundkörper ist rechnerisch, in OpenSCAD und als Mesh geprüft,
-aber noch nicht vollständig mit PETG gedruckt.
+aber noch nicht vollständig mit PETG gedruckt. Die Stapelschnittstelle ist als
+separates Kalibrierpaar rechnerisch und als Mesh validiert. Ihr reales
+Passungs- und Löseverhalten ist noch nicht physisch freigegeben.
 
 ## Konstruktionsvorgaben
 
@@ -22,7 +24,7 @@ aber noch nicht vollständig mit PETG gedruckt.
 | SO-DIMM-Gesamtdicke | 4,2 mm | Konservative Standardhülle der Komponenten |
 | Kapazität | 20 Module | Geforderte Kapazität der Box |
 | Anordnung | 2 Spalten × 10 Reihen | Geforderte Organisation |
-| Spiel der Stapelschnittstelle | 0,25 mm | Unteres Ende des PETG-Prüfbereichs |
+| Gesamtspiel der Stapelschnittstelle | 0,25 mm | Startwert für den PETG-Prüfbereich |
 | Maximaler beabsichtigter Überhang | 45° | Vorgabe für supportfreien Druck |
 | Druckerbauraum | 256 × 256 × 256 mm | Bauraum des Bambu Lab P1S |
 
@@ -52,7 +54,9 @@ und Assertions, und jede Geometriedatei besitzt genau eine Merkmalsfamilie.
 `RAM_Box.scad` enthält ausschließlich Includes. Änderungen bleiben dadurch gut
 prüfbar und künftige Varianten können dieselben validierten Module verwenden.
 Der 2×2-Kalibrierkörper, der 2×10-Grundkörper und der 2×3-Kurztest verwenden
-dieselben Matrixfunktionen und dieselben Slot-Negativmodule.
+dieselben Matrixfunktionen und dieselben Slot-Negativmodule. Analog verwenden
+Standard- und Variantenkörper der Stapelkalibrierung direkt dieselben
+männlichen und weiblichen Merkmalsmodule aus `stacking.scad`.
 
 ## Parameterhoheit und abgeleitete Maße
 
@@ -69,14 +73,14 @@ Maßkette. Die Standardkonfiguration ergibt:
 | Slotabmessung | 73,2 × 5,4 mm |
 | Slotfeld | 154,4 × 82,8 mm |
 | Hauptkörper | 170,8 × 99,2 × 31,4 mm |
-| Gesamter Druckbauraum | 170,8 × 99,2 × 33,0 mm |
+| Konservativ reservierter Druckbauraum | 170,8 × 99,2 × 33,6 mm |
 | Freiliegende SO-DIMM-Höhe | 1,0 mm |
 
-Die Gesamthöhe enthält die reservierte, 1,6 mm nach unten ragende
-Stapelfunktion. Der geplante Stapelsteg bleibt innerhalb der X-/Y-Grundfläche
-des Körpers. Jedes spätere Merkmal, das weiter nach außen reicht, muss die
-zentrale Bauraumberechnung aktualisieren, statt die Bauraum-Assertions zu
-umgehen.
+Die reservierte Gesamthöhe addiert die 2,2 mm hohe Kalibrierkontur
+konservativ zum unveränderten Grundkörper. Sie ist noch keine Behauptung über
+die spätere Einbauposition. Jedes integrierte Merkmal muss seine tatsächliche
+X-/Y-/Z-Hülle in die zentrale Bauraumberechnung übernehmen, statt die
+Bauraum-Assertions zu umgehen.
 
 ## Passungsspiele
 
@@ -89,8 +93,10 @@ Unterschiede zwischen SO-DIMM-Bauformen. Einführfasen und gerundete Auflagen
 bestimmen das tatsächliche Gefühl. Vor Freigabe des 20-Slot-Feldes müssen die
 Werte dennoch mit weiteren repräsentativen Modulen gegengeprüft werden.
 
-Das Spiel der Stapelmechanik beginnt mit 0,25 mm am engeren Ende des geforderten
-Bereichs von 0,25 bis 0,30 mm. Es gilt erst als validiert, wenn wiederholte
+Das Stapelspiel beginnt mit 0,25 mm. Dieser Wert ist als horizontales
+**Gesamtspiel** zwischen zwei gegenüberliegenden Flanken definiert und ergibt
+bei zentrierter Kontur 0,125 mm je Seite. Die Kalibrierreihe prüft zusätzlich
+0,20, 0,30 und 0,35 mm. Ein Wert gilt erst als validiert, wenn wiederholte
 Stapel- und Trennversuche sowohl geringes Spiel als auch leichtes Lösen zeigen.
 
 ## Vier-Slot-Kalibriergeometrie
@@ -239,12 +245,99 @@ Matrix verwendet direkt den Generator des physisch geprüften Vier-Slot-Körpers
 ## Stapelmechanik
 
 Das Stapelsystem wird als eigenständiges funktionales Teilsystem behandelt.
-Die geplante Schnittstelle verwendet durchgehende konische Führungsflächen
-anstelle rechteckiger Füße. Gegenüberliegende 45-Grad-Flächen sorgen für
-Selbstzentrierung und bleiben in der vorgesehenen Druckausrichtung supportfrei.
-Das Spiel von 0,25 bis 0,30 mm ist ein Prüfbereich. Der veröffentlichte Wert
-wird anhand wiederholter PETG-Stapel- und Trennversuche festgelegt, nicht nur
-anhand einer optischen Passung.
+Meilenstein 4 integriert es ausdrücklich noch nicht in den 20-Slot-Körper. Der
+Test besteht aus zwei 70,0 × 26,0 mm großen Platten, die zusammen druckfertig
+70,0 × 58,0 × 4,8 mm belegen. Unter- und Oberteil bleiben getrennte
+Netzkomponenten und lassen sich nach dem Druck unmittelbar zusammenführen.
+
+### Gewähltes Prinzip
+
+Vier überlappende trapezförmige Schienen bilden einen geschlossenen
+Führungsrahmen. Die gegenüberliegenden Schienen zentrieren in X und Y; es
+handelt sich funktional um eine Nut-/Feder-Führung und nicht nur um eine
+dekorative Fase. Die Feder ist 2,2 mm hoch, an der Basis 6,8 mm und an der
+Krone 2,4 mm breit. Damit bleibt jede freistehende Krone mindestens so stark
+wie sechs nominelle 0,4-mm-Düsenbreiten. Empfindliche Spitzen, Clips,
+Snap-Fits und flexible Rastnasen existieren nicht.
+
+Clips und Snap-Fits wurden bewusst ausgeschlossen. PETG kriecht unter
+Dauerlast, Rastnasen konzentrieren Spannung am Kerbgrund und ihr Verhalten
+hängt stark von Layerhaftung und Druckrichtung ab. Die gewählte Schnittstelle
+führt ausschließlich geometrisch und lässt sich senkrecht wieder lösen.
+
+### Flanken, Nutdach und Supportfreiheit
+
+Der Flankenwinkel wird gegenüber der Druckebene definiert und beträgt 45°.
+Bei dieser Einstellung entspricht der horizontale Lauf der vertikalen Höhe.
+Die männliche Feder wächst deshalb von 2,4 mm an der Krone auf 6,8 mm an der
+Basis.
+
+Die weibliche Nut ist kein rechteckiger Blindkanal. Ihr Querschnitt läuft von
+der Öffnung in zwei 45-Grad-Flächen zu einer Dachkante zusammen. Es entsteht
+weder eine nach unten gerichtete horizontale Decke noch eine verdeckte
+Brücke. Das Oberteil wird mit offener Nut auf dem Druckbett erzeugt, das
+Unterteil mit offen nach oben wachsender Feder. Beide Teile benötigen in der
+konstruierten Orientierung keine Stützstrukturen.
+
+### Funktionales Spiel und definierte Auflage
+
+`stacking_clearance` ist das gesamte horizontale Maß zwischen zwei
+gegenüberliegenden Kontaktflächen. Die weibliche Kontur wird nicht pauschal in
+allen Richtungen skaliert. Stattdessen wird die Nut an jeder relevanten Flanke
+um die Hälfte des Gesamtspiels erweitert. Bei 0,25 mm bleiben rechnerisch
+0,125 mm je Seite.
+
+Konische Flanken allein würden unter Gewicht so lange tiefer gleiten, bis sie
+sich verklemmen. Vier horizontale Auflageländer begrenzen deshalb die
+Eingriffstiefe auf 1,0 mm und tragen die obere Hälfte auf einer nominalen
+Projektionsfläche von 76,8 mm². Die Auflagen definieren eine moderate
+Stapelhöhe von 1,2 mm. Über dem 1,0 mm herausstehenden SO-DIMM verbleiben damit
+rechnerisch 0,2 mm vertikaler Freiraum. Die Flanken führen, die Auflagen
+tragen; diese Funktionstrennung verbessert Lösbarkeit und Wiederholbarkeit.
+
+Die Standardnut öffnet sich 4,65 mm weit und läuft über 2,325 mm in der
+Dachkante aus. In der 4,8 mm starken oberen Testplatte bleiben darüber
+2,475 mm tragende Rückwand. Auch die größte Variante mit 0,35 mm Gesamtspiel
+erhält mindestens 2,425 mm. Assertions verhindern dünnere Kronen,
+unzureichende Rückwände, negative Spiele und Flankenwinkel über 45°.
+
+### Selbstzentrierung und Abstände
+
+Vor dem ersten Eingriff darf das Oberteil beim Standardspiel rechnerisch um
+bis zu 1,125 mm je Achse gegenüber der Mitte versetzt sein, während die
+gegenüberliegenden Schrägflächen noch eine korrigierende Bewegung erzeugen.
+Die tatsächliche Führungstiefe beträgt 1,0 mm. Der männliche Rahmen hält im
+Testkörper mindestens 5,425 mm Abstand zu den X-Außenkanten und 3,425 mm zu
+den Y-Außenkanten. Diese konservativen Werte berücksichtigen bereits die
+längeren Nutsegmente der größten 0,35-mm-Variante und halten den konfigurierten
+Mindestabstand von 3,2 mm ein.
+
+Unter- und Oberteil liegen in der Standard-STL 6,0 mm auseinander. Die vier
+Varianten werden als 2×2-Feld mit 10,0 mm Abstand zwischen den Paarhüllen
+angeordnet. Assertions prüfen positive Innenöffnungen, Auflagenposition,
+Außenkantenabstände, Variantenanzahl, Nutrückwand und beide P1S-Bounding-Boxen.
+Eine zusätzliche 3D-Schnittsonde setzt Feder und weibliches Plattenmaterial in
+Sollposition zusammen. Für alle vier Spiele muss ihr Schnittvolumen leer
+bleiben. Diese Prüfung erfasst insbesondere die Schienenkreuzungen an den
+Rahmenecken, die eine reine Querschnittsrechnung nicht vollständig abbildet.
+
+Die endgültige Position am Vollkörper ist absichtlich noch nicht festgelegt.
+Slotfasen, Kontaktentlastungen, Randreliefs und die durchgehende Entnahmezone
+schränken mögliche Auflagebereiche gemeinsam ein. Bei der späteren Integration
+müssen deshalb konkrete Intervall- und Keep-out-Assertions für die gewählte
+Position ergänzt werden. Eine nicht integrierte Testkontur kann eine solche
+Kollisionsfreiheit nicht seriös behaupten. Der Grundkörper bleibt in diesem
+Meilenstein geometrisch unverändert.
+
+### Warum der reale PETG-Test erforderlich ist
+
+Die nach unten offene Nut beginnt in der ersten Schicht. Elefantenfuß,
+Betthaftung, Fluss, Abkühlung und die Textur der Druckplatte beeinflussen daher
+das reale Spiel stärker als die nominelle CAD-Differenz vermuten lässt. Die
+Varianten 0,20 / 0,25 / 0,30 / 0,35 mm werden mit demselben P1S-PETG-Profil wie
+die spätere Box gedruckt. Freigegeben wird das kleinste Spiel, das vollständig
+abgekühlt selbstzentriert, nicht kippelt und sich nach mehreren Zyklen ohne
+Verkeilen lösen lässt.
 
 ## Radien und Übergänge
 
@@ -263,7 +356,7 @@ Assertions verwenden jedoch die konfigurierbaren Druckerwerte statt eines
 fest codierten Druckerprofils. Der tatsächliche Grundkörper mit
 170,8 × 99,2 × 31,4 mm lässt 85,2 mm in X, 156,8 mm in Y und 224,6 mm in Z
 frei. Der vorsorglich einschließlich späterer Stapelhöhe berechnete Bauraum von
-170,8 × 99,2 × 33,0 mm lässt noch 223,0 mm in Z. Assertions melden die konkret
+170,8 × 99,2 × 33,6 mm lässt noch 222,4 mm in Z. Assertions melden die konkret
 überschrittene Achse und Abmessung.
 
 ## Beschriftungssystem
@@ -295,4 +388,9 @@ Grundkörper rendert ohne Warnungen, besitzt genau eine zusammenhängende
 Komponente, 0 nicht-manifold Kanten, 5.900 Dreiecke und ein geschlossenes
 Netzvolumen von 239.519 mm³. Supportfreiheit ist geometrisch geprüft; der
 vollständige PETG-Druck bleibt als physische Validierungsstufe offen.
-Stapelgefühl, finale Ergonomie und finale Box bleiben bewusst unvalidiert.
+Das Standard-Stapeltestpaar besitzt 2.016 Dreiecke, zwei Komponenten,
+0 nicht-manifold Kanten und ein geschlossenes Netzvolumen von 13.719 mm³. Das
+Variantenfeld besitzt acht Komponenten, 8.128 Dreiecke und 0 nicht-manifold
+Kanten. Sein P1S-Bauraum beträgt 150,0 × 126,0 × 4,8 mm. Das reale
+Stapelgefühl, die endgültige Vollkörperposition, finale Ergonomie und finale
+Box bleiben bewusst unvalidiert.

@@ -5,8 +5,10 @@ Speichermodule, konstruiert in OpenSCAD für zuverlässigen FDM-3D-Druck.
 
 > **Projektstatus:** Die Slotmaße sind physisch validiert. Ein vollständiger
 > Grundkörper für 20 Module sowie ein verkürzter 2×3-Testkörper sind als
-> Prototypen verfügbar. Stapelmechanik und finales Labelsystem sind noch nicht
-> implementiert.
+> Prototypen verfügbar. Die Stapelschnittstelle liegt als separates
+> Kalibrierpaar mit vier Spielvarianten vor, ist aber noch nicht physisch
+> validiert oder in den Grundkörper integriert. Das finale Labelsystem ist noch
+> nicht implementiert.
 
 
 ## Projektziele
@@ -56,8 +58,11 @@ Der Einstiegspunkt enthält absichtlich ausschließlich Include-Anweisungen.
 `render_mode = "slot_test"` erzeugt den druckbaren Kalibrierkörper,
 `render_mode = "full_box"` den vollständigen 2×10-Grundkörper,
 `render_mode = "full_box_short"` denselben Körper mit drei Reihen und
-`render_mode = "debug"` die Vorschau des Maß- und Bauraums. Der Grundkörper
-ist noch keine finale stapelbare Veröffentlichung.
+`render_mode = "stacking_test"` das Stapeltestpaar mit dem Standardspiel.
+`render_mode = "stacking_test_variants"` ordnet vier gravierte
+Spielvarianten druckfertig an. `render_mode = "debug"` erzeugt die Vorschau
+des Maß- und Bauraums. Der Grundkörper ist noch keine finale stapelbare
+Veröffentlichung.
 
 ## STL-Dateien erzeugen
 
@@ -92,6 +97,8 @@ SODIMM_OPENSCAD_BIN=/absoluter/pfad/zu/openscad scripts/export_all.sh
 | --- | --- |
 | `exports/calibration/sodimm-slot-test.stl` | Standard-Kalibrierkörper mit 2 × 2 Slots |
 | `exports/calibration/sodimm-slot-variants.stl` | Gravierte Varianten mit 0,8, 1,0 und 1,2 mm Spiel |
+| `exports/calibration/stacking-test.stl` | Unter- und Oberteil der Stapelkalibrierung mit 0,25 mm Gesamtspiel |
+| `exports/calibration/stacking-test-variants.stl` | Vier gravierte Stapelpaare mit 0,20 / 0,25 / 0,30 / 0,35 mm Gesamtspiel |
 | `exports/prototypes/sodimm-box-v3-body.stl` | Vollständiger Grundkörper mit 2 × 10 Slots |
 | `exports/prototypes/sodimm-box-v3-short.stl` | Kurzer Grundkörper mit 2 × 3 Slots |
 
@@ -239,12 +246,69 @@ zusammenhängende Komponente, null nicht-manifold Kanten und den P1S-Bauraum.
 Der komplette Grundkörper wurde noch nicht physisch gedruckt; seine Geometrie
 ist rechnerisch sowie per OpenSCAD- und Meshprüfung validiert.
 
+## Stapelkalibrierung
+
+Die Stapelschnittstelle wird vor jeder Änderung am 20-Slot-Grundkörper mit
+zwei kleinen Platten geprüft. Das Unterteil trägt den männlichen
+Führungsrahmen und vier definierte Auflagen; das Oberteil enthält die passende
+dachförmige Nut. Beide Teile verwenden direkt dieselben wiederverwendbaren
+Module, die nach einem erfolgreichen Drucktest in den Vollkörper übernommen
+werden können.
+
+Die vier Rahmenseiten zentrieren in X und Y. Ihre 45-Grad-Flanken führen eine
+seitlich versetzte Platte beim Absenken zur Mitte. Die weibliche Kontur endet
+in einer 45-Grad-Dachkante und besitzt deshalb keine horizontale Blinddecke.
+Clips, Snap-Fits und dünne Rastnasen werden nicht verwendet.
+
+`stacking_clearance` bezeichnet das horizontale **Gesamtspiel** zwischen zwei
+gegenüberliegenden Flanken. Der Standardwert 0,25 mm entspricht 0,125 mm je
+Seite. Er ist noch kein physisch freigegebener Produktionswert. Für PETG wird
+zuerst der Variantenkörper empfohlen:
+
+```scad
+render_mode = "stacking_test_variants";
+stacking_clearance_variants = [0.20, 0.25, 0.30, 0.35];
+```
+
+Alternativ erzeugt `scripts/export_all.sh` beide Stapel-STLs ohne Änderung der
+Konfigurationsdatei. Die normale Druckanordnung misst 70,0 × 58,0 × 4,8 mm,
+das Variantenfeld 150,0 × 126,0 × 4,8 mm.
+
+### Druck- und Passungsprüfung
+
+1. Die STL unverändert in der konstruierten Orientierung laden. Unter- und
+   Oberteil liegen bereits mit ihren supportfreien Druckseiten auf dem
+   Druckbett; die Nut des Oberteils öffnet sich zur ersten Schicht.
+2. Mit demselben P1S-PETG-Profil, 0,4-mm-Düse, 0,20-mm-Schichten und ohne
+   Stützstrukturen drucken, das später für die Box vorgesehen ist.
+3. Gleich markierte Teile zuordnen. Das Oberteil vom Druckbett lösen, mit der
+   Nut nach unten auf die Feder setzen und nur mit leichtem Eigengewicht
+   absenken. Nicht mit Kraft zusammendrücken.
+4. Prüfen, ob die Flanken aus einer kleinen seitlichen Fehlstellung in beiden
+   Achsen zentrieren, die vier Auflagen gleichmäßig anliegen, kein fühlbares
+   Kippeln entsteht und sich das Oberteil ohne Verkeilen wieder abheben lässt.
+5. Das kleinste Spiel wählen, das nach mehreren Stapel- und Trennzyklen sowie
+   vollständig abgekühltem PETG zuverlässig funktioniert.
+
+Die erste Schicht beeinflusst die nach unten offene Nut unmittelbar.
+Elefantenfußkorrektur, Fluss und Betthaftung müssen deshalb dem späteren
+Produktionsprofil entsprechen. Das Ergebnis des physischen Tests ist zu
+dokumentieren, bevor eine Variante als Standard festgelegt oder die
+Schnittstelle in den 20-Slot-Körper integriert wird.
+
+Die reproduzierbare Geometrie- und Negativprüfung wird so gestartet:
+
+```bash
+scripts/validate_stacking_test.sh
+```
+
 ## Zusammenbau und Stapeln
 
 Jede Box soll später als ein Bauteil gedruckt werden und keinen Zusammenbau
-erfordern. Die selbstzentrierende Stapelschnittstelle wird erst in Meilenstein
-4 mit eigenen Toleranzkörpern entwickelt. Der aktuelle Prototyp enthält noch
-keine Stapelgeometrie.
+erfordern. Die selbstzentrierende Stapelschnittstelle ist als separates
+Kalibrierpaar konstruiert. Der aktuelle 20-Slot-Prototyp enthält absichtlich
+noch keine Stapelgeometrie; die Integration folgt erst nach dem realen
+PETG-Passungstest.
 
 ## Anpassungen
 
@@ -266,11 +330,13 @@ geplanten Meilensteine in [ROADMAP.md](docs/ROADMAP.md).
 | `body.scad` | Vollständige Slotmatrix, gerundeter Grundkörper, Rippen und Materialreliefs |
 | `slots.scad` | Parametrische Erzeugung der SO-DIMM-Slots |
 | `stacking.scad` | Selbstzentrierende Stapelmechanik |
+| `stacking_test.scad` | Separate Stapelkalibrierkörper und Spielvarianten |
 | `label.scad` | Adaptive gravierte oder erhabene Beschriftung |
 | `debug_preview.scad` | Meilensteinbezogene Maßausgabe und Bauraumvorschau |
 | `slot_test.scad` | Vier-Slot-Passungstest und Toleranzvarianten |
 | `render.scad` | Zentrale Auswahl des Rendermodus |
 | `RAM_Box.scad` | Projekteinstiegspunkt, der nur Includes enthält |
+| `tests/stacking_collision_check.scad` | 3D-Schnittsonde für kollisionsfreie Stapel-Sollpositionen |
 
 ## Lizenz
 

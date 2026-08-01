@@ -10,7 +10,8 @@ scripts/export_all.sh
 
 Aktuelle und reservierte Kategorien:
 
-- `calibration/` — Passungstestkörper und Toleranzvarianten
+- `calibration/` — Slot-Passungskörper sowie Stapeltestpaare und ihre
+  Toleranzvarianten
 - `final/` — zukünftige validierte Produktionsmodelle
 - `prototypes/` — vollständiger 2×10-Grundkörper und 2×3-Kurztest für die Entwicklung
 - `examples/` — zukünftige Beispielkonfigurationen

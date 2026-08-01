@@ -25,9 +25,28 @@ zu folgen.
 - Automatisierte Vollkörperprüfung für Slotanzahl, Diagnosewerte, Assertions,
   P1S-Bauraum, Bounding Box, Netzvolumen, Komponenten und Manifold-Topologie.
 - Netzvolumenberechnung im ASCII-STL-Prüfwerkzeug.
+- Parametrische männliche und weibliche Stapelkonturen aus demselben
+  Parametersatz mit 45-Grad-Flanken und dachförmig supportfreier Nut.
+- Kompaktes Stapelkalibrierpaar mit definierten Auflageländern,
+  selbstzentrierender Führung in X und Y und schriftunabhängiger Gravur.
+- Vier getrennt druckbare Stapelspielvarianten mit 0,20 / 0,25 / 0,30 /
+  0,35 mm horizontalem Gesamtspiel.
+- Rendermodi `stacking_test` und `stacking_test_variants` ohne Geometrie im
+  Dispatcher oder Integration in den 20-Slot-Grundkörper.
+- Reproduzierbare Exporte `stacking-test.stl` und
+  `stacking-test-variants.stl`.
+- Automatisierte Stapelprüfung für Gesamt- und Seitenspiel, 45-Grad-Grenze,
+  Führungstiefe, Zentrierweg, Featurestärke, Rückwand, Außenkantenabstand,
+  P1S-Bauraum, Bounding Box, Netzvolumen, Komponenten, Manifold-Topologie und
+  ein leeres 3D-Schnittvolumen in Sollposition.
+- Gemeinsame schriftunabhängige Siebensegment-Ziffern für Slot- und
+  Stapelkalibrierungen.
 
 ### Behoben
 
+- Die dachförmigen Nutsegmente decken jetzt auch die vollständige Länge der
+  Federbasis an allen vier Rahmenecken ab. Eine separate 3D-Schnittprüfung
+  verhindert erneute Eckkollisionen für sämtliche Spielvarianten.
 - Die freie Standard-Slotlänge wurde nach einem realen Testdruck von 68,8 auf
   73,2 mm erhöht. Gemessene Module von ungefähr 72,0 mm erhalten damit das
   unveränderte gesamte Längenspiel von 1,2 mm.
@@ -42,6 +61,11 @@ zu folgen.
   erhalten.
 - Der Kalibrierkörper und beide Grundkörper verwenden jetzt gemeinsame
   Matrixmaßfunktionen sowie dieselbe supportfreie Entnahmegeometrie.
+- `stacking_clearance` ist eindeutig als horizontales Gesamtspiel definiert;
+  die Standardkontur verteilt 0,25 mm symmetrisch als 0,125 mm je Flanke.
+- Die konservativ reservierte Gesamthöhe berücksichtigt jetzt die 2,2 mm hohe
+  Stapelkalibrierkontur und beträgt 33,6 mm. Die reale Grundkörpergeometrie
+  bleibt unverändert 31,4 mm hoch.
 - Projektdokumentation, Entwicklerkommentare, Diagnoseausgaben und
   CI-Bezeichnungen wurden auf Deutsch vereinheitlicht.
 - Deutsch wurde als verbindliche Projektsprache für künftige Änderungen
