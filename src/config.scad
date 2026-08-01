@@ -48,6 +48,7 @@ access_grip_depth = 8.0;
 
 // Selbstzentrierende Stapelschnittstelle.
 // stacking_clearance ist das horizontale Gesamtspiel, nicht das Spiel je Seite.
+// 0,25 mm wurde mit PETG auf dem Bambu Lab P1S physisch validiert.
 stacking_clearance = 0.25;
 stacking_feature_height = 2.2;
 stacking_feature_top_width = 2.4;
