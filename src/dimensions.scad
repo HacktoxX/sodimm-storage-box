@@ -930,9 +930,31 @@ assert(
     "stacking_test_variant_columns muss eine ganze Zahl von mindestens 1 sein."
 );
 for (variant_clearance = stacking_clearance_variants) {
+    variant_female_opening =
+        stacking_female_opening_width_for(
+            variant_clearance,
+            stacking_feature_height,
+            stacking_feature_top_width,
+            stacking_chamfer_angle,
+            stacking_standoff
+        );
+    variant_calculated_clearance =
+        variant_female_opening -
+        (
+            2 *
+            stacking_engagement_depth *
+            stacking_slope_run_per_height
+        ) -
+        stacking_feature_top_width;
+
     assert(
         variant_clearance >= 0,
         "Jedes Gesamtspiel des Stapeltests muss nichtnegativ sein."
+    );
+    assert(
+        abs(variant_calculated_clearance - variant_clearance) <=
+            body_calculation_epsilon,
+        "Eine Stapelvariante erzeugt in Sollposition nicht das konfigurierte Gesamtspiel."
     );
     assert(
         stacking_test_top_thickness -
