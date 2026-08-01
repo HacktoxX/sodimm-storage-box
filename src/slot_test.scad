@@ -224,7 +224,7 @@ module slot_test_body(
             body_length = test_body_length,
             body_width = test_body_width,
             body_height = slot_test_body_height,
-            grip_depth = slot_test_grip_depth,
+            grip_depth = access_grip_depth,
             bottom_width = slot_test_grip_bottom_width,
             top_width = slot_test_grip_top_width,
             boolean_overlap = slot_test_boolean_overlap

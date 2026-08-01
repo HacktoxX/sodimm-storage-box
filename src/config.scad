@@ -37,9 +37,14 @@ bottom_thickness = 2.4;
 outer_margin_x = 5.0;
 outer_margin_y = 5.0;
 corner_radius = 4.0;
+curve_resolution = 48;
+body_material_reliefs = true;
 
 // Vertikaler Eingriff des SO-DIMMs.
 insertion_depth = 29.0;
+
+// Funktionale, supportfreie Entnahmezone.
+access_grip_depth = 8.0;
 
 // Selbstzentrierende Stapelschnittstelle.
 stacking_clearance = 0.25;
@@ -67,10 +72,12 @@ layer_height = 0.2;
 slot_test_rows = 2;
 slot_test_columns = 2;
 slot_test_outer_margin = 3.2;
-slot_test_grip_depth = 8.0;
 slot_test_variant_mode = false;
 slot_test_clearance_variants = [0.8, 1.0, 1.2];
 slot_test_variant_spacing = 12.0;
+
+// Verkürzter Grundkörper für einen schnellen 2×3-Testdruck.
+full_box_short_rows = 3;
 
 // Auswahl des Rendermodus und Diagnoseausgabe.
 render_mode = "slot_test"; // "debug" oder "slot_test".

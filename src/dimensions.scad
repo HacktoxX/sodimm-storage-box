@@ -24,6 +24,12 @@ assert(
     "row_count muss eine ganze Zahl von mindestens 1 sein."
 );
 assert(
+    full_box_short_rows >= 1 &&
+    full_box_short_rows <= row_count &&
+    full_box_short_rows == floor(full_box_short_rows),
+    "full_box_short_rows muss eine ganze Zahl zwischen 1 und row_count sein."
+);
+assert(
     nozzle_diameter > 0,
     "nozzle_diameter muss positiv sein."
 );
@@ -56,8 +62,21 @@ assert(
     "Außenränder dürfen nicht negativ sein."
 );
 assert(
+    curve_resolution >= 12 &&
+    curve_resolution == floor(curve_resolution),
+    "curve_resolution muss eine ganze Zahl von mindestens 12 sein."
+);
+assert(
+    body_material_reliefs == true || body_material_reliefs == false,
+    "body_material_reliefs muss true oder false sein."
+);
+assert(
     insertion_depth > 0 && insertion_depth <= sodimm_height,
     "insertion_depth muss positiv sein und darf sodimm_height nicht überschreiten."
+);
+assert(
+    access_grip_depth > 0 && access_grip_depth < insertion_depth,
+    "access_grip_depth muss positiv und kleiner als insertion_depth sein."
 );
 assert(
     stacking_clearance >= 0,
@@ -101,19 +120,38 @@ assert(
 
 // Ein Slot addiert explizites Fertigungsspiel zur nominellen Modulhülle.
 slot_length = sodimm_length + slot_length_clearance;
-slot_width = sodimm_thickness + slot_thickness_clearance;
+function slot_width_with_clearance(thickness_clearance) =
+    sodimm_thickness + thickness_clearance;
+slot_width = slot_width_with_clearance(slot_thickness_clearance);
+
+/*
+ * Gemeinsame Matrixfunktionen sind die einzige Quelle für Slotfeld- und
+ * Körpermaße. Kalibrierkörper, vollständige Box und Kurztest verwenden damit
+ * dieselbe Positions- und Abstandskette.
+ */
+function slot_matrix_length_for(columns) =
+    (columns * slot_length) + ((columns - 1) * center_gap);
+
+function slot_matrix_width_for(rows, thickness_clearance) =
+    (rows * slot_width_with_clearance(thickness_clearance)) +
+    ((rows - 1) * row_spacing);
+
+function storage_body_length_for(columns) =
+    slot_matrix_length_for(columns) +
+    (2 * (outer_margin_x + wall_thickness));
+
+function storage_body_width_for(rows, thickness_clearance) =
+    slot_matrix_width_for(rows, thickness_clearance) +
+    (2 * (outer_margin_y + wall_thickness));
 
 // Das Slotfeld enthält alle Slots und nur die Abstände zwischen Nachbarn.
-slot_area_length =
-    (slots_per_row * slot_length) +
-    ((slots_per_row - 1) * center_gap);
+slot_area_length = slot_matrix_length_for(slots_per_row);
 slot_area_width =
-    (row_count * slot_width) +
-    ((row_count - 1) * row_spacing);
+    slot_matrix_width_for(row_count, slot_thickness_clearance);
 
 // Der Hauptkörper umschließt das Slotfeld mit Funktionsrand und Außenwand.
-body_length = slot_area_length + (2 * (outer_margin_x + wall_thickness));
-body_width = slot_area_width + (2 * (outer_margin_y + wall_thickness));
+body_length = storage_body_length_for(slots_per_row);
+body_width = storage_body_width_for(row_count, slot_thickness_clearance);
 body_height = bottom_thickness + insertion_depth;
 
 /*
@@ -135,6 +173,23 @@ box_height = body_height + stacking_feature_height;
 
 // Die Kapazität wird einmal abgeleitet, damit jedes Teilsystem denselben Wert meldet.
 total_slot_count = slots_per_row * row_count;
+
+// Der Kurztest reduziert ausschließlich die Reihenzahl derselben Matrix.
+full_box_short_slot_count = slots_per_row * full_box_short_rows;
+full_box_short_slot_area_length =
+    slot_matrix_length_for(slots_per_row);
+full_box_short_slot_area_width =
+    slot_matrix_width_for(
+        full_box_short_rows,
+        slot_thickness_clearance
+    );
+full_box_short_body_length = storage_body_length_for(slots_per_row);
+full_box_short_body_width =
+    storage_body_width_for(
+        full_box_short_rows,
+        slot_thickness_clearance
+    );
+full_box_short_body_height = body_height;
 
 // Ursprung des Slotfelds, gemessen von der unteren Außenecke des Körpers.
 slot_start_x = wall_thickness + outer_margin_x;
@@ -235,15 +290,11 @@ assert(
  * der späteren Box bleiben die verbindliche Quelle; nur das Dickenspiel
  * unterscheidet sich zwischen den Kalibrierkörpern.
  */
-function slot_width_with_clearance(thickness_clearance) =
-    sodimm_thickness + thickness_clearance;
-
 function slot_test_field_length_for(columns) =
-    (columns * slot_length) + ((columns - 1) * center_gap);
+    slot_matrix_length_for(columns);
 
 function slot_test_field_width_for(thickness_clearance, rows) =
-    (rows * slot_width_with_clearance(thickness_clearance)) +
-    ((rows - 1) * row_spacing);
+    slot_matrix_width_for(rows, thickness_clearance);
 
 function slot_test_body_length_for(columns) =
     slot_test_field_length_for(columns) + (2 * slot_test_edge_width);
@@ -299,8 +350,8 @@ assert(
     "slot_test_outer_margin muss mindestens wall_thickness erhalten."
 );
 assert(
-    slot_test_grip_depth > 0,
-    "slot_test_grip_depth muss positiv sein."
+    access_grip_depth > 0,
+    "access_grip_depth muss positiv sein."
 );
 assert(
     slot_test_variant_mode == true || slot_test_variant_mode == false,
@@ -362,9 +413,9 @@ slot_contact_floor_thickness =
  */
 slot_test_grip_bottom_width = center_gap;
 slot_test_grip_top_width =
-    slot_test_grip_bottom_width + (2 * slot_test_grip_depth);
+    slot_test_grip_bottom_width + (2 * access_grip_depth);
 slot_test_remaining_center_web_height =
-    slot_test_body_height - slot_test_grip_depth;
+    slot_test_body_height - access_grip_depth;
 
 // Explizite Stegberechnungen belegen, dass benachbarte Fasen nicht kollidieren.
 slot_test_column_web_width = center_gap;
